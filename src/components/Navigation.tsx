@@ -17,6 +17,8 @@ export function Navigation({ teams }: { teams: Team[] }) {
   const [mobileClubOpen, setMobileClubOpen] = useState(false)
   const location = useLocation()
   const primaryLogo = teams.find((team) => team.slug === 'muzi')?.logo_url ?? teams[0]?.logo_url
+  const teamsActive = location.pathname.startsWith('/tymy')
+  const clubActive = location.pathname.startsWith('/klub') || location.pathname === '/kontakt'
 
   useEffect(() => {
     setMobileOpen(false)
@@ -49,8 +51,8 @@ export function Navigation({ teams }: { teams: Team[] }) {
           </div>
         </Link>
 
-        <div className="hidden items-center rounded-[16px] border border-sand-200/80 bg-white/60 p-1 lg:flex">
-          <Dropdown label="Týmy">
+        <div className="hidden items-center gap-1 lg:flex">
+          <Dropdown label="Týmy" active={teamsActive}>
             <div className="min-w-[430px] p-2.5">
               <div className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-ink-500">
                 Kategorie NFC Lichnov
@@ -77,7 +79,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
           <NavItem to="/aktuality">Aktuality</NavItem>
           <NavItem to="/galerie">Galerie</NavItem>
 
-          <Dropdown label="Klub">
+          <Dropdown label="Klub" active={clubActive}>
             <div className="min-w-[330px] p-2.5">
               {clubLinks.map((item) => (
                 <Link
@@ -212,11 +214,7 @@ function NavItem({ to, children }: { to: string; children: ReactNode }) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `rounded-[13px] px-3.5 py-2 text-[13px] font-semibold transition ${
-          isActive
-            ? 'bg-white text-brand-900 shadow-sm ring-1 ring-sand-200/80'
-            : 'text-ink-900 hover:bg-white/80'
-        }`
+        `nav-link px-3.5 py-2 text-[13px] font-semibold ${isActive ? 'nav-link-active' : ''}`
       }
     >
       {children}
@@ -224,13 +222,21 @@ function NavItem({ to, children }: { to: string; children: ReactNode }) {
   )
 }
 
-function Dropdown({ label, children }: { label: string; children: ReactNode }) {
+function Dropdown({
+  label,
+  active,
+  children,
+}: {
+  label: string
+  active: boolean
+  children: ReactNode
+}) {
   return (
     <div className="group relative">
       <button
         type="button"
         aria-haspopup="menu"
-        className="flex items-center gap-1 rounded-[13px] px-3.5 py-2 text-[13px] font-semibold text-ink-900 transition hover:bg-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        className={`nav-link flex items-center gap-1 px-3.5 py-2 text-[13px] font-semibold ${active ? 'nav-link-active' : ''}`}
       >
         {label}
         <ChevronDown size={14} className="transition duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
