@@ -27,13 +27,37 @@ export function formatMatchDate(value: string | null | undefined) {
   }).format(new Date(value))
 }
 
+export function formatMatchDay(value: string | null | undefined) {
+  if (!value) return ''
+  return new Intl.DateTimeFormat('cs-CZ', {
+    day: 'numeric',
+    month: 'numeric',
+  }).format(new Date(value))
+}
+
+export function formatMatchTime(value: string | null | undefined) {
+  if (!value) return ''
+  return new Intl.DateTimeFormat('cs-CZ', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value))
+}
+
+export function isUpcomingMatch(value: string | null | undefined) {
+  if (!value) return false
+  return new Date(value).getTime() > Date.now()
+}
+
 export function matchScore(
   scoreHome: number | null,
   scoreAway: number | null,
   manualOverride?: boolean | null,
   manualHome?: number | null,
   manualAway?: number | null,
+  playingAt?: string | null,
 ) {
+  if (playingAt && isUpcomingMatch(playingAt)) return null
+
   const home = manualOverride && manualHome != null ? manualHome : scoreHome
   const away = manualOverride && manualAway != null ? manualAway : scoreAway
   if (home == null || away == null) return null
