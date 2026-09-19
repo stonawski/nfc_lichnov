@@ -77,7 +77,9 @@ export function PlayerStripCarousel({
       >
         {players.map((player) => {
           const fullName = [player.first_name, player.last_name].filter(Boolean).join(' ') || 'Hráč NFC'
-          const photo = player.photo_url || player.facr_photo_url
+          // Pro tento široký carousel používáme jen ručně nahrané klubové portréty.
+          // FAČR headshoty mají jiný ořez; dokud photo_url není doplněné, zobrazí se neutrální avatar.
+          const photo = player.photo_url
 
           return (
             <article
