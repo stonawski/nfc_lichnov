@@ -39,15 +39,14 @@ export function Navigation({ teams }: { teams: Team[] }) {
 
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-      <nav className="mx-auto flex h-[68px] max-w-[1210px] items-center justify-between gap-4 rounded-[22px] border border-white/80 bg-[#fbfaf6]/90 px-3.5 shadow-nav backdrop-blur-2xl sm:px-4">
+      <nav className="nav-shell mx-auto flex h-[72px] max-w-[1210px] items-center justify-between gap-4 rounded-[22px] border border-white/80 bg-[#fbfaf6]/90 px-3.5 shadow-nav backdrop-blur-2xl sm:px-4">
         <Link
           to="/"
           className="flex shrink-0 items-center gap-2.5 rounded-2xl px-1 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
-          <ClubLogo src={primaryLogo} name="NFC Lichnov" size="sm" />
-          <div className="hidden leading-none sm:block">
-            <div className="text-[14px] font-extrabold tracking-[-0.035em] text-brand-900">NFC Lichnov</div>
-            <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-ink-500">fotbalový klub</div>
+          <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+          <div className="hidden sm:block">
+            <div className="text-[15px] font-extrabold tracking-[-0.035em] text-brand-900">NFC Lichnov</div>
           </div>
         </Link>
 
@@ -130,11 +129,8 @@ export function Navigation({ teams }: { teams: Team[] }) {
           >
             <div className="flex items-center justify-between">
               <Link to="/" onClick={closeMobile} className="flex items-center gap-3">
-                <ClubLogo src={primaryLogo} name="NFC Lichnov" size="sm" />
-                <div>
-                  <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
-                  <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.17em] text-ink-500">fotbalový klub</div>
-                </div>
+                <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
               </Link>
 
               <button
