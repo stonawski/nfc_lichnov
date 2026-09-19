@@ -6,10 +6,13 @@ import { Navigation } from './Navigation'
 
 export function Layout() {
   const { data: teams = [] } = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
+
   return (
-    <div className="min-h-screen bg-sand-50 text-ink-900">
+    <div className="flex min-h-screen flex-col bg-sand-50 text-ink-900">
       <Navigation teams={teams} />
-      <Outlet />
+      <div className="flex-1">
+        <Outlet />
+      </div>
       <Footer />
     </div>
   )
