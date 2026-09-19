@@ -33,9 +33,11 @@ export function Navigation({ teams }: { teams: Team[] }) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [mobileOpen])
 
+  const closeMobile = () => setMobileOpen(false)
+
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-      <nav className="mx-auto flex h-[68px] max-w-[1210px] items-center justify-between gap-4 rounded-[22px] border border-white/80 bg-[#fbfaf6]/88 px-3.5 shadow-nav backdrop-blur-2xl sm:px-4">
+      <nav className="mx-auto flex h-[68px] max-w-[1210px] items-center justify-between gap-4 rounded-[22px] border border-white/80 bg-[#fbfaf6]/90 px-3.5 shadow-nav backdrop-blur-2xl sm:px-4">
         <Link
           to="/"
           className="flex shrink-0 items-center gap-2.5 rounded-2xl px-1 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -47,7 +49,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
           </div>
         </Link>
 
-        <div className="hidden items-center rounded-[16px] border border-sand-200/80 bg-white/55 p-1 lg:flex">
+        <div className="hidden items-center rounded-[16px] border border-sand-200/80 bg-white/60 p-1 lg:flex">
           <Dropdown label="Týmy">
             <div className="min-w-[430px] p-2.5">
               <div className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-ink-500">
@@ -61,7 +63,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                     className="group/item rounded-2xl px-3.5 py-3 transition hover:bg-sand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-500/55 transition group-hover/item:scale-125 group-hover/item:bg-brand-500" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-brand-500/60 transition group-hover/item:scale-125 group-hover/item:bg-brand-500" />
                       <div className="text-sm font-semibold text-ink-900">{team.name}</div>
                     </div>
                     <div className="mt-1 pl-4 text-[11px] text-ink-500">Zápasy · hráči · statistiky</div>
@@ -118,14 +120,14 @@ export function Navigation({ teams }: { teams: Team[] }) {
       {mobileOpen && (
         <div
           className="fixed inset-0 z-[60] bg-brand-900/25 p-3 backdrop-blur-md lg:hidden"
-          onClick={() => setMobileOpen(false)}
+          onClick={closeMobile}
         >
           <div
             className="mobile-menu-enter ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-3">
+              <Link to="/" onClick={closeMobile} className="flex items-center gap-3">
                 <ClubLogo src={primaryLogo} name="NFC Lichnov" size="sm" />
                 <div>
                   <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
@@ -135,7 +137,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
 
               <button
                 type="button"
-                onClick={() => setMobileOpen(false)}
+                onClick={closeMobile}
                 aria-label="Zavřít menu"
                 className="grid h-10 w-10 place-items-center rounded-[14px] bg-white ring-1 ring-sand-200"
               >
@@ -153,6 +155,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                   <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
+                    onClick={closeMobile}
                     className="block rounded-xl px-3 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-white"
                   >
                     {team.name}
@@ -160,9 +163,9 @@ export function Navigation({ teams }: { teams: Team[] }) {
                 ))}
               </MobileGroup>
 
-              <MobileLink to="/zapasy">Zápasy</MobileLink>
-              <MobileLink to="/aktuality">Aktuality</MobileLink>
-              <MobileLink to="/galerie">Galerie</MobileLink>
+              <MobileLink to="/zapasy" close={closeMobile}>Zápasy</MobileLink>
+              <MobileLink to="/aktuality" close={closeMobile}>Aktuality</MobileLink>
+              <MobileLink to="/galerie" close={closeMobile}>Galerie</MobileLink>
 
               <MobileGroup
                 label="Klub"
@@ -173,6 +176,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                   <Link
                     key={item.label}
                     to={item.to}
+                    onClick={closeMobile}
                     className="block rounded-xl px-3 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-white"
                   >
                     {item.label}
@@ -189,6 +193,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                 </p>
                 <Link
                   to="/kontakt"
+                  onClick={closeMobile}
                   className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-brand-900"
                 >
                   Kontakt <ArrowUpRight size={14} />
@@ -232,7 +237,7 @@ function Dropdown({ label, children }: { label: string; children: ReactNode }) {
       </button>
 
       <div className="pointer-events-none absolute left-1/2 top-full z-30 -translate-x-1/2 translate-y-1 pt-3 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
-        <div className="rounded-[24px] border border-white/85 bg-[#fbfaf6]/97 shadow-soft ring-1 ring-sand-200/60 backdrop-blur-2xl">
+        <div className="rounded-[24px] border border-white/85 bg-[#fbfaf6]/95 shadow-soft ring-1 ring-sand-200/60 backdrop-blur-2xl">
           {children}
         </div>
       </div>
@@ -240,10 +245,11 @@ function Dropdown({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function MobileLink({ to, children }: { to: string; children: ReactNode }) {
+function MobileLink({ to, close, children }: { to: string; close: () => void; children: ReactNode }) {
   return (
     <Link
       to={to}
+      onClick={close}
       className="block rounded-2xl px-4 py-3.5 text-xl font-semibold tracking-tight text-ink-900 transition hover:bg-white"
     >
       {children}
