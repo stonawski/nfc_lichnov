@@ -53,7 +53,7 @@ export function HomePage() {
   return (
     <main>
       <section className="relative overflow-hidden px-4 pb-10 pt-8 sm:px-5 sm:pb-14 sm:pt-12 md:px-8 lg:pb-20 lg:pt-16">
-        <div className="hero-mesh pointer-events-none absolute inset-x-0 top-[-90px] mx-auto h-[820px] max-w-[1500px]" />
+        <div className="hero-glow pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/10 blur-3xl" />
         <div className="pointer-events-none absolute right-[-5rem] top-0 h-[30rem] w-[30rem] rounded-full bg-[#decfac]/35 blur-3xl" />
 
@@ -95,52 +95,35 @@ export function HomePage() {
                 </Link>
               </div>
 
-              <div className="mt-10 grid max-w-[620px] grid-cols-3 border-t border-sand-200 pt-5">
+              <div className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
                 <HeroStat value={teamsQuery.data?.length ? String(teamsQuery.data.length) : '—'} label="aktivních týmů" />
                 <HeroStat value={men?.season || '2026/27'} label="aktuální sezóna" />
-                <HeroStat value="FAČR" label="automatická data" />
               </div>
             </div>
 
-            <div className="relative lg:pl-2">
-              <div className="hero-match-shell relative overflow-hidden rounded-[38px] border border-brand-900/5 bg-brand-900 p-3 shadow-[0_30px_90px_rgba(24,53,42,.14)] sm:p-4">
-                <div className="pointer-events-none absolute -right-10 -top-12 text-[11rem] font-black leading-none tracking-[-0.08em] text-white/[0.035]">
-                  NFC
+            <div className="relative lg:pl-4">
+              <div className="mb-4 flex items-end justify-between gap-4 px-1">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">Zápasy</div>
+                  <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
+                    Výsledky napříč kategoriemi
+                  </h2>
                 </div>
-
-                <div className="relative flex items-center justify-between px-3 pb-3 pt-2 sm:px-4">
-                  <div>
-                    <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/45">Klubový přehled</div>
-                    <div className="mt-1 text-sm font-bold text-white">Výsledky napříč kategoriemi</div>
-                  </div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.13em] text-white/65">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#35d276]" />
-                    aktuální
-                  </div>
-                </div>
-
-                <div className="relative">
-                  {matchesQuery.isLoading ? (
-                    <div className="rounded-[30px] bg-white/95 p-5">
-                      <LoadingState rows={2} />
-                    </div>
-                  ) : matchesQuery.isError ? (
-                    <div className="rounded-[30px] bg-white/95 p-5">
-                      <EmptyState
-                        title="Data se nepodařilo načíst"
-                        text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
-                      />
-                    </div>
-                  ) : (
-                    <MatchCarousel items={matchesQuery.data ?? []} />
-                  )}
-                </div>
-
-                <div className="relative flex items-center justify-between gap-4 px-3 pb-2 pt-3 text-[10px] font-medium text-white/40 sm:px-4">
-                  <span>Přepínej mezi týmy</span>
-                  <span className="hidden sm:block">Na mobilu můžeš přejet prstem</span>
+                <div className="hidden text-right text-[11px] leading-5 text-ink-500 sm:block">
+                  Přepínej mezi týmy<br />nebo přejeď prstem
                 </div>
               </div>
+
+              {matchesQuery.isLoading ? (
+                <LoadingState rows={3} />
+              ) : matchesQuery.isError ? (
+                <EmptyState
+                  title="Data se nepodařilo načíst"
+                  text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
+                />
+              ) : (
+                <MatchCarousel items={matchesQuery.data ?? []} />
+              )}
             </div>
           </div>
 
