@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { MatchCarousel } from '../components/MatchCarousel'
+import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { SectionHeading } from '../components/SectionHeading'
 import { StandingsTable } from '../components/StandingsTable'
 import {
   fetchHomepageMatchSummaries,
+  fetchPlayersByTeam,
   fetchPublishedNews,
   fetchStandingsByTeam,
   fetchTeams,
@@ -38,6 +40,12 @@ export function HomePage() {
   const standingsQuery = useQuery({
     queryKey: ['standings', men?.id],
     queryFn: () => fetchStandingsByTeam(men!.id),
+    enabled: Boolean(men?.id),
+    retry: false,
+  })
+  const menPlayersQuery = useQuery({
+    queryKey: ['players', men?.id, 'home-strip'],
+    queryFn: () => fetchPlayersByTeam(men!.id),
     enabled: Boolean(men?.id),
     retry: false,
   })
@@ -283,6 +291,26 @@ export function HomePage() {
           )}
         </div>
       </section>
+
+      {men && (
+        <div className="py-8 md:py-14">
+          {menPlayersQuery.isLoading ? (
+            <div className="px-5 md:px-8">
+              <div className="mx-auto max-w-[1240px]">
+                <LoadingState rows={3} />
+              </div>
+            </div>
+          ) : menPlayersQuery.data?.length ? (
+            <PlayerStripCarousel
+              team={men}
+              players={menPlayersQuery.data}
+              eyebrow="A tým"
+              title="Hráči NFC Lichnov"
+              linkTo="/tymy/muzi"
+            />
+          ) : null}
+        </div>
+      )}
 
       <section className="px-5 py-8 md:px-8 md:py-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
