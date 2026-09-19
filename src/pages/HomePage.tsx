@@ -254,32 +254,30 @@ export function HomePage() {
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : upcomingQuery.data?.length ? (
-            <div className="grid gap-px overflow-hidden rounded-[34px] border border-sand-200 bg-sand-200 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {upcomingQuery.data.map((match) => (
                 <Link
                   to={`/tymy/${match.team?.slug ?? ''}`}
                   key={match.id}
-                  className="group bg-white p-5 transition hover:bg-brand-50/55 sm:p-6"
+                  className="group flex min-h-[178px] flex-col rounded-4xl border border-sand-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-500">
+                    <span className="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-700">
                       {match.team?.name || 'NFC Lichnov'}
                     </span>
                     <ArrowUpRight
                       size={16}
-                      className="text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"
+                      className="shrink-0 text-ink-500 transition group-hover:text-brand-500"
                     />
                   </div>
 
-                  <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm font-bold text-ink-900">
-                    <span className="text-right leading-tight">{match.home_team_name}</span>
-                    <span className="rounded-full bg-sand-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-ink-500">
-                      vs
-                    </span>
-                    <span className="leading-tight">{match.away_team_name}</span>
+                  <div className="mt-5 grid min-h-[46px] grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm font-bold text-ink-900">
+                    <span className="line-clamp-2 text-right leading-tight">{match.home_team_name}</span>
+                    <span className="text-xs text-ink-500">vs.</span>
+                    <span className="line-clamp-2 leading-tight">{match.away_team_name}</span>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 border-t border-sand-200 pt-4 text-xs text-ink-500">
+                  <div className="mt-auto flex flex-wrap justify-center gap-x-4 gap-y-2 pt-5 text-xs text-ink-500">
                     <span className="inline-flex items-center gap-1.5">
                       <CalendarDays size={14} />
                       {formatMatchDate(match.playing_at)}
