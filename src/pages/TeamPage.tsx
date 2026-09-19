@@ -175,12 +175,7 @@ export function TeamPage() {
             </div>
           </div>
         ) : playersQuery.data?.length ? (
-          <PlayerStripCarousel
-            team={team}
-            players={playersQuery.data}
-            eyebrow="Soupiska"
-            title={team.name}
-          />
+          <PlayerStripCarousel team={team} players={playersQuery.data} />
         ) : (
           <div className="px-5 md:px-8">
             <div className="mx-auto max-w-[1240px]">
