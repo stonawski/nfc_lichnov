@@ -32,7 +32,8 @@ body {
   color: #18352A;
 }
 
-a, button {
+a,
+button {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -40,19 +41,56 @@ button {
   font: inherit;
 }
 
+.hero-mesh {
+  opacity: 0.95;
+  background:
+    radial-gradient(circle at 15% 36%, rgba(0, 146, 63, 0.13), transparent 24%),
+    radial-gradient(circle at 86% 12%, rgba(222, 207, 172, 0.42), transparent 27%),
+    linear-gradient(rgba(0, 146, 63, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 146, 63, 0.055) 1px, transparent 1px);
+  background-size: auto, auto, 78px 78px, 78px 78px;
+  mask-image: linear-gradient(to bottom, black 0%, black 68%, transparent 98%);
+}
+
+.hero-match-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 49.88%, rgba(255, 255, 255, 0.035) 50%, transparent 50.12%),
+    radial-gradient(circle at 50% 50%, transparent 0 64px, rgba(255, 255, 255, 0.035) 65px 66px, transparent 67px);
+}
+
 .pitch-lines {
   background-image:
-    linear-gradient(rgba(0,146,63,.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,146,63,.07) 1px, transparent 1px);
+    linear-gradient(rgba(0, 146, 63, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 146, 63, 0.07) 1px, transparent 1px);
   background-size: 74px 74px;
   mask-image: linear-gradient(to bottom, black 5%, transparent 92%);
 }
 
 .field-watermark {
   background:
-    radial-gradient(circle at 18% 42%, rgba(0,146,63,.11), transparent 25%),
-    radial-gradient(circle at 82% 60%, rgba(20,83,45,.08), transparent 22%),
-    linear-gradient(90deg, transparent 49.85%, rgba(20,83,45,.08) 50%, transparent 50.15%);
+    radial-gradient(circle at 18% 42%, rgba(0, 146, 63, 0.11), transparent 25%),
+    radial-gradient(circle at 82% 60%, rgba(20, 83, 45, 0.08), transparent 22%),
+    linear-gradient(90deg, transparent 49.85%, rgba(20, 83, 45, 0.08) 50%, transparent 50.15%);
+}
+
+.mobile-menu-enter {
+  animation: mobile-menu-enter 180ms ease-out both;
+}
+
+@keyframes mobile-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
 .prose-club h2,
