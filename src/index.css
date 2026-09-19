@@ -77,6 +77,38 @@ button {
     linear-gradient(90deg, transparent 49.85%, rgba(20, 83, 45, 0.08) 50%, transparent 50.15%);
 }
 
+.nav-link {
+  position: relative;
+  color: #202621;
+  transition: color 180ms ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: 0.2rem;
+  height: 2px;
+  border-radius: 999px;
+  background: #00923F;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link-active {
+  color: #00923F;
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link-active::after {
+  transform: scaleX(1);
+}
+
 .mobile-menu-enter {
   animation: mobile-menu-enter 180ms ease-out both;
 }
