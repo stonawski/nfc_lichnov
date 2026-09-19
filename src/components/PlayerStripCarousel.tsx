@@ -1,5 +1,5 @@
 import { UserRound } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import type { Player, Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 
@@ -14,7 +14,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
   const dragStartX = useRef(0)
   const dragStartScroll = useRef(0)
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== 'mouse') return
     const track = trackRef.current
     if (!track) return
@@ -25,7 +25,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
     track.setPointerCapture(event.pointerId)
   }
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!dragging || event.pointerType !== 'mouse') return
     const track = trackRef.current
     if (!track) return
@@ -34,7 +34,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
     track.scrollLeft = dragStartScroll.current - delta
   }
 
-  const stopDragging = (event: React.PointerEvent<HTMLDivElement>) => {
+  const stopDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== 'mouse') return
     setDragging(false)
 
