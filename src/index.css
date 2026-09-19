@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  background: #FAF8F3;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #FAF8F3;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #FAF8F3;
+  color: #202621;
+  font-family: Inter, "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(0, 146, 63, 0.18);
+  color: #18352A;
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+}
+
+.pitch-lines {
+  background-image:
+    linear-gradient(rgba(0,146,63,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,146,63,.07) 1px, transparent 1px);
+  background-size: 74px 74px;
+  mask-image: linear-gradient(to bottom, black 5%, transparent 92%);
+}
+
+.field-watermark {
+  background:
+    radial-gradient(circle at 18% 42%, rgba(0,146,63,.11), transparent 25%),
+    radial-gradient(circle at 82% 60%, rgba(20,83,45,.08), transparent 22%),
+    linear-gradient(90deg, transparent 49.85%, rgba(20,83,45,.08) 50%, transparent 50.15%);
+}
+
+.prose-club h2,
+.prose-club h3 {
+  color: #18352A;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.prose-club a {
+  color: #00923F;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
