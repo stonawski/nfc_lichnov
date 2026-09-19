@@ -301,13 +301,7 @@ export function HomePage() {
               </div>
             </div>
           ) : menPlayersQuery.data?.length ? (
-            <PlayerStripCarousel
-              team={men}
-              players={menPlayersQuery.data}
-              eyebrow="A tým"
-              title="Hráči NFC Lichnov"
-              linkTo="/tymy/muzi"
-            />
+            <PlayerStripCarousel team={men} players={menPlayersQuery.data} />
           ) : null}
         </div>
       )}
