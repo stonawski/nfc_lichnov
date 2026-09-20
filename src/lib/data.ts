@@ -39,7 +39,25 @@ export async function fetchTeamBySlug(slug: string): Promise<Team | null> {
     .maybeSingle()
 
   if (error) throw error
-  return data as Team | null
+  if (!data) return null
+
+  const team = data as Team
+  if (team.logo_url) return team
+
+  const { data: logoSource, error: logoError } = await supabase
+    .from('teams')
+    .select('logo_url')
+    .not('logo_url', 'is', null)
+    .order('sort_order', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (logoError) throw logoError
+
+  return {
+    ...team,
+    logo_url: logoSource?.logo_url ?? null,
+  }
 }
 
 export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
@@ -103,7 +121,6 @@ export async function fetchUpcomingMatches(): Promise<Array<Match & { team?: Tea
   const teams = await fetchTeams()
   if (!teams.length) return []
 
-  const teamMap = new Map(teams.map((team) => [team.id, team]))
   const teamIds = teams.map((team) => team.id)
   const nowIso = new Date().toISOString()
 
