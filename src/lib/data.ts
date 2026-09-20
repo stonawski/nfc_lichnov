@@ -1,5 +1,16 @@
 import { supabase, isSupabaseConfigured } from './supabase'
-import type { Match, NewsArticle, Player, Staff, Standing, Team, TeamMatchSummary, TeamSeason } from './types'
+import type {
+  Gallery,
+  GalleryImage,
+  Match,
+  NewsArticle,
+  Player,
+  Staff,
+  Standing,
+  Team,
+  TeamMatchSummary,
+  TeamSeason,
+} from './types'
 import { TEAM_ORDER } from './format'
 
 function ensureConfigured() {
@@ -251,4 +262,47 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null>
 
   if (error) throw error
   return data as NewsArticle | null
+}
+
+
+export async function fetchGalleries(): Promise<Gallery[]> {
+  ensureConfigured()
+
+  const { data, error } = await supabase.from('galleries').select('*')
+  if (error) throw error
+
+  return ((data ?? []) as Gallery[])
+    .filter((gallery) => gallery.published !== false)
+    .sort((a, b) => {
+      const aDate = a.event_date || a.created_at || ''
+      const bDate = b.event_date || b.created_at || ''
+      return bDate.localeCompare(aDate)
+    })
+}
+
+export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> {
+  const galleries = await fetchGalleries()
+  return galleries.find((gallery) => gallery.slug === slug) ?? null
+}
+
+export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
+  ensureConfigured()
+
+  let query = supabase.from('gallery_images').select('*')
+  if (galleryId) query = query.eq('gallery_id', galleryId)
+
+  const { data, error } = await query
+  if (error) throw error
+
+  return ((data ?? []) as GalleryImage[]).sort((a, b) => {
+    const aOrder = a.sort_order ?? Number.MAX_SAFE_INTEGER
+    const bOrder = b.sort_order ?? Number.MAX_SAFE_INTEGER
+    if (aOrder !== bOrder) return aOrder - bOrder
+
+    return (a.created_at || '').localeCompare(b.created_at || '')
+  })
+}
+
+export function galleryImageUrl(image: GalleryImage): string | null {
+  return image.image_url || image.url || null
 }
