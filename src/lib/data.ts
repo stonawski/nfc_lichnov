@@ -17,19 +17,22 @@ export async function fetchTeams(): Promise<Team[]> {
     .order('sort_order', { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as Team[]
+
+  const teams = (data ?? []) as Team[]
+  const clubLogo =
+    teams.find((team) => team.slug === 'muzi' && team.logo_url)?.logo_url ??
+    teams.find((team) => team.logo_url)?.logo_url ??
+    null
+
+  return teams.map((team) => ({
+    ...team,
+    logo_url: team.logo_url || clubLogo,
+  }))
 }
 
 export async function fetchTeamBySlug(slug: string): Promise<Team | null> {
-  ensureConfigured()
-  const { data, error } = await supabase
-    .from('teams')
-    .select('id,name,short_name,slug,category,logo_url,active,sort_order,season')
-    .eq('slug', slug)
-    .maybeSingle()
-
-  if (error) throw error
-  return data as Team | null
+  const teams = await fetchTeams()
+  return teams.find((team) => team.slug === slug) ?? null
 }
 
 export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
@@ -88,16 +91,48 @@ export async function fetchHomepageMatchSummaries(): Promise<TeamMatchSummary[]>
     })
 }
 
-export async function fetchUpcomingMatches(limit = 6): Promise<Array<Match & { team?: Team }>> {
-  const [teams, matches] = await Promise.all([fetchTeams(), fetchCurrentMatches()])
-  const teamMap = new Map(teams.map((team) => [team.id, team]))
-  const now = Date.now()
+export async function fetchUpcomingMatches(): Promise<Array<Match & { team?: Team }>> {
+  ensureConfigured()
+  const teams = await fetchTeams()
+  if (!teams.length) return []
 
-  return matches
-    .filter((match) => new Date(match.playing_at).getTime() > now)
-    .sort((a, b) => new Date(a.playing_at).getTime() - new Date(b.playing_at).getTime())
-    .slice(0, limit)
-    .map((match) => ({ ...match, team: teamMap.get(match.team_id) }))
+  const teamIds = teams.map((team) => team.id)
+  const nowIso = new Date().toISOString()
+
+  const { data, error } = await supabase
+    .from('matches')
+    .select('id,team_id,facr_match_id,home_team_facr_id,home_team_name,home_team_logo,away_team_facr_id,away_team_name,away_team_logo,playing_at,season,facr_competition_id,competition_name,round,round_position,state,final_score,score_home,score_away,penalty_score_home,penalty_score_away,manual_override,manual_score_home,manual_score_away,pitch_name')
+    .in('team_id', teamIds)
+    .gt('playing_at', nowIso)
+    .order('playing_at', { ascending: true })
+
+  if (error) throw error
+
+  const firstMatchByTeam = new Map<string, Match>()
+  for (const match of (data ?? []) as Match[]) {
+    if (!firstMatchByTeam.has(match.team_id)) {
+      firstMatchByTeam.set(match.team_id, match)
+    }
+  }
+
+  return teams
+    .sort((a, b) => TEAM_ORDER.indexOf(a.slug) - TEAM_ORDER.indexOf(b.slug))
+    .map((team) => {
+      const match = firstMatchByTeam.get(team.id)
+      if (!match) return null
+
+      const fallbackLogo = team.logo_url
+      const homeIsLichnov = /lichnov/i.test(match.home_team_name)
+      const awayIsLichnov = /lichnov/i.test(match.away_team_name)
+
+      return {
+        ...match,
+        home_team_logo: match.home_team_logo || (homeIsLichnov ? fallbackLogo : null),
+        away_team_logo: match.away_team_logo || (awayIsLichnov ? fallbackLogo : null),
+        team,
+      }
+    })
+    .filter((match): match is Match & { team: Team } => match != null)
 }
 
 export async function fetchMatchesByTeam(teamId: string): Promise<Match[]> {

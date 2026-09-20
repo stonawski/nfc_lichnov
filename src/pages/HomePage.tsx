@@ -16,7 +16,7 @@ import {
   fetchUpcomingMatches,
 } from '../lib/data'
 import { formatDate, formatMatchDate } from '../lib/format'
-import type { Team } from '../lib/types'
+import type { Match, Team } from '../lib/types'
 
 export function HomePage() {
   const teamsQuery = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
@@ -32,7 +32,7 @@ export function HomePage() {
   })
   const upcomingQuery = useQuery({
     queryKey: ['matches', 'upcoming'],
-    queryFn: () => fetchUpcomingMatches(6),
+    queryFn: fetchUpcomingMatches,
     retry: false,
   })
 
@@ -51,6 +51,13 @@ export function HomePage() {
   })
 
   const news = newsQuery.data ?? []
+  const upcomingMatches = upcomingQuery.data ?? []
+  const featuredUpcoming =
+    upcomingMatches.find((match) => match.team?.slug === 'muzi') ?? upcomingMatches[0]
+  const dorostUpcoming = upcomingMatches.find((match) => match.team?.slug === 'dorost')
+  const lowerUpcoming = upcomingMatches
+    .filter((match) => match.id !== featuredUpcoming?.id && match.id !== dorostUpcoming?.id)
+    .slice(0, 3)
   const standings = standingsQuery.data ?? []
   const lichnovIndex = standings.findIndex((row) => /lichnov/i.test(row.team_name || row.club_name || ''))
   const standingsPreview =
@@ -237,50 +244,42 @@ export function HomePage() {
           <SectionHeading
             eyebrow="Program"
             title="Co nás čeká"
-            text="Nejbližší zápasy napříč kategoriemi."
+            text="Jeden nejbližší zápas z každé kategorie."
             to="/zapasy"
             linkLabel="Celý program"
           />
 
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
-          ) : upcomingQuery.data?.length ? (
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {upcomingQuery.data.map((match) => (
-                <Link
-                  to={`/tymy/${match.team?.slug ?? ''}`}
+          ) : featuredUpcoming ? (
+            <div className="grid gap-4 lg:grid-cols-12">
+              <UpcomingMatchTile
+                match={featuredUpcoming}
+                featured
+                large
+                className="min-h-[290px] lg:col-span-7"
+              />
+
+              {dorostUpcoming && (
+                <UpcomingMatchTile
+                  match={dorostUpcoming}
+                  large
+                  className="min-h-[290px] lg:col-span-5"
+                />
+              )}
+
+              {lowerUpcoming.map((match) => (
+                <UpcomingMatchTile
                   key={match.id}
-                  className="group flex min-h-[178px] flex-col rounded-4xl border border-sand-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-soft"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-700">
-                      {match.team?.name || 'NFC Lichnov'}
-                    </span>
-                    <ArrowUpRight
-                      size={16}
-                      className="shrink-0 text-ink-500 transition group-hover:text-brand-500"
-                    />
-                  </div>
-
-                  <div className="mt-5 grid min-h-[46px] grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm font-bold text-ink-900">
-                    <span className="line-clamp-2 text-right leading-tight">{match.home_team_name}</span>
-                    <span className="text-xs text-ink-500">vs.</span>
-                    <span className="line-clamp-2 leading-tight">{match.away_team_name}</span>
-                  </div>
-
-                  <div className="mt-auto flex flex-wrap justify-center gap-x-4 gap-y-2 pt-5 text-xs text-ink-500">
-                    <span className="inline-flex items-center gap-1.5">
-                      <CalendarDays size={14} />
-                      {formatMatchDate(match.playing_at)}
-                    </span>
-                    {match.pitch_name && (
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin size={14} />
-                        {match.pitch_name}
-                      </span>
-                    )}
-                  </div>
-                </Link>
+                  match={match}
+                  className={
+                    lowerUpcoming.length >= 3
+                      ? 'min-h-[185px] lg:col-span-4'
+                      : lowerUpcoming.length === 2
+                        ? 'min-h-[185px] lg:col-span-6'
+                        : 'min-h-[185px] lg:col-span-12'
+                  }
+                />
               ))}
             </div>
           ) : (
@@ -419,6 +418,111 @@ export function HomePage() {
         </div>
       </section>
     </main>
+  )
+}
+
+function UpcomingMatchTile({
+  match,
+  featured = false,
+  large = false,
+  className = '',
+}: {
+  match: Match & { team?: Team }
+  featured?: boolean
+  large?: boolean
+  className?: string
+}) {
+  const teamName = match.team?.name || 'NFC Lichnov'
+  const to = `/tymy/${match.team?.slug ?? ''}`
+
+  return (
+    <Link
+      to={to}
+      className={`group relative overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${featured
+        ? 'border-brand-900 bg-brand-900 text-white'
+        : 'border-sand-200 bg-white text-ink-900'
+      } ${className}`}
+    >
+      <div className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? 'bg-brand-500/20' : 'bg-brand-500/[0.06]'}`} />
+
+      <div className={`relative flex h-full flex-col ${featured ? 'p-7 sm:p-8' : large ? 'p-6 sm:p-7' : 'p-5'}`}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className={`text-[10px] font-bold uppercase tracking-[0.17em] ${featured ? 'text-white/45' : 'text-brand-500'}`}>
+              {teamName}
+            </div>
+            <div className={`mt-1 text-xs font-semibold ${featured ? 'text-white/60' : 'text-ink-500'}`}>
+              {formatMatchDate(match.playing_at)}
+            </div>
+          </div>
+          <ArrowUpRight
+            size={featured ? 20 : 16}
+            className={`shrink-0 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? 'text-white/55 group-hover:text-white' : 'text-ink-500 group-hover:text-brand-500'}`}
+          />
+        </div>
+
+        <div className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? 'gap-6' : large ? 'gap-5' : 'gap-3'}`}>
+          <MatchClub
+            name={match.home_team_name}
+            logo={match.home_team_logo}
+            featured={featured}
+            large={large}
+            align="right"
+          />
+
+          <div className={`rounded-full font-black uppercase tracking-[0.12em] ${featured
+            ? 'bg-white/[0.08] px-3 py-2 text-[11px] text-white/60 ring-1 ring-white/10'
+            : 'bg-sand-100 px-2.5 py-1.5 text-[9px] text-ink-500'
+          }`}>
+            vs
+          </div>
+
+          <MatchClub
+            name={match.away_team_name}
+            logo={match.away_team_logo}
+            featured={featured}
+            large={large}
+            align="left"
+          />
+        </div>
+
+        <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-xs ${featured ? 'text-white/55' : 'text-ink-500'}`}>
+          <span className="inline-flex items-center gap-1.5">
+            <CalendarDays size={14} />
+            {formatMatchDate(match.playing_at)}
+          </span>
+          {match.pitch_name && (
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin size={14} />
+              {match.pitch_name}
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function MatchClub({
+  name,
+  logo,
+  featured,
+  large,
+  align,
+}: {
+  name: string
+  logo: string | null
+  featured: boolean
+  large: boolean
+  align: 'left' | 'right'
+}) {
+  return (
+    <div className={`flex min-w-0 items-center gap-3 ${align === 'right' ? 'flex-row-reverse text-right' : ''}`}>
+      <ClubLogo src={logo} name={name} size={featured ? 'lg' : large ? 'md' : 'sm'} />
+      <div className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? 'text-xl sm:text-2xl' : large ? 'text-base sm:text-lg' : 'text-sm'}`}>
+        {name}
+      </div>
+    </div>
   )
 }
 
