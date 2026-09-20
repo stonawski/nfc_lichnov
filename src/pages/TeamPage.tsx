@@ -7,8 +7,8 @@ import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { StandingsTable } from '../components/StandingsTable'
 import {
+  fetchDisplayPlayersByTeam,
   fetchMatchesByTeam,
-  fetchPlayersByTeam,
   fetchStaffByTeam,
   fetchStandingsByTeam,
   fetchTeamBySlug,
@@ -45,7 +45,7 @@ export function TeamPage() {
   })
   const playersQuery = useQuery({
     queryKey: ['players', team?.id],
-    queryFn: () => fetchPlayersByTeam(team!.id),
+    queryFn: () => fetchDisplayPlayersByTeam(team!),
     enabled: Boolean(team?.id),
     retry: false,
   })
