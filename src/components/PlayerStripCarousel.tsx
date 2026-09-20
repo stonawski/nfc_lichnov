@@ -1,4 +1,3 @@
-import { UserRound } from 'lucide-react'
 import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import type { Player, Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
@@ -113,11 +112,14 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
                   className="pointer-events-none absolute inset-x-0 bottom-0 h-[92%] w-full object-cover object-top transition duration-500 group-hover:scale-[1.025]"
                 />
               ) : (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-[88%] items-center justify-center">
-                  <div className="grid h-40 w-40 place-items-center rounded-full bg-white/[0.06] ring-1 ring-white/10 sm:h-44 sm:w-44">
-                    <UserRound className="h-24 w-24 text-white/28 sm:h-28 sm:w-28" strokeWidth={1.25} />
-                  </div>
-                </div>
+                <img
+                  src="/player-placeholder.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  draggable={false}
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+                />
               )}
 
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
