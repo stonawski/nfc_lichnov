@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Gallery, GalleryImage, NewsArticle } from './types'
+import type { Gallery, GalleryImage, NewsArticle, Player } from './types'
 
 export type CreateGalleryInput = {
   title: string
@@ -286,4 +286,110 @@ export async function setNewsCover(
 export async function deleteNewsArticle(id: string): Promise<void> {
   const { error } = await supabase.from('news').delete().eq('id', id)
   if (error) throw error
+}
+
+
+const playerSelect =
+  'id,team_id,facr_player_id,first_name,last_name,birth_date,number,position,photo_url,facr_photo_url,bio,matches_count,goals_count,yellow_cards,red_cards,active,sort_order'
+
+export type CreatePlayerInput = {
+  team_id: string
+  first_name: string
+  last_name: string
+  number?: number | null
+}
+
+export type UpdatePlayerProfileInput = {
+  first_name?: string | null
+  last_name?: string | null
+  number: number | null
+  position: string | null
+  photo_url: string | null
+  bio: string | null
+  active: boolean
+  sort_order: number | null
+}
+
+export async function createPlayer(input: CreatePlayerInput): Promise<Player> {
+  const { data, error } = await supabase
+    .from('players')
+    .insert({
+      team_id: input.team_id,
+      facr_player_id: null,
+      first_name: input.first_name.trim(),
+      last_name: input.last_name.trim(),
+      number: input.number ?? null,
+      position: null,
+      photo_url: null,
+      bio: null,
+      active: true,
+      sort_order: null,
+    })
+    .select(playerSelect)
+    .single()
+
+  if (error) throw error
+  return data as Player
+}
+
+export async function fetchAdminPlayers(teamId?: string): Promise<Player[]> {
+  let query = supabase
+    .from('players')
+    .select(playerSelect)
+    .order('sort_order', { ascending: true, nullsFirst: false })
+    .order('last_name', { ascending: true })
+    .order('first_name', { ascending: true })
+
+  if (teamId) query = query.eq('team_id', teamId)
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data ?? []) as Player[]
+}
+
+export async function fetchAdminPlayerById(id: string): Promise<Player | null> {
+  const { data, error } = await supabase
+    .from('players')
+    .select(playerSelect)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Player | null
+}
+
+export async function updatePlayerProfile(
+  id: string,
+  input: UpdatePlayerProfileInput,
+): Promise<Player> {
+  const { data, error } = await supabase
+    .from('players')
+    .update({
+      ...(input.first_name !== undefined ? { first_name: input.first_name?.trim() || null } : {}),
+      ...(input.last_name !== undefined ? { last_name: input.last_name?.trim() || null } : {}),
+      number: input.number,
+      position: input.position?.trim() || null,
+      photo_url: input.photo_url || null,
+      bio: input.bio?.trim() || null,
+      active: input.active,
+      sort_order: input.sort_order,
+    })
+    .eq('id', id)
+    .select(playerSelect)
+    .single()
+
+  if (error) throw error
+  return data as Player
+}
+
+export async function setPlayerPhoto(id: string, photoUrl: string | null): Promise<Player> {
+  const { data, error } = await supabase
+    .from('players')
+    .update({ photo_url: photoUrl })
+    .eq('id', id)
+    .select(playerSelect)
+    .single()
+
+  if (error) throw error
+  return data as Player
 }

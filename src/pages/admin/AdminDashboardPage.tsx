@@ -27,7 +27,7 @@ const modules = [
     title: 'Hráči',
     description: 'Profily hráčů, fotografie, čísla a doplňující obsah.',
     icon: UserRound,
-    status: 'Další krok',
+    status: 'Připraveno',
   },
   {
     to: '/admin/realizacni-tym',
