@@ -73,23 +73,24 @@ export function HomePage() {
             src="/hero-lichnov-field.webp"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
+            className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-90"
+            style={{ filter: 'saturate(.92) contrast(.96) brightness(1.03)' }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.93) 28%, rgba(250,248,243,.62) 50%, rgba(250,248,243,.30) 72%, rgba(250,248,243,.16) 100%)',
+                'linear-gradient(90deg, rgba(250,248,243,.99) 0%, rgba(250,248,243,.97) 24%, rgba(250,248,243,.82) 40%, rgba(250,248,243,.42) 56%, rgba(250,248,243,.14) 72%, rgba(250,248,243,.06) 100%)',
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(180deg, rgba(250,248,243,.18) 0%, rgba(250,248,243,.08) 36%, rgba(250,248,243,.48) 72%, rgba(250,248,243,.98) 100%)',
+                'linear-gradient(180deg, rgba(250,248,243,.04) 0%, rgba(250,248,243,.02) 34%, rgba(250,248,243,.16) 62%, rgba(250,248,243,.90) 100%)',
             }}
           />
-          <div className="hero-glow absolute inset-0 opacity-70" />
+          <div className="hero-glow absolute inset-0 opacity-35" />
           <div className="absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
         </div>
 
