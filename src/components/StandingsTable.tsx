@@ -4,7 +4,7 @@ import { ClubLogo } from './ClubLogo'
 export function StandingsTable({ rows, compact = false }: { rows: Standing[]; compact?: boolean }) {
   if (!rows.length) return null
   return (
-    <div className="overflow-hidden rounded-4xl border border-sand-200 bg-white">
+    <div className="content-enter overflow-hidden rounded-4xl border border-sand-200 bg-white">
       <div className="grid grid-cols-[42px_1fr_48px_54px] items-center gap-2 border-b border-sand-200 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500 sm:grid-cols-[50px_1fr_64px_64px_80px]">
         <span>#</span><span>Tým</span><span className="text-center">Z</span><span className="text-center">B</span><span className="hidden text-center sm:block">Skóre</span>
       </div>

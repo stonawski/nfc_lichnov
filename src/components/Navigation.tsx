@@ -22,6 +22,10 @@ export function Navigation({ teams }: { teams: Team[] }) {
 
   useEffect(() => {
     setMobileOpen(false)
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
   }, [location.pathname, location.hash])
 
   useEffect(() => {
@@ -61,6 +65,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                   <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
+                    onClick={(event) => event.currentTarget.blur()}
                     className="group/item rounded-2xl px-3.5 py-3 transition hover:bg-sand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     <div className="flex items-center gap-2.5">
@@ -84,6 +89,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                 <Link
                   key={item.label}
                   to={item.to}
+                  onClick={(event) => event.currentTarget.blur()}
                   className="group/item flex items-center justify-between gap-5 rounded-2xl px-3.5 py-3 transition hover:bg-sand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <div>
