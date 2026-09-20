@@ -204,14 +204,11 @@ export function HomePage() {
       </section>
 
       <section className="relative overflow-hidden bg-sand-100 px-5 py-20 md:px-8 md:py-28">
-        <div className="field-watermark pointer-events-none absolute inset-0 opacity-45" />
         <div className="relative mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Klubový deník"
             title="Aktuálně z Lichnova"
             text="Novinky z hřiště, kabiny i života klubu."
-            to="/aktuality"
-            linkLabel="Všechny aktuality"
           />
 
           {newsQuery.isLoading ? (
@@ -260,7 +257,7 @@ export function HomePage() {
                 </div>
               </Link>
 
-              <div className="border-t border-brand-900/10">
+              <div>
                 {news.slice(1, 4).map((article) => (
                   <Link
                     key={article.id}
@@ -285,12 +282,6 @@ export function HomePage() {
                   </Link>
                 ))}
 
-                <Link
-                  to="/aktuality"
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-700 transition hover:text-brand-500"
-                >
-                  Všechny zprávy <ArrowRight size={15} />
-                </Link>
               </div>
             </div>
           ) : (
