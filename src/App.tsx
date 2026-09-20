@@ -1,17 +1,43 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AdminGuard } from './admin/AdminGuard'
+import { AdminLayout } from './admin/AdminLayout'
 import { Layout } from './components/Layout'
 import { HomePage } from './pages/HomePage'
-import { TeamsPage } from './pages/TeamsPage'
-import { TeamPage } from './pages/TeamPage'
 import { MatchesPage } from './pages/MatchesPage'
-import { NewsPage } from './pages/NewsPage'
 import { NewsDetailPage } from './pages/NewsDetailPage'
-import { AdminPlaceholderPage, ClubPage, ContactPage } from './pages/StaticPages'
+import { NewsPage } from './pages/NewsPage'
+import { ClubPage, ContactPage } from './pages/StaticPages'
+import { TeamPage } from './pages/TeamPage'
+import { TeamsPage } from './pages/TeamsPage'
 import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
+import { AdminGalleriesPage } from './pages/admin/AdminGalleriesPage'
+import { AdminGalleryDetailPage } from './pages/admin/AdminGalleryDetailPage'
+import { AdminLoginPage } from './pages/admin/AdminLoginPage'
+import { AdminModulePlaceholderPage } from './pages/admin/AdminModulePlaceholderPage'
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/admin/prihlaseni" element={<AdminLoginPage />} />
+
+      <Route path="/admin" element={<AdminGuard />}>
+        <Route element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="galerie" element={<AdminGalleriesPage />} />
+          <Route path="galerie/:id" element={<AdminGalleryDetailPage />} />
+          <Route
+            path="aktuality"
+            element={<AdminModulePlaceholderPage module="aktuality" />}
+          />
+          <Route path="hraci" element={<AdminModulePlaceholderPage module="hraci" />} />
+          <Route
+            path="realizacni-tym"
+            element={<AdminModulePlaceholderPage module="realizacni-tym" />}
+          />
+        </Route>
+      </Route>
+
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/tymy" element={<TeamsPage />} />
@@ -23,7 +49,6 @@ export default function App() {
         <Route path="/galerie/:slug" element={<GalleryDetailPage />} />
         <Route path="/klub" element={<ClubPage />} />
         <Route path="/kontakt" element={<ContactPage />} />
-        <Route path="/admin" element={<AdminPlaceholderPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

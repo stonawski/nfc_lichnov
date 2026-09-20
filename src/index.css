@@ -122,6 +122,33 @@ button {
   }
 }
 
+
+.admin-input {
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 1rem;
+  border: 1px solid #e7e0d2;
+  background: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 0.875rem;
+  color: #202621;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.admin-input:focus {
+  border-color: rgba(0, 146, 63, 0.72);
+  box-shadow: 0 0 0 4px rgba(0, 146, 63, 0.09);
+}
+
+.admin-input::placeholder {
+  color: rgba(32, 38, 33, 0.38);
+}
+
 .prose-club h2,
 .prose-club h3 {
   color: #18352A;
