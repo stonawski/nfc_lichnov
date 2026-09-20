@@ -17,6 +17,8 @@ import { AdminLoginPage } from './pages/admin/AdminLoginPage'
 import { AdminModulePlaceholderPage } from './pages/admin/AdminModulePlaceholderPage'
 import { AdminNewsEditorPage } from './pages/admin/AdminNewsEditorPage'
 import { AdminNewsPage } from './pages/admin/AdminNewsPage'
+import { AdminPlayerEditorPage } from './pages/admin/AdminPlayerEditorPage'
+import { AdminPlayersPage } from './pages/admin/AdminPlayersPage'
 
 export default function App() {
   return (
@@ -30,7 +32,8 @@ export default function App() {
           <Route path="galerie/:id" element={<AdminGalleryDetailPage />} />
           <Route path="aktuality" element={<AdminNewsPage />} />
           <Route path="aktuality/:id" element={<AdminNewsEditorPage />} />
-          <Route path="hraci" element={<AdminModulePlaceholderPage module="hraci" />} />
+          <Route path="hraci" element={<AdminPlayersPage />} />
+          <Route path="hraci/:id" element={<AdminPlayerEditorPage />} />
           <Route
             path="realizacni-tym"
             element={<AdminModulePlaceholderPage module="realizacni-tym" />}
