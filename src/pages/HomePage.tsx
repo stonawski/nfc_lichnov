@@ -68,9 +68,30 @@ export function HomePage() {
   return (
     <main>
       <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
-        <div className="hero-glow pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-[-5rem] top-0 h-[30rem] w-[30rem] rounded-full bg-[#decfac]/35 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <img
+            src="/hero-lichnov-field.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.93) 28%, rgba(250,248,243,.62) 50%, rgba(250,248,243,.30) 72%, rgba(250,248,243,.16) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(250,248,243,.18) 0%, rgba(250,248,243,.08) 36%, rgba(250,248,243,.48) 72%, rgba(250,248,243,.98) 100%)',
+            }}
+          />
+          <div className="hero-glow absolute inset-0 opacity-70" />
+          <div className="absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
+        </div>
 
         <div className="relative mx-auto max-w-[1240px]">
           <div className="grid gap-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12">
