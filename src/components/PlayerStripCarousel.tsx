@@ -83,7 +83,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
   }
 
   return (
-    <section className="player-strip relative w-full overflow-hidden bg-brand-900 text-white">
+    <section className="player-strip relative mb-10 w-full bg-brand-900 text-white">
       <div
         ref={trackRef}
         onScroll={keepInfinite}
@@ -141,8 +141,8 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
         })}
       </div>
 
-      <div className="relative z-20 h-16 border-t border-white/10 bg-brand-900">
-        <div className="absolute left-1/2 top-[-26px] -translate-x-1/2">
+      <div className="relative z-20 h-0 border-t border-white/10">
+        <div className="absolute left-1/2 top-[-30px] -translate-x-1/2">
           <div className="grid h-[66px] w-[66px] place-items-center rounded-full bg-sand-50 shadow-[0_8px_24px_rgba(0,0,0,.22)] ring-4 ring-brand-900">
             <ClubLogo src={team.logo_url} name={team.name} size="md" />
           </div>
