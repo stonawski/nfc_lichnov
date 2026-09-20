@@ -34,7 +34,7 @@ const modules = [
     title: 'Realizační tým',
     description: 'Trenéři, vedení týmu, fotografie a medailonky.',
     icon: UsersRound,
-    status: 'Další krok',
+    status: 'Připraveno',
   },
 ]
 
