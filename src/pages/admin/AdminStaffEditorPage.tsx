@@ -225,7 +225,7 @@ export function AdminStaffEditorPage() {
 
         <button
           type="button"
-          disabled={saveMutation.isPending}
+          disabled={saveMutation.isPending || (isManual && !name.trim())}
           onClick={() => saveMutation.mutate()}
           className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-wait disabled:opacity-50"
         >
