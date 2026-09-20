@@ -147,6 +147,37 @@ export async function fetchPlayersByTeam(teamId: string): Promise<Player[]> {
   return (data ?? []) as Player[]
 }
 
+export async function fetchDisplayPlayersByTeam(team: Team): Promise<Player[]> {
+  const players = await fetchPlayersByTeam(team.id)
+  if (team.slug !== 'muzi') return players
+
+  const teams = await fetchTeams()
+  const dorost = teams.find((item) => item.slug === 'dorost')
+  if (!dorost) return players
+
+  const dorostPlayers = await fetchPlayersByTeam(dorost.id)
+  const dorostFacrIds = new Set(
+    dorostPlayers
+      .map((player) => player.facr_player_id)
+      .filter((id): id is number => id != null),
+  )
+  const normalizeName = (player: Player) =>
+    [player.first_name, player.last_name]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+      .toLocaleLowerCase('cs-CZ')
+
+  const dorostNames = new Set(dorostPlayers.map(normalizeName).filter(Boolean))
+
+  return players.filter((player) => {
+    if (player.facr_player_id != null && dorostFacrIds.has(player.facr_player_id)) return false
+
+    const normalizedName = normalizeName(player)
+    return !normalizedName || !dorostNames.has(normalizedName)
+  })
+}
+
 export async function fetchStaffByTeam(teamId: string): Promise<Staff[]> {
   ensureConfigured()
   const { data, error } = await supabase
