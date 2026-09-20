@@ -114,20 +114,27 @@ export type NewsArticle = {
 
 export type Gallery = {
   id: string
-  title?: string | null
-  slug?: string | null
-  description?: string | null
-  cover_image?: string | null
-  created_at?: string | null
+  team_id: string | null
+  title: string
+  slug: string
+  description: string | null
+  cover_image: string | null
+  event_date: string | null
+  published: boolean
+  published_at: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
 }
 
 export type GalleryImage = {
   id: string
   gallery_id: string
-  image_url?: string | null
-  url?: string | null
-  caption?: string | null
-  sort_order?: number | null
+  image_url: string
+  caption: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
 }
 
 export type TeamMatchSummary = {

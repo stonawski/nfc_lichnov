@@ -1,5 +1,16 @@
 import { supabase, isSupabaseConfigured } from './supabase'
-import type { Match, NewsArticle, Player, Staff, Standing, Team, TeamMatchSummary, TeamSeason } from './types'
+import type {
+  Gallery,
+  GalleryImage,
+  Match,
+  NewsArticle,
+  Player,
+  Staff,
+  Standing,
+  Team,
+  TeamMatchSummary,
+  TeamSeason,
+} from './types'
 import { TEAM_ORDER } from './format'
 
 function ensureConfigured() {
@@ -251,4 +262,54 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null>
 
   if (error) throw error
   return data as NewsArticle | null
+}
+
+
+export async function fetchGalleries(): Promise<Gallery[]> {
+  ensureConfigured()
+
+  const { data, error } = await supabase
+    .from('galleries')
+    .select('id,team_id,title,slug,description,cover_image,event_date,published,published_at,sort_order,created_at,updated_at')
+    .eq('published', true)
+    .order('sort_order', { ascending: true })
+    .order('event_date', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []) as Gallery[]
+}
+
+export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> {
+  ensureConfigured()
+
+  const { data, error } = await supabase
+    .from('galleries')
+    .select('id,team_id,title,slug,description,cover_image,event_date,published,published_at,sort_order,created_at,updated_at')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Gallery | null
+}
+
+export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
+  ensureConfigured()
+
+  let query = supabase
+    .from('gallery_images')
+    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (galleryId) query = query.eq('gallery_id', galleryId)
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data ?? []) as GalleryImage[]
+}
+
+export function galleryImageUrl(image: GalleryImage): string {
+  return image.image_url
 }

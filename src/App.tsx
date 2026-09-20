@@ -6,7 +6,8 @@ import { TeamPage } from './pages/TeamPage'
 import { MatchesPage } from './pages/MatchesPage'
 import { NewsPage } from './pages/NewsPage'
 import { NewsDetailPage } from './pages/NewsDetailPage'
-import { AdminPlaceholderPage, ClubPage, ContactPage, GalleryDetailPage, GalleryPage } from './pages/StaticPages'
+import { AdminPlaceholderPage, ClubPage, ContactPage } from './pages/StaticPages'
+import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
 
 export default function App() {
   return (
