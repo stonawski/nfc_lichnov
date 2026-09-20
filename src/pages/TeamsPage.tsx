@@ -17,7 +17,7 @@ export function TeamsPage() {
         </div>
         <div className="mt-12">
           {isLoading ? <LoadingState rows={4} /> : teams.length ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="stagger-children grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {teams.map((team) => (
                 <Link key={team.id} to={`/tymy/${team.slug}`} className="group rounded-5xl border border-sand-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-soft">
                   <div className="flex items-start justify-between">
