@@ -217,7 +217,7 @@ export function HomePage() {
           {newsQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : news.length ? (
-            <div className="grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
+            <div className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
               <Link
                 to={`/aktuality/${news[0].slug}`}
                 className="group relative min-h-[470px] overflow-hidden rounded-[38px] bg-brand-900 p-7 text-white shadow-soft sm:p-9"
@@ -315,7 +315,7 @@ export function HomePage() {
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : featuredUpcoming ? (
-            <div className="grid gap-4 lg:grid-cols-12">
+            <div className="stagger-children grid gap-4 lg:grid-cols-12">
               <UpcomingMatchTile
                 match={featuredUpcoming}
                 featured
@@ -654,7 +654,7 @@ function TeamRail({ teams }: { teams: Team[] }) {
 
 function TeamEditorialGrid({ teams }: { teams: Team[] }) {
   return (
-    <div className="grid auto-rows-[170px] gap-4 md:grid-cols-12 md:auto-rows-[190px]">
+    <div className="stagger-children grid auto-rows-[170px] gap-4 md:grid-cols-12 md:auto-rows-[190px]">
       {teams.map((team, index) => {
         const span =
           index === 0
