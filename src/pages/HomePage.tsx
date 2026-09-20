@@ -54,7 +54,10 @@ export function HomePage() {
   const upcomingMatches = upcomingQuery.data ?? []
   const featuredUpcoming =
     upcomingMatches.find((match) => match.team?.slug === 'muzi') ?? upcomingMatches[0]
-  const secondaryUpcoming = upcomingMatches.filter((match) => match.id !== featuredUpcoming?.id)
+  const dorostUpcoming = upcomingMatches.find((match) => match.team?.slug === 'dorost')
+  const lowerUpcoming = upcomingMatches
+    .filter((match) => match.id !== featuredUpcoming?.id && match.id !== dorostUpcoming?.id)
+    .slice(0, 3)
   const standings = standingsQuery.data ?? []
   const lichnovIndex = standings.findIndex((row) => /lichnov/i.test(row.team_name || row.club_name || ''))
   const standingsPreview =
@@ -249,27 +252,35 @@ export function HomePage() {
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : featuredUpcoming ? (
-            <div className="grid gap-4 lg:grid-cols-12 lg:auto-rows-[178px]">
+            <div className="grid gap-4 lg:grid-cols-12">
               <UpcomingMatchTile
                 match={featuredUpcoming}
                 featured
-                className="lg:col-span-7 lg:row-span-2"
+                large
+                className="min-h-[290px] lg:col-span-7"
               />
 
-              {secondaryUpcoming.map((match, index) => {
-                const lowerCount = Math.max(0, secondaryUpcoming.length - 2)
-                const lowerSpan =
-                  lowerCount >= 3 ? 'lg:col-span-4' : lowerCount === 2 ? 'lg:col-span-6' : 'lg:col-span-12'
-                const span = index < 2 ? 'lg:col-span-5' : lowerSpan
+              {dorostUpcoming && (
+                <UpcomingMatchTile
+                  match={dorostUpcoming}
+                  large
+                  className="min-h-[290px] lg:col-span-5"
+                />
+              )}
 
-                return (
-                  <UpcomingMatchTile
-                    key={match.id}
-                    match={match}
-                    className={span}
-                  />
-                )
-              })}
+              {lowerUpcoming.map((match) => (
+                <UpcomingMatchTile
+                  key={match.id}
+                  match={match}
+                  className={
+                    lowerUpcoming.length >= 3
+                      ? 'min-h-[185px] lg:col-span-4'
+                      : lowerUpcoming.length === 2
+                        ? 'min-h-[185px] lg:col-span-6'
+                        : 'min-h-[185px] lg:col-span-12'
+                  }
+                />
+              ))}
             </div>
           ) : (
             <EmptyState
@@ -413,10 +424,12 @@ export function HomePage() {
 function UpcomingMatchTile({
   match,
   featured = false,
+  large = false,
   className = '',
 }: {
   match: Match & { team?: Team }
   featured?: boolean
+  large?: boolean
   className?: string
 }) {
   const teamName = match.team?.name || 'NFC Lichnov'
@@ -432,7 +445,7 @@ function UpcomingMatchTile({
     >
       <div className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? 'bg-brand-500/20' : 'bg-brand-500/[0.06]'}`} />
 
-      <div className={`relative flex h-full flex-col ${featured ? 'p-7 sm:p-8' : 'p-5'}`}>
+      <div className={`relative flex h-full flex-col ${featured ? 'p-7 sm:p-8' : large ? 'p-6 sm:p-7' : 'p-5'}`}>
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className={`text-[10px] font-bold uppercase tracking-[0.17em] ${featured ? 'text-white/45' : 'text-brand-500'}`}>
@@ -448,11 +461,12 @@ function UpcomingMatchTile({
           />
         </div>
 
-        <div className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? 'gap-6' : 'gap-3'}`}>
+        <div className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? 'gap-6' : large ? 'gap-5' : 'gap-3'}`}>
           <MatchClub
             name={match.home_team_name}
             logo={match.home_team_logo}
             featured={featured}
+            large={large}
             align="right"
           />
 
@@ -467,6 +481,7 @@ function UpcomingMatchTile({
             name={match.away_team_name}
             logo={match.away_team_logo}
             featured={featured}
+            large={large}
             align="left"
           />
         </div>
@@ -492,17 +507,19 @@ function MatchClub({
   name,
   logo,
   featured,
+  large,
   align,
 }: {
   name: string
   logo: string | null
   featured: boolean
+  large: boolean
   align: 'left' | 'right'
 }) {
   return (
     <div className={`flex min-w-0 items-center gap-3 ${align === 'right' ? 'flex-row-reverse text-right' : ''}`}>
-      <ClubLogo src={logo} name={name} size={featured ? 'lg' : 'sm'} />
-      <div className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? 'text-xl sm:text-2xl' : 'text-sm'}`}>
+      <ClubLogo src={logo} name={name} size={featured ? 'lg' : large ? 'md' : 'sm'} />
+      <div className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? 'text-xl sm:text-2xl' : large ? 'text-base sm:text-lg' : 'text-sm'}`}>
         {name}
       </div>
     </div>
