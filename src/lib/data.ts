@@ -268,41 +268,48 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null>
 export async function fetchGalleries(): Promise<Gallery[]> {
   ensureConfigured()
 
-  const { data, error } = await supabase.from('galleries').select('*')
-  if (error) throw error
+  const { data, error } = await supabase
+    .from('galleries')
+    .select('id,team_id,title,slug,description,cover_image,event_date,published,published_at,sort_order,created_at,updated_at')
+    .eq('published', true)
+    .order('sort_order', { ascending: true })
+    .order('event_date', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
 
-  return ((data ?? []) as Gallery[])
-    .filter((gallery) => gallery.published !== false)
-    .sort((a, b) => {
-      const aDate = a.event_date || a.created_at || ''
-      const bDate = b.event_date || b.created_at || ''
-      return bDate.localeCompare(aDate)
-    })
+  if (error) throw error
+  return (data ?? []) as Gallery[]
 }
 
 export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> {
-  const galleries = await fetchGalleries()
-  return galleries.find((gallery) => gallery.slug === slug || gallery.id === slug) ?? null
+  ensureConfigured()
+
+  const { data, error } = await supabase
+    .from('galleries')
+    .select('id,team_id,title,slug,description,cover_image,event_date,published,published_at,sort_order,created_at,updated_at')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Gallery | null
 }
 
 export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
   ensureConfigured()
 
-  let query = supabase.from('gallery_images').select('*')
+  let query = supabase
+    .from('gallery_images')
+    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
   if (galleryId) query = query.eq('gallery_id', galleryId)
 
   const { data, error } = await query
   if (error) throw error
-
-  return ((data ?? []) as GalleryImage[]).sort((a, b) => {
-    const aOrder = a.sort_order ?? Number.MAX_SAFE_INTEGER
-    const bOrder = b.sort_order ?? Number.MAX_SAFE_INTEGER
-    if (aOrder !== bOrder) return aOrder - bOrder
-
-    return (a.created_at || '').localeCompare(b.created_at || '')
-  })
+  return (data ?? []) as GalleryImage[]
 }
 
-export function galleryImageUrl(image: GalleryImage): string | null {
-  return image.image_url || image.url || null
+export function galleryImageUrl(image: GalleryImage): string {
+  return image.image_url
 }
