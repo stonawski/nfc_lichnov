@@ -8,8 +8,8 @@ import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { SectionHeading } from '../components/SectionHeading'
 import { StandingsTable } from '../components/StandingsTable'
 import {
+  fetchDisplayPlayersByTeam,
   fetchHomepageMatchSummaries,
-  fetchPlayersByTeam,
   fetchPublishedNews,
   fetchStandingsByTeam,
   fetchTeams,
@@ -45,7 +45,7 @@ export function HomePage() {
   })
   const menPlayersQuery = useQuery({
     queryKey: ['players', men?.id, 'home-strip'],
-    queryFn: () => fetchPlayersByTeam(men!.id),
+    queryFn: () => fetchDisplayPlayersByTeam(men!),
     enabled: Boolean(men?.id),
     retry: false,
   })
@@ -60,7 +60,7 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="relative overflow-hidden px-4 pb-10 pt-8 sm:px-5 sm:pb-14 sm:pt-12 md:px-8 lg:pb-20 lg:pt-16">
+      <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <div className="hero-glow pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/10 blur-3xl" />
         <div className="pointer-events-none absolute right-[-5rem] top-0 h-[30rem] w-[30rem] rounded-full bg-[#decfac]/35 blur-3xl" />
