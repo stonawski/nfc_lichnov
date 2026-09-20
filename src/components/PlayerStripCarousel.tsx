@@ -82,7 +82,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
   }
 
   return (
-    <section className="player-strip relative mb-14 mt-3 w-full bg-brand-900 text-white">
+    <section className="content-enter player-strip relative mb-14 mt-3 w-full bg-brand-900 text-white">
       <div className="pointer-events-none absolute inset-x-0 top-[-15px] z-30 h-[5px] bg-[#00923F]" />
 
       <div
