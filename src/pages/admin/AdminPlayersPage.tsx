@@ -78,7 +78,7 @@ export function AdminPlayersPage() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700"
+          className="inline-flex min-h-12 min-w-[166px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-brand-900 px-6 py-3 text-sm font-bold leading-none text-white transition hover:bg-brand-700"
         >
           <Plus size={17} />
           Nový hráč
@@ -134,7 +134,7 @@ export function AdminPlayersPage() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="admin-input pl-11"
+              className="admin-input !pl-11"
               placeholder="Hledat hráče…"
             />
           </label>
