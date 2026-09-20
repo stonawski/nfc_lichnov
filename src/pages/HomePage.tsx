@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
-import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { ClubLogo } from '../components/ClubLogo'
-import { EmptyState, LoadingState } from '../components/LoadingState'
-import { MatchCarousel } from '../components/MatchCarousel'
-import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
-import { SectionHeading } from '../components/SectionHeading'
-import { StandingsTable } from '../components/StandingsTable'
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ClubLogo } from "../components/ClubLogo";
+import { EmptyState, LoadingState } from "../components/LoadingState";
+import { MatchCarousel } from "../components/MatchCarousel";
+import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
+import { SectionHeading } from "../components/SectionHeading";
+import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
   fetchHomepageMatchSummaries,
@@ -14,81 +14,96 @@ import {
   fetchStandingsByTeam,
   fetchTeams,
   fetchUpcomingMatches,
-} from '../lib/data'
-import { formatDate, formatMatchDate } from '../lib/format'
-import type { Match, Team } from '../lib/types'
+} from "../lib/data";
+import { formatDate, formatMatchDate } from "../lib/format";
+import type { Match, Team } from "../lib/types";
 
 export function HomePage() {
-  const teamsQuery = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
+  const teamsQuery = useQuery({
+    queryKey: ["teams"],
+    queryFn: fetchTeams,
+    retry: false,
+  });
   const matchesQuery = useQuery({
-    queryKey: ['home-match-summaries'],
+    queryKey: ["home-match-summaries"],
     queryFn: fetchHomepageMatchSummaries,
     retry: false,
-  })
+  });
   const newsQuery = useQuery({
-    queryKey: ['news', 'home'],
+    queryKey: ["news", "home"],
     queryFn: () => fetchPublishedNews(4),
     retry: false,
-  })
+  });
   const upcomingQuery = useQuery({
-    queryKey: ['matches', 'upcoming'],
+    queryKey: ["matches", "upcoming"],
     queryFn: fetchUpcomingMatches,
     retry: false,
-  })
+  });
 
-  const men = teamsQuery.data?.find((team) => team.slug === 'muzi')
+  const men = teamsQuery.data?.find((team) => team.slug === "muzi");
   const standingsQuery = useQuery({
-    queryKey: ['standings', men?.id],
+    queryKey: ["standings", men?.id],
     queryFn: () => fetchStandingsByTeam(men!.id),
     enabled: Boolean(men?.id),
     retry: false,
-  })
+  });
   const menPlayersQuery = useQuery({
-    queryKey: ['players', men?.id, 'home-strip'],
+    queryKey: ["players", men?.id, "home-strip"],
     queryFn: () => fetchDisplayPlayersByTeam(men!),
     enabled: Boolean(men?.id),
     retry: false,
-  })
+  });
 
-  const news = newsQuery.data ?? []
-  const upcomingMatches = upcomingQuery.data ?? []
+  const news = newsQuery.data ?? [];
+  const upcomingMatches = upcomingQuery.data ?? [];
   const featuredUpcoming =
-    upcomingMatches.find((match) => match.team?.slug === 'muzi') ?? upcomingMatches[0]
-  const dorostUpcoming = upcomingMatches.find((match) => match.team?.slug === 'dorost')
+    upcomingMatches.find((match) => match.team?.slug === "muzi") ??
+    upcomingMatches[0];
+  const dorostUpcoming = upcomingMatches.find(
+    (match) => match.team?.slug === "dorost",
+  );
   const lowerUpcoming = upcomingMatches
-    .filter((match) => match.id !== featuredUpcoming?.id && match.id !== dorostUpcoming?.id)
-    .slice(0, 3)
-  const standings = standingsQuery.data ?? []
-  const lichnovIndex = standings.findIndex((row) => /lichnov/i.test(row.team_name || row.club_name || ''))
+    .filter(
+      (match) =>
+        match.id !== featuredUpcoming?.id && match.id !== dorostUpcoming?.id,
+    )
+    .slice(0, 3);
+  const standings = standingsQuery.data ?? [];
+  const lichnovIndex = standings.findIndex((row) =>
+    /lichnov/i.test(row.team_name || row.club_name || ""),
+  );
   const standingsPreview =
     lichnovIndex >= 0
-      ? standings.slice(Math.max(0, lichnovIndex - 2), Math.min(standings.length, lichnovIndex + 3))
-      : standings.slice(0, 5)
+      ? standings.slice(
+          Math.max(0, lichnovIndex - 2),
+          Math.min(standings.length, lichnovIndex + 3),
+        )
+      : standings.slice(0, 5);
 
   return (
     <main>
       <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <div className="pointer-events-none absolute inset-0 overflow-hidden bg-sand-50">
-          <div className="absolute right-0 top-0 h-[72%] w-full sm:h-[76%] lg:h-[80%] lg:w-[72%]">
+          <div className="absolute right-0 top-0 h-[70%] w-full sm:h-[76%] lg:h-[55%] lg:w-[72%]">
             <img
               src="/hero-lichnov-field.webp"
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-[66%_center] opacity-55"
-              style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
+              className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
+              style={{ filter: "saturate(.82) contrast(.92) brightness(1.08)" }}
             />
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)',
+                  "linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)",
               }}
             />
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  'linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)',
+                  "linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)",
               }}
             />
           </div>
@@ -111,12 +126,14 @@ export function HomePage() {
 
               <h1 className="max-w-[760px] text-[clamp(3.25rem,7vw,6.85rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
                 Fotbal v Lichnově.
-                <span className="mt-2 block text-brand-500">Od nejmenších až po muže.</span>
+                <span className="mt-2 block text-brand-500">
+                  Od nejmenších až po muže.
+                </span>
               </h1>
 
               <p className="mt-7 max-w-[590px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
-                Výsledky, zápasy, hráči a život klubu na jednom místě. Přehledně pro fanoušky,
-                rodiče i všechny, kteří jsou součástí NFC.
+                Výsledky, zápasy, hráči a život klubu na jednom místě. Přehledně
+                pro fanoušky, rodiče i všechny, kteří jsou součástí NFC.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -135,21 +152,35 @@ export function HomePage() {
               </div>
 
               <div className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
-                <HeroStat value={teamsQuery.data?.length ? String(teamsQuery.data.length) : '—'} label="aktivních týmů" />
-                <HeroStat value={men?.season || '2026/27'} label="aktuální sezóna" />
+                <HeroStat
+                  value={
+                    teamsQuery.data?.length
+                      ? String(teamsQuery.data.length)
+                      : "—"
+                  }
+                  label="aktivních týmů"
+                />
+                <HeroStat
+                  value={men?.season || "2026/27"}
+                  label="aktuální sezóna"
+                />
               </div>
             </div>
 
             <div className="relative lg:pl-4">
               <div className="mb-4 flex items-end justify-between gap-4 px-1">
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">Zápasy</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                    Zápasy
+                  </div>
                   <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
                     Výsledky napříč kategoriemi
                   </h2>
                 </div>
                 <div className="hidden text-right text-[11px] leading-5 text-ink-500 sm:block">
-                  Přepínej mezi týmy<br />nebo přejeď prstem
+                  Přepínej mezi týmy
+                  <br />
+                  nebo přejeď prstem
                 </div>
               </div>
 
@@ -166,7 +197,9 @@ export function HomePage() {
             </div>
           </div>
 
-          {(teamsQuery.data?.length ?? 0) > 0 && <TeamRail teams={teamsQuery.data ?? []} />}
+          {(teamsQuery.data?.length ?? 0) > 0 && (
+            <TeamRail teams={teamsQuery.data ?? []} />
+          )}
         </div>
       </section>
 
@@ -203,7 +236,7 @@ export function HomePage() {
                 <div className="relative flex h-full min-h-[405px] flex-col justify-between">
                   <div className="flex items-center justify-between">
                     <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/70 backdrop-blur">
-                      {news[0].category || 'Aktualita'}
+                      {news[0].category || "Aktualita"}
                     </span>
                     <ArrowUpRight
                       size={20}
@@ -212,12 +245,16 @@ export function HomePage() {
                   </div>
 
                   <div>
-                    <div className="text-xs font-semibold text-white/55">{formatDate(news[0].published_at)}</div>
+                    <div className="text-xs font-semibold text-white/55">
+                      {formatDate(news[0].published_at)}
+                    </div>
                     <h3 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.02] tracking-[-0.045em] sm:text-5xl">
                       {news[0].title}
                     </h3>
                     {news[0].excerpt && (
-                      <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">{news[0].excerpt}</p>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
+                        {news[0].excerpt}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -232,12 +269,14 @@ export function HomePage() {
                   >
                     <div>
                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-                        {article.category || 'Aktualita'}
+                        {article.category || "Aktualita"}
                       </div>
                       <h3 className="mt-2 text-xl font-extrabold leading-tight tracking-[-0.035em] text-brand-900 transition group-hover:text-brand-700">
                         {article.title}
                       </h3>
-                      <p className="mt-3 text-xs text-ink-500">{formatDate(article.published_at)}</p>
+                      <p className="mt-3 text-xs text-ink-500">
+                        {formatDate(article.published_at)}
+                      </p>
                     </div>
 
                     <div className="grid h-10 w-10 place-items-center self-center rounded-2xl bg-white/70 text-brand-900 ring-1 ring-white transition group-hover:bg-brand-500 group-hover:text-white">
@@ -298,10 +337,10 @@ export function HomePage() {
                   match={match}
                   className={
                     lowerUpcoming.length >= 3
-                      ? 'min-h-[185px] lg:col-span-4'
+                      ? "min-h-[185px] lg:col-span-4"
                       : lowerUpcoming.length === 2
-                        ? 'min-h-[185px] lg:col-span-6'
-                        : 'min-h-[185px] lg:col-span-12'
+                        ? "min-h-[185px] lg:col-span-6"
+                        : "min-h-[185px] lg:col-span-12"
                   }
                 />
               ))}
@@ -333,13 +372,15 @@ export function HomePage() {
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">A tým</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                A tým
+              </div>
               <h2 className="mt-4 text-4xl font-extrabold leading-[.98] tracking-[-0.055em] md:text-5xl">
                 Tabulka bez hledání.
               </h2>
               <p className="mt-5 max-w-sm text-sm leading-6 text-white/60 sm:text-base">
-                Aktuální pozice mužů na první pohled. NFC Lichnov zvýrazňujeme, aby ses v tabulce
-                zorientoval během vteřiny.
+                Aktuální pozice mužů na první pohled. NFC Lichnov zvýrazňujeme,
+                aby ses v tabulce zorientoval během vteřiny.
               </p>
               <Link
                 to="/tymy/muzi"
@@ -390,13 +431,15 @@ export function HomePage() {
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
             <div>
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">Život klubu</div>
+              <div className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">
+                Život klubu
+              </div>
               <h2 className="mt-4 max-w-xl text-4xl font-extrabold leading-[.98] tracking-[-0.055em] md:text-6xl">
                 Fotbal nejsou jen výsledky.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-                Galerie bude patřit zápasům, tréninkům, mládeži, fanouškům i tomu, co se děje mimo
-                devadesát minut na hřišti.
+                Galerie bude patřit zápasům, tréninkům, mládeži, fanouškům i
+                tomu, co se děje mimo devadesát minut na hřišti.
               </p>
             </div>
 
@@ -417,14 +460,17 @@ export function HomePage() {
 
       <section className="px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
-          <SectionHeading eyebrow="NFC Lichnov" title="Klub je víc než sestava." />
+          <SectionHeading
+            eyebrow="NFC Lichnov"
+            title="Klub je víc než sestava."
+          />
 
           <div className="grid border-y border-sand-200 md:grid-cols-4 md:divide-x md:divide-sand-200">
             {[
-              ['O klubu', '/klub'],
-              ['Historie', '/klub#historie'],
-              ['Sportovní areál', '/klub#areal'],
-              ['Kontakt', '/kontakt'],
+              ["O klubu", "/klub"],
+              ["Historie", "/klub#historie"],
+              ["Sportovní areál", "/klub#areal"],
+              ["Kontakt", "/kontakt"],
             ].map(([label, to]) => (
               <Link
                 key={label}
@@ -442,50 +488,61 @@ export function HomePage() {
         </div>
       </section>
     </main>
-  )
+  );
 }
 
 function UpcomingMatchTile({
   match,
   featured = false,
   large = false,
-  className = '',
+  className = "",
 }: {
-  match: Match & { team?: Team }
-  featured?: boolean
-  large?: boolean
-  className?: string
+  match: Match & { team?: Team };
+  featured?: boolean;
+  large?: boolean;
+  className?: string;
 }) {
-  const teamName = match.team?.name || 'NFC Lichnov'
-  const to = `/tymy/${match.team?.slug ?? ''}`
+  const teamName = match.team?.name || "NFC Lichnov";
+  const to = `/tymy/${match.team?.slug ?? ""}`;
 
   return (
     <Link
       to={to}
-      className={`group relative overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${featured
-        ? 'border-brand-900 bg-brand-900 text-white'
-        : 'border-sand-200 bg-white text-ink-900'
+      className={`group relative overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${
+        featured
+          ? "border-brand-900 bg-brand-900 text-white"
+          : "border-sand-200 bg-white text-ink-900"
       } ${className}`}
     >
-      <div className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? 'bg-brand-500/20' : 'bg-brand-500/[0.06]'}`} />
+      <div
+        className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? "bg-brand-500/20" : "bg-brand-500/[0.06]"}`}
+      />
 
-      <div className={`relative flex h-full flex-col ${featured ? 'p-7 sm:p-8' : large ? 'p-6 sm:p-7' : 'p-5'}`}>
+      <div
+        className={`relative flex h-full flex-col ${featured ? "p-7 sm:p-8" : large ? "p-6 sm:p-7" : "p-5"}`}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className={`text-[10px] font-bold uppercase tracking-[0.17em] ${featured ? 'text-white/45' : 'text-brand-500'}`}>
+            <div
+              className={`text-[10px] font-bold uppercase tracking-[0.17em] ${featured ? "text-white/45" : "text-brand-500"}`}
+            >
               {teamName}
             </div>
-            <div className={`mt-1 text-xs font-semibold ${featured ? 'text-white/60' : 'text-ink-500'}`}>
+            <div
+              className={`mt-1 text-xs font-semibold ${featured ? "text-white/60" : "text-ink-500"}`}
+            >
               {formatMatchDate(match.playing_at)}
             </div>
           </div>
           <ArrowUpRight
             size={featured ? 20 : 16}
-            className={`shrink-0 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? 'text-white/55 group-hover:text-white' : 'text-ink-500 group-hover:text-brand-500'}`}
+            className={`shrink-0 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? "text-white/55 group-hover:text-white" : "text-ink-500 group-hover:text-brand-500"}`}
           />
         </div>
 
-        <div className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? 'gap-6' : large ? 'gap-5' : 'gap-3'}`}>
+        <div
+          className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? "gap-6" : large ? "gap-5" : "gap-3"}`}
+        >
           <MatchClub
             name={match.home_team_name}
             logo={match.home_team_logo}
@@ -494,10 +551,13 @@ function UpcomingMatchTile({
             align="right"
           />
 
-          <div className={`rounded-full font-black uppercase tracking-[0.12em] ${featured
-            ? 'bg-white/[0.08] px-3 py-2 text-[11px] text-white/60 ring-1 ring-white/10'
-            : 'bg-sand-100 px-2.5 py-1.5 text-[9px] text-ink-500'
-          }`}>
+          <div
+            className={`rounded-full font-black uppercase tracking-[0.12em] ${
+              featured
+                ? "bg-white/[0.08] px-3 py-2 text-[11px] text-white/60 ring-1 ring-white/10"
+                : "bg-sand-100 px-2.5 py-1.5 text-[9px] text-ink-500"
+            }`}
+          >
             vs
           </div>
 
@@ -510,7 +570,9 @@ function UpcomingMatchTile({
           />
         </div>
 
-        <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-xs ${featured ? 'text-white/55' : 'text-ink-500'}`}>
+        <div
+          className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-xs ${featured ? "text-white/55" : "text-ink-500"}`}
+        >
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays size={14} />
             {formatMatchDate(match.playing_at)}
@@ -524,7 +586,7 @@ function UpcomingMatchTile({
         </div>
       </div>
     </Link>
-  )
+  );
 }
 
 function MatchClub({
@@ -534,29 +596,41 @@ function MatchClub({
   large,
   align,
 }: {
-  name: string
-  logo: string | null
-  featured: boolean
-  large: boolean
-  align: 'left' | 'right'
+  name: string;
+  logo: string | null;
+  featured: boolean;
+  large: boolean;
+  align: "left" | "right";
 }) {
   return (
-    <div className={`flex min-w-0 items-center gap-3 ${align === 'right' ? 'flex-row-reverse text-right' : ''}`}>
-      <ClubLogo src={logo} name={name} size={featured ? 'lg' : large ? 'md' : 'sm'} />
-      <div className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? 'text-xl sm:text-2xl' : large ? 'text-base sm:text-lg' : 'text-sm'}`}>
+    <div
+      className={`flex min-w-0 items-center gap-3 ${align === "right" ? "flex-row-reverse text-right" : ""}`}
+    >
+      <ClubLogo
+        src={logo}
+        name={name}
+        size={featured ? "lg" : large ? "md" : "sm"}
+      />
+      <div
+        className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? "text-xl sm:text-2xl" : large ? "text-base sm:text-lg" : "text-sm"}`}
+      >
         {name}
       </div>
     </div>
-  )
+  );
 }
 
 function HeroStat({ value, label }: { value: string; label: string }) {
   return (
     <div className="border-r border-sand-200 px-3 first:pl-0 last:border-r-0 sm:px-5">
-      <div className="truncate text-base font-black tracking-[-0.04em] text-brand-900 sm:text-xl">{value}</div>
-      <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500 sm:text-[10px]">{label}</div>
+      <div className="truncate text-base font-black tracking-[-0.04em] text-brand-900 sm:text-xl">
+        {value}
+      </div>
+      <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500 sm:text-[10px]">
+        {label}
+      </div>
     </div>
-  )
+  );
 }
 
 function TeamRail({ teams }: { teams: Team[] }) {
@@ -575,7 +649,7 @@ function TeamRail({ teams }: { teams: Team[] }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function TeamEditorialGrid({ teams }: { teams: Team[] }) {
@@ -584,12 +658,12 @@ function TeamEditorialGrid({ teams }: { teams: Team[] }) {
       {teams.map((team, index) => {
         const span =
           index === 0
-            ? 'md:col-span-7 md:row-span-2'
+            ? "md:col-span-7 md:row-span-2"
             : index === 1
-              ? 'md:col-span-5'
+              ? "md:col-span-5"
               : index === 2
-                ? 'md:col-span-5'
-                : 'md:col-span-4'
+                ? "md:col-span-5"
+                : "md:col-span-4";
 
         return (
           <Link
@@ -602,7 +676,11 @@ function TeamEditorialGrid({ teams }: { teams: Team[] }) {
 
             <div className="relative flex h-full flex-col justify-between">
               <div className="flex items-start justify-between">
-                <ClubLogo src={team.logo_url} name={team.name} size={index === 0 ? 'lg' : 'sm'} />
+                <ClubLogo
+                  src={team.logo_url}
+                  name={team.name}
+                  size={index === 0 ? "lg" : "sm"}
+                />
                 <ArrowUpRight
                   className="text-ink-500 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-brand-500"
                   size={18}
@@ -610,17 +688,19 @@ function TeamEditorialGrid({ teams }: { teams: Team[] }) {
               </div>
 
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">NFC Lichnov</div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                  NFC Lichnov
+                </div>
                 <div
-                  className={`${index === 0 ? 'text-4xl md:text-5xl' : 'text-2xl'} mt-2 font-extrabold tracking-[-0.05em] text-brand-900`}
+                  className={`${index === 0 ? "text-4xl md:text-5xl" : "text-2xl"} mt-2 font-extrabold tracking-[-0.05em] text-brand-900`}
                 >
                   {team.name}
                 </div>
               </div>
             </div>
           </Link>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
