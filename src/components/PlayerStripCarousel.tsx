@@ -83,7 +83,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
 
   return (
     <section className="player-strip relative mb-14 mt-3 w-full bg-brand-900 text-white">
-      <div className="pointer-events-none absolute inset-x-0 top-[-12px] z-30 h-[2px] bg-[#18352a]" />
+      <div className="pointer-events-none absolute inset-x-0 top-[-15px] z-30 h-[5px] bg-[#00923F]" />
 
       <div
         ref={trackRef}
@@ -145,16 +145,16 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
         })}
       </div>
 
-      <div className="relative z-30 h-[12px] bg-sand-50">
+      <div className="relative z-30 h-[17px] bg-sand-50">
         <div
-          className="pointer-events-none absolute inset-x-0 top-[10px] flex -translate-y-1/2 items-center"
-          style={{ filter: 'drop-shadow(0 10px 10px rgba(24, 53, 42, 0.24))' }}
+          className="pointer-events-none absolute inset-x-0 top-[13px] flex -translate-y-1/2 items-center"
+          style={{ filter: 'drop-shadow(0 12px 12px rgba(24, 53, 42, 0.3))' }}
         >
-          <div className="h-[2px] flex-1 bg-[#18352a]" />
+          <div className="h-[7px] flex-1 bg-[#18352a]" />
           <div className="grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full bg-sand-50 ring-4 ring-brand-900">
             <ClubLogo src={team.logo_url} name={team.name} size="md" />
           </div>
-          <div className="h-[2px] flex-1 bg-[#18352a]" />
+          <div className="h-[7px] flex-1 bg-[#18352a]" />
         </div>
       </div>
     </section>
