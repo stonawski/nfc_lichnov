@@ -68,29 +68,31 @@ export function HomePage() {
   return (
     <main>
       <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <img
-            src="/hero-lichnov-field.webp"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-90"
-            style={{ filter: 'saturate(.92) contrast(.96) brightness(1.03)' }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(250,248,243,.99) 0%, rgba(250,248,243,.97) 24%, rgba(250,248,243,.82) 40%, rgba(250,248,243,.42) 56%, rgba(250,248,243,.14) 72%, rgba(250,248,243,.06) 100%)',
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(180deg, rgba(250,248,243,.04) 0%, rgba(250,248,243,.02) 34%, rgba(250,248,243,.16) 62%, rgba(250,248,243,.90) 100%)',
-            }}
-          />
-          <div className="hero-glow absolute inset-0 opacity-35" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden bg-sand-50">
+          <div className="absolute right-0 top-0 h-[72%] w-full sm:h-[76%] lg:h-[80%] lg:w-[72%]">
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-[66%_center] opacity-55"
+              style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)',
+              }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)',
+              }}
+            />
+          </div>
+          <div className="hero-glow absolute inset-0 opacity-45" />
           <div className="absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
         </div>
 
