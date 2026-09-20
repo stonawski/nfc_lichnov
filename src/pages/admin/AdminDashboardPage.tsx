@@ -20,7 +20,7 @@ const modules = [
     title: 'Aktuality',
     description: 'Články, titulní fotografie a publikace novinek.',
     icon: Newspaper,
-    status: 'Další krok',
+    status: 'Připraveno',
   },
   {
     to: '/admin/hraci',

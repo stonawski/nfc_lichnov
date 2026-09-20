@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Gallery, GalleryImage } from './types'
+import type { Gallery, GalleryImage, NewsArticle } from './types'
 
 export type CreateGalleryInput = {
   title: string
@@ -159,4 +159,131 @@ export async function deleteGalleryRecords(id: string): Promise<void> {
 
   const { error: galleryError } = await supabase.from('galleries').delete().eq('id', id)
   if (galleryError) throw galleryError
+}
+
+
+const newsSelect =
+  'id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
+
+export type CreateNewsInput = {
+  title: string
+  slug: string
+}
+
+export type UpdateNewsInput = {
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string | null
+  cover_image: string | null
+  category: string | null
+  team_id: string | null
+  featured: boolean
+}
+
+export async function fetchAdminNews(): Promise<NewsArticle[]> {
+  const { data, error } = await supabase
+    .from('news')
+    .select(newsSelect)
+    .order('published', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []) as NewsArticle[]
+}
+
+export async function fetchAdminNewsById(id: string): Promise<NewsArticle | null> {
+  const { data, error } = await supabase
+    .from('news')
+    .select(newsSelect)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as NewsArticle | null
+}
+
+export async function createNewsDraft(input: CreateNewsInput): Promise<NewsArticle> {
+  const { data, error } = await supabase
+    .from('news')
+    .insert({
+      title: input.title.trim(),
+      slug: input.slug.trim(),
+      excerpt: null,
+      content: null,
+      cover_image: null,
+      category: null,
+      team_id: null,
+      featured: false,
+      published: false,
+      published_at: null,
+    })
+    .select(newsSelect)
+    .single()
+
+  if (error) throw error
+  return data as NewsArticle
+}
+
+export async function updateNewsArticle(
+  id: string,
+  input: UpdateNewsInput,
+): Promise<NewsArticle> {
+  const { data, error } = await supabase
+    .from('news')
+    .update({
+      title: input.title.trim(),
+      slug: input.slug.trim(),
+      excerpt: input.excerpt?.trim() || null,
+      content: input.content?.trim() || null,
+      cover_image: input.cover_image || null,
+      category: input.category?.trim() || null,
+      team_id: input.team_id || null,
+      featured: input.featured,
+    })
+    .eq('id', id)
+    .select(newsSelect)
+    .single()
+
+  if (error) throw error
+  return data as NewsArticle
+}
+
+export async function setNewsPublished(
+  id: string,
+  published: boolean,
+): Promise<NewsArticle> {
+  const { data, error } = await supabase
+    .from('news')
+    .update({
+      published,
+      published_at: published ? new Date().toISOString() : null,
+    })
+    .eq('id', id)
+    .select(newsSelect)
+    .single()
+
+  if (error) throw error
+  return data as NewsArticle
+}
+
+export async function setNewsCover(
+  id: string,
+  coverImage: string | null,
+): Promise<NewsArticle> {
+  const { data, error } = await supabase
+    .from('news')
+    .update({ cover_image: coverImage })
+    .eq('id', id)
+    .select(newsSelect)
+    .single()
+
+  if (error) throw error
+  return data as NewsArticle
+}
+
+export async function deleteNewsArticle(id: string): Promise<void> {
+  const { error } = await supabase.from('news').delete().eq('id', id)
+  if (error) throw error
 }
