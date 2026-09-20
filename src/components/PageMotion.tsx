@@ -1,25 +1,16 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  type ReactNode,
-} from 'react'
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-const COVER_MS = 180
-const SETTLE_MS = 260
-const REVEAL_MS = 480
+const EXIT_MS = 190
+const ENTER_MS = 560
 
 export function PageMotion({ children }: { children: ReactNode }) {
   const location = useLocation()
   const navigate = useNavigate()
   const navigateRef = useRef(navigate)
   const rootRef = useRef<HTMLDivElement>(null)
-  const shieldRef = useRef<HTMLDivElement>(null)
-  const firstRenderRef = useRef(true)
   const navigateTimerRef = useRef<number | null>(null)
-  const revealTimerRef = useRef<number | null>(null)
-  const cleanupTimerRef = useRef<number | null>(null)
+  const enterTimerRef = useRef<number | null>(null)
 
   navigateRef.current = navigate
 
@@ -27,12 +18,6 @@ export function PageMotion({ children }: { children: ReactNode }) {
     if (timer.current == null) return
     window.clearTimeout(timer.current)
     timer.current = null
-  }
-
-  const clearAllTimers = () => {
-    clearTimer(navigateTimerRef)
-    clearTimer(revealTimerRef)
-    clearTimer(cleanupTimerRef)
   }
 
   useEffect(() => {
@@ -69,17 +54,15 @@ export function PageMotion({ children }: { children: ReactNode }) {
         nextUrl.pathname === currentUrl.pathname &&
         nextUrl.search === currentUrl.search
 
-      // Keep hash-only navigation native.
       if (sameDocument) return
 
-      const shield = shieldRef.current
-      if (!shield) return
+      const root = rootRef.current
+      if (!root) return
 
       event.preventDefault()
-      clearAllTimers()
+      clearTimer(navigateTimerRef)
 
-      shield.classList.remove('is-revealing')
-      shield.classList.add('is-covering')
+      root.classList.add('is-leaving')
       document.documentElement.classList.add('route-changing')
 
       const targetPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
@@ -87,22 +70,24 @@ export function PageMotion({ children }: { children: ReactNode }) {
       navigateTimerRef.current = window.setTimeout(() => {
         navigateTimerRef.current = null
         navigateRef.current(targetPath)
-      }, COVER_MS)
+      }, EXIT_MS)
     }
 
     document.addEventListener('click', handleDocumentClick, true)
 
     return () => {
       document.removeEventListener('click', handleDocumentClick, true)
-      clearAllTimers()
+      clearTimer(navigateTimerRef)
+      clearTimer(enterTimerRef)
       document.documentElement.classList.remove('route-changing')
     }
   }, [])
 
   useLayoutEffect(() => {
     const root = rootRef.current
-    const shield = shieldRef.current
-    if (!root || !shield) return
+    if (!root) return
+
+    root.classList.remove('is-leaving')
 
     const html = document.documentElement
     const previousScrollBehavior = html.style.scrollBehavior
@@ -118,14 +103,12 @@ export function PageMotion({ children }: { children: ReactNode }) {
     blocks.forEach((block, index) => {
       block.classList.add('reveal-block')
       block.classList.remove('is-visible')
-      block.style.setProperty('--reveal-delay', `${Math.min(index, 3) * 65}ms`)
+      block.style.setProperty('--reveal-delay', `${Math.min(index, 3) * 70}ms`)
     })
 
     if (reducedMotion || typeof IntersectionObserver === 'undefined') {
       blocks.forEach((block) => block.classList.add('is-visible'))
-      shield.classList.remove('is-covering', 'is-revealing')
       document.documentElement.classList.remove('route-changing')
-      firstRenderRef.current = false
       return
     }
 
@@ -145,56 +128,29 @@ export function PageMotion({ children }: { children: ReactNode }) {
       },
     )
 
+    // The first viewport fades in as one stable layout. Following sections reveal on scroll.
+    requestAnimationFrame(() => {
+      blocks[0]?.classList.add('is-visible')
+    })
     blocks.slice(1).forEach((block) => observer.observe(block))
 
-    clearTimer(revealTimerRef)
-    clearTimer(cleanupTimerRef)
-
-    if (firstRenderRef.current) {
-      blocks[0]?.classList.add('is-visible')
-      firstRenderRef.current = false
+    clearTimer(enterTimerRef)
+    enterTimerRef.current = window.setTimeout(() => {
+      enterTimerRef.current = null
       document.documentElement.classList.remove('route-changing')
-
-      return () => observer.disconnect()
-    }
-
-    // The route is already mounted under the cover. Give layout/loading states
-    // a short moment to settle, then reveal the first viewport smoothly.
-    shield.classList.remove('is-revealing')
-    shield.classList.add('is-covering')
-    document.documentElement.classList.add('route-changing')
-
-    revealTimerRef.current = window.setTimeout(() => {
-      revealTimerRef.current = null
-      blocks[0]?.classList.add('is-visible')
-      shield.classList.remove('is-covering')
-      shield.classList.add('is-revealing')
-    }, SETTLE_MS)
-
-    cleanupTimerRef.current = window.setTimeout(() => {
-      cleanupTimerRef.current = null
-      shield.classList.remove('is-covering', 'is-revealing')
-      document.documentElement.classList.remove('route-changing')
-    }, SETTLE_MS + REVEAL_MS)
+    }, ENTER_MS)
 
     return () => {
       observer.disconnect()
-      clearTimer(revealTimerRef)
-      clearTimer(cleanupTimerRef)
+      clearTimer(enterTimerRef)
     }
   }, [location.key])
 
   return (
-    <>
-      <div ref={rootRef} className="page-motion-shell">
-        <div key={location.key} className="route-content-enter">
-          {children}
-        </div>
+    <div ref={rootRef} className="page-motion-shell">
+      <div key={location.key} className="route-content-enter">
+        {children}
       </div>
-
-      <div ref={shieldRef} className="route-transition-shield" aria-hidden="true">
-        <div className="route-transition-mark" />
-      </div>
-    </>
+    </div>
   )
 }
