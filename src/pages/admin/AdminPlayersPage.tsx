@@ -1,14 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowRight,
+  Plus,
   Search,
   ShieldCheck,
   UserRound,
   UsersRound,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { fetchAdminPlayers } from '../../lib/adminData'
+import { useMemo, useState, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { createPlayer, fetchAdminPlayers } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
 import type { Player } from '../../lib/types'
 
@@ -19,6 +20,9 @@ function playerName(player: Player) {
 export function AdminPlayersPage() {
   const [teamId, setTeamId] = useState<string>('')
   const [query, setQuery] = useState('')
+  const [creating, setCreating] = useState(false)
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const teamsQuery = useQuery({
     queryKey: ['teams'],
@@ -76,42 +80,41 @@ export function AdminPlayersPage() {
       </div>
 
       <section className="mt-6 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-bold uppercase tracking-[0.14em] text-ink-500">
-              Kategorie
-            </div>
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <button
-                type="button"
-                onClick={() => setTeamId('')}
-                className={`shrink-0 rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
-                  teamId === ''
-                    ? 'bg-brand-900 text-white'
-                    : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
-                }`}
-              >
-                Všechny týmy
-              </button>
+        <div className="text-xs font-bold uppercase tracking-[0.14em] text-ink-500">
+          Kategorie
+        </div>
 
-              {teams.map((team) => (
-                <button
-                  key={team.id}
-                  type="button"
-                  onClick={() => setTeamId(team.id)}
-                  className={`shrink-0 rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
-                    teamId === team.id
-                      ? 'bg-brand-900 text-white'
-                      : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
-                  }`}
-                >
-                  {team.name}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setTeamId('')}
+            className={`rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
+              teamId === ''
+                ? 'bg-brand-900 text-white'
+                : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
+            }`}
+          >
+            Všechny týmy
+          </button>
 
-          <label className="relative block w-full lg:max-w-xs">
+          {teams.map((team) => (
+            <button
+              key={team.id}
+              type="button"
+              onClick={() => setTeamId(team.id)}
+              className={`rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
+                teamId === team.id
+                  ? 'bg-brand-900 text-white'
+                  : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
+              }`}
+            >
+              {team.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3 border-t border-sand-200 pt-5 sm:flex-row sm:items-center">
+          <label className="relative block min-w-0 flex-1">
             <Search
               size={16}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-500"
@@ -123,10 +126,19 @@ export function AdminPlayersPage() {
               placeholder="Hledat hráče…"
             />
           </label>
+
+          <button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 text-sm font-bold text-white transition hover:bg-brand-700"
+          >
+            <Plus size={16} />
+            Nový hráč
+          </button>
         </div>
       </section>
 
-      <section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
+      <section className="mt-6 overflow-hidden<section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
         <div className="flex items-center justify-between border-b border-sand-200 px-5 py-4 sm:px-6">
           <div>
             <div className="text-sm font-extrabold text-brand-900">Soupiska</div>
@@ -235,6 +247,171 @@ export function AdminPlayersPage() {
           </div>
         )}
       </section>
+
+      {creating && (
+        <CreatePlayerDialog
+          teams={teams}
+          initialTeamId={teamId}
+          onClose={() => setCreating(false)}
+          onCreated={async (playerId) => {
+            await queryClient.invalidateQueries({ queryKey: ['admin-players'] })
+            setCreating(false)
+            navigate(`/admin/hraci/${playerId}`)
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function CreatePlayerDialog({
+  teams,
+  initialTeamId,
+  onClose,
+  onCreated,
+}: {
+  teams: ReturnType<typeof fetchTeams> extends Promise<infer T> ? T : never
+  initialTeamId: string
+  onClose: () => void
+  onCreated: (playerId: string) => Promise<void> | void
+}) {
+  const [selectedTeamId, setSelectedTeamId] = useState(
+    initialTeamId || teams[0]?.id || '',
+  )
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [number, setNumber] = useState('')
+
+  const createMutation = useMutation({
+    mutationFn: () =>
+      createPlayer({
+        team_id: selectedTeamId,
+        first_name: firstName,
+        last_name: lastName,
+        number: number.trim() ? Number(number) : null,
+      }),
+    onSuccess: (player) => onCreated(player.id),
+  })
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    createMutation.mutate()
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] grid place-items-center bg-brand-900/30 p-3 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-[34px] border border-white/70 bg-[#fbfaf6] p-6 shadow-soft sm:p-8"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div>
+          <div className="text-xs font-bold uppercase tracking-[0.16em] text-brand-500">
+            Nový hráč
+          </div>
+          <h2 className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900">
+            Přidat hráče ručně
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-ink-500">
+            Ručně založený hráč nebude mít FAČR ID. Jméno pak půjde upravovat i v jeho profilu.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+              Tým
+            </span>
+            <select
+              required
+              value={selectedTeamId}
+              onChange={(event) => setSelectedTeamId(event.target.value)}
+              className="admin-input mt-2"
+            >
+              <option value="">Vyber tým</option>
+              {teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+                Jméno
+              </span>
+              <input
+                required
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                className="admin-input mt-2"
+                placeholder="Jan"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+                Příjmení
+              </span>
+              <input
+                required
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                className="admin-input mt-2"
+                placeholder="Novák"
+              />
+            </label>
+          </div>
+
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+              Číslo dresu
+            </span>
+            <input
+              type="number"
+              min="0"
+              max="999"
+              value={number}
+              onChange={(event) => setNumber(event.target.value)}
+              className="admin-input mt-2"
+              placeholder="Volitelné"
+            />
+          </label>
+
+          {createMutation.isError && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              Hráče se nepodařilo vytvořit. Zkontroluj editor RLS oprávnění tabulky players.
+            </div>
+          )}
+
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-11 rounded-2xl bg-white px-5 text-sm font-bold text-ink-500 ring-1 ring-sand-200"
+            >
+              Zrušit
+            </button>
+            <button
+              type="submit"
+              disabled={
+                createMutation.isPending ||
+                !selectedTeamId ||
+                !firstName.trim() ||
+                !lastName.trim()
+              }
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Plus size={16} />
+              {createMutation.isPending ? 'Vytvářím…' : 'Vytvořit hráče'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
