@@ -31,33 +31,8 @@ export async function fetchTeams(): Promise<Team[]> {
 }
 
 export async function fetchTeamBySlug(slug: string): Promise<Team | null> {
-  ensureConfigured()
-  const { data, error } = await supabase
-    .from('teams')
-    .select('id,name,short_name,slug,category,logo_url,active,sort_order,season')
-    .eq('slug', slug)
-    .maybeSingle()
-
-  if (error) throw error
-  if (!data) return null
-
-  const team = data as Team
-  if (team.logo_url) return team
-
-  const { data: logoSource, error: logoError } = await supabase
-    .from('teams')
-    .select('logo_url')
-    .not('logo_url', 'is', null)
-    .order('sort_order', { ascending: true })
-    .limit(1)
-    .maybeSingle()
-
-  if (logoError) throw logoError
-
-  return {
-    ...team,
-    logo_url: logoSource?.logo_url ?? null,
-  }
+  const teams = await fetchTeams()
+  return teams.find((team) => team.slug === slug) ?? null
 }
 
 export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
