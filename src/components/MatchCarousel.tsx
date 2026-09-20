@@ -54,7 +54,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
 
   return (
     <div
-      className="rounded-[32px] border border-white/80 bg-white/88 p-4 shadow-soft backdrop-blur md:p-6"
+      className="min-h-[330px] rounded-[30px] border border-sand-200 bg-white/82 p-5 shadow-soft backdrop-blur-xl sm:p-6"
       role="region"
       aria-roledescription="carousel"
       aria-label="Zápasy týmů NFC Lichnov"
@@ -66,81 +66,71 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-5">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-500">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
             {active.kind === 'upcoming' ? 'Další zápas' : active.kind === 'result' ? 'Poslední výsledek' : 'Tým'}
           </div>
-          <div className="mt-1 text-xl font-extrabold tracking-[-0.035em] text-brand-900">{active.team.name}</div>
+          <div className="mt-1.5 text-xl font-extrabold tracking-[-0.035em] text-brand-900">{active.team.name}</div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <button
             type="button"
             aria-label="Předchozí tým"
             onClick={() => move(-1)}
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-sand-50 text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100"
+            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={17} />
           </button>
           <button
             type="button"
             aria-label="Další tým"
             onClick={() => move(1)}
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-sand-50 text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100"
+            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={17} />
           </button>
         </div>
       </div>
 
       {active.match ? (
-        <div className="mt-7">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">
+        <>
+          <div className="mt-9 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
             <ClubSide name={active.match.home_team_name} logo={active.match.home_team_logo} align="right" />
 
-            <div className="min-w-[86px] text-center">
+            <div className="min-w-[96px] text-center">
               {active.kind === 'upcoming' ? (
-                <div className="rounded-2xl bg-brand-50 px-3 py-2.5 ring-1 ring-brand-500/10">
-                  <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-700">Výkop</div>
-                  <div className="mt-1 text-2xl font-black tracking-[-0.05em] text-brand-900">
+                <div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">Výkop</div>
+                  <div className="mt-1 text-3xl font-black tracking-[-0.06em] text-brand-900">
                     {formatMatchDay(active.match.playing_at)}
                   </div>
-                  <div className="mt-0.5 text-xs font-bold text-brand-500">
+                  <div className="mt-1 text-xs font-bold text-brand-500">
                     {formatMatchTime(active.match.playing_at)}
                   </div>
                 </div>
               ) : (
-                <div className="text-4xl font-black tracking-[-0.07em] text-brand-900 sm:text-5xl">{score ?? '—'}</div>
+                <div className="text-5xl font-black tracking-[-0.07em] text-brand-900">{score ?? '—'}</div>
               )}
             </div>
 
             <ClubSide name={active.match.away_team_name} logo={active.match.away_team_logo} align="left" />
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-medium text-ink-500">
-            {active.kind !== 'upcoming' && <span>{formatMatchDate(active.match.playing_at)}</span>}
-            {active.match.competition_name && (
-              <>
-                {active.kind !== 'upcoming' && <span>•</span>}
-                <span>{active.match.competition_name}</span>
-              </>
-            )}
-            {active.match.round && (
-              <>
-                <span>•</span>
-                <span>{active.match.round}</span>
-              </>
-            )}
+          <div className="mt-8 border-t border-sand-200 pt-4 text-center text-xs font-medium text-ink-500">
+            <span>{formatMatchDate(active.match.playing_at)}</span>
+            {active.match.competition_name && <span> · {active.match.competition_name}</span>}
+            {active.match.round && <span> · {active.match.round}</span>}
           </div>
-        </div>
+        </>
       ) : (
-        <div className="mt-6 rounded-3xl bg-sand-50 p-6 text-sm text-ink-500">
+        <div className="mt-8 rounded-2xl bg-sand-50 p-5 text-sm text-ink-500">
           Pro tento tým momentálně nemáme zápas k zobrazení.
         </div>
       )}
 
-      <div className="mt-6 flex items-center justify-center gap-2" aria-label="Výběr týmu">
+      <div className="mt-5 flex items-center justify-center gap-2" aria-label="Výběr týmu">
         {items.map((item, itemIndex) => (
           <button
             key={item.team.id}
@@ -148,7 +138,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
             onClick={() => setIndex(itemIndex)}
             aria-label={`Zobrazit ${item.team.name}`}
             aria-current={itemIndex === index ? 'true' : undefined}
-            className={`h-2 rounded-full transition-all ${itemIndex === index ? 'w-7 bg-brand-500' : 'w-2 bg-sand-200 hover:bg-brand-500/40'}`}
+            className={`h-1.5 rounded-full transition-all ${itemIndex === index ? 'w-6 bg-brand-500' : 'w-1.5 bg-sand-200 hover:bg-brand-500/40'}`}
           />
         ))}
       </div>
@@ -158,9 +148,9 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
 
 function ClubSide({ name, logo, align }: { name: string; logo: string | null; align: 'left' | 'right' }) {
   return (
-    <div className={`flex min-w-0 items-center gap-3 ${align === 'right' ? 'flex-row-reverse text-right' : ''}`}>
+    <div className={`flex min-w-0 flex-col items-center gap-2.5 text-center ${align === 'right' ? '' : ''}`}>
       <ClubLogo src={logo} name={name} />
-      <div className="min-w-0 text-sm font-bold leading-tight text-ink-900 sm:text-base">{name}</div>
+      <div className="line-clamp-2 min-h-[36px] max-w-[145px] text-sm font-bold leading-[1.15] text-ink-900">{name}</div>
     </div>
   )
 }

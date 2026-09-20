@@ -4,10 +4,11 @@ import { CalendarClock, CalendarDays } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { StandingsTable } from '../components/StandingsTable'
 import {
+  fetchDisplayPlayersByTeam,
   fetchMatchesByTeam,
-  fetchPlayersByTeam,
   fetchStaffByTeam,
   fetchStandingsByTeam,
   fetchTeamBySlug,
@@ -44,7 +45,7 @@ export function TeamPage() {
   })
   const playersQuery = useQuery({
     queryKey: ['players', team?.id],
-    queryFn: () => fetchPlayersByTeam(team!.id),
+    queryFn: () => fetchDisplayPlayersByTeam(team!),
     enabled: Boolean(team?.id),
     retry: false,
   })
@@ -165,61 +166,27 @@ export function TeamPage() {
         </section>
       )}
 
-      <section className="px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-[1240px]">
-          <PageHeading eyebrow="Kabina" title="Hráči" />
-
-          {playersQuery.isLoading ? (
-            <LoadingState rows={4} />
-          ) : playersQuery.data?.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {playersQuery.data.map((player) => {
-                const fullName = [player.first_name, player.last_name].filter(Boolean).join(' ')
-                const photo = player.photo_url || player.facr_photo_url
-
-                return (
-                  <article key={player.id} className="overflow-hidden rounded-5xl border border-sand-200 bg-white">
-                    <div className="aspect-[4/4.4] bg-sand-100">
-                      {photo ? (
-                        <img
-                          src={photo}
-                          alt={fullName}
-                          className="h-full w-full object-cover object-top"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="grid h-full place-items-center text-5xl font-black text-brand-500/25">
-                          {player.number ?? 'NFC'}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="text-xl font-extrabold tracking-[-0.035em] text-brand-900">{fullName}</h3>
-                          <p className="mt-1 text-sm text-ink-500">{player.position || 'Hráč'}</p>
-                        </div>
-                        {player.number != null && (
-                          <span className="text-2xl font-black text-brand-500">{player.number}</span>
-                        )}
-                      </div>
-                      <div className="mt-5 grid grid-cols-3 gap-2 text-center">
-                        <Stat label="Z" value={player.matches_count} />
-                        <Stat label="G" value={player.goals_count} />
-                        <Stat label="ŽK" value={player.yellow_cards} />
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
+      <section className="py-10 md:py-16">
+        {playersQuery.isLoading ? (
+          <div className="px-5 md:px-8">
+            <div className="mx-auto max-w-[1240px]">
+              <PageHeading eyebrow="Kabina" title="Hráči" />
+              <LoadingState rows={4} />
             </div>
-          ) : (
-            <EmptyState
-              title="Soupiska zatím není k dispozici"
-              text="Hráči se zobrazí po synchronizaci nebo ručním doplnění."
-            />
-          )}
-        </div>
+          </div>
+        ) : playersQuery.data?.length ? (
+          <PlayerStripCarousel team={team} players={playersQuery.data} />
+        ) : (
+          <div className="px-5 md:px-8">
+            <div className="mx-auto max-w-[1240px]">
+              <PageHeading eyebrow="Kabina" title="Hráči" />
+              <EmptyState
+                title="Soupiska zatím není k dispozici"
+                text="Hráči se zobrazí po synchronizaci nebo ručním doplnění."
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="px-5 pb-12 md:px-8 md:pb-20">
@@ -315,15 +282,6 @@ function HeroMatch({
         <CalendarDays size={14} />
         {formatMatchDate(match.playing_at)}
       </div>
-    </div>
-  )
-}
-
-function Stat({ label, value }: { label: string; value: number | null }) {
-  return (
-    <div className="rounded-2xl bg-sand-50 py-2">
-      <div className="text-sm font-extrabold text-brand-900">{value ?? 0}</div>
-      <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">{label}</div>
     </div>
   )
 }
