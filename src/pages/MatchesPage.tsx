@@ -38,7 +38,7 @@ export function MatchesPage() {
         {matchesQuery.isLoading ? (
           <LoadingState rows={6} />
         ) : matches.length ? (
-          <div className="space-y-3">
+          <div className="stagger-children space-y-3">
             {matches.map((match) => {
               const upcoming = isUpcomingMatch(match.playing_at)
               const score = matchScore(
