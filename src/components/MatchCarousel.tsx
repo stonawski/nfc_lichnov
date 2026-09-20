@@ -54,7 +54,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
 
   return (
     <div
-      className="min-h-[330px] rounded-[30px] border border-sand-200 bg-white/82 p-5 shadow-soft backdrop-blur-xl sm:p-6"
+      className="min-h-[330px] rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 shadow-soft sm:p-6"
       role="region"
       aria-roledescription="carousel"
       aria-label="Zápasy týmů NFC Lichnov"
