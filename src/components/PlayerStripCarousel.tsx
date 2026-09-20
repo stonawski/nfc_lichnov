@@ -1,5 +1,5 @@
 import { UserRound } from 'lucide-react'
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import type { Player, Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 
@@ -10,33 +10,71 @@ type PlayerStripCarouselProps = {
 
 export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null)
-  const [dragging, setDragging] = useState(false)
+  const draggingRef = useRef(false)
   const dragStartX = useRef(0)
   const dragStartScroll = useRef(0)
+  const recenteringRef = useRef(false)
+
+  const loopPlayers = players.length > 1 ? [...players, ...players, ...players] : players
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track || players.length <= 1) return
+
+    const frame = requestAnimationFrame(() => {
+      const loopWidth = track.scrollWidth / 3
+      track.scrollLeft = loopWidth
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [players])
+
+  const keepInfinite = () => {
+    const track = trackRef.current
+    if (!track || players.length <= 1 || recenteringRef.current) return
+
+    const loopWidth = track.scrollWidth / 3
+    if (!loopWidth) return
+
+    if (track.scrollLeft < loopWidth * 0.5) {
+      recenteringRef.current = true
+      track.scrollLeft += loopWidth
+      requestAnimationFrame(() => {
+        recenteringRef.current = false
+      })
+    } else if (track.scrollLeft > loopWidth * 1.5) {
+      recenteringRef.current = true
+      track.scrollLeft -= loopWidth
+      requestAnimationFrame(() => {
+        recenteringRef.current = false
+      })
+    }
+  }
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== 'mouse') return
     const track = trackRef.current
     if (!track) return
 
-    setDragging(true)
+    draggingRef.current = true
     dragStartX.current = event.clientX
     dragStartScroll.current = track.scrollLeft
     track.setPointerCapture(event.pointerId)
   }
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragging || event.pointerType !== 'mouse') return
+    if (!draggingRef.current || event.pointerType !== 'mouse') return
     const track = trackRef.current
     if (!track) return
 
+    event.preventDefault()
     const delta = event.clientX - dragStartX.current
     track.scrollLeft = dragStartScroll.current - delta
   }
 
   const stopDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== 'mouse') return
-    setDragging(false)
+    draggingRef.current = false
 
     const track = trackRef.current
     if (track?.hasPointerCapture(event.pointerId)) {
@@ -48,27 +86,21 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
     <section className="player-strip relative w-full overflow-hidden bg-brand-900 text-white">
       <div
         ref={trackRef}
+        onScroll={keepInfinite}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={stopDragging}
         onPointerCancel={stopDragging}
-        onPointerLeave={(event) => {
-          if (dragging) stopDragging(event)
-        }}
-        className={`relative z-10 flex snap-x snap-mandatory overflow-x-auto select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-          dragging ? 'cursor-grabbing snap-none' : 'cursor-grab'
-        }`}
+        className="relative z-10 flex cursor-grab overflow-x-auto overscroll-x-contain select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
-        {players.map((player) => {
+        {loopPlayers.map((player, index) => {
           const fullName = [player.first_name, player.last_name].filter(Boolean).join(' ') || 'Hráč NFC'
-          // V tomto hero carouselu používáme pouze klubové portréty.
-          // Dokud photo_url není doplněné, zobrazí se neutrální avatar.
           const photo = player.photo_url
 
           return (
             <article
-              key={player.id}
-              className="player-strip-card group relative h-[350px] w-[72vw] max-w-[310px] shrink-0 snap-start overflow-hidden border-r border-white/10 sm:h-[390px] sm:w-[42vw] md:w-[31vw] lg:h-[420px] lg:w-[14.285vw] lg:max-w-none"
+              key={`${player.id}-${index}`}
+              className="player-strip-card group relative h-[350px] w-[72vw] max-w-[310px] shrink-0 overflow-hidden border-r border-white/10 sm:h-[390px] sm:w-[42vw] md:w-[31vw] lg:h-[420px] lg:w-[14.285vw] lg:max-w-none"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] via-white/[0.025] to-black/20" />
 
@@ -109,11 +141,9 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
         })}
       </div>
 
-      <div className="relative z-20 h-16">
-        <div className="absolute left-0 right-0 top-0 h-[3px] bg-brand-500" />
-        <div className="absolute left-0 right-0 top-[5px] h-px bg-white/30" />
-        <div className="absolute left-1/2 top-[-25px] -translate-x-1/2">
-          <div className="grid h-[62px] w-[62px] place-items-center rounded-full bg-sand-50 shadow-[0_8px_24px_rgba(0,0,0,.22)] ring-4 ring-brand-900">
+      <div className="relative z-20 h-16 border-t border-white/10 bg-brand-900">
+        <div className="absolute left-1/2 top-[-26px] -translate-x-1/2">
+          <div className="grid h-[66px] w-[66px] place-items-center rounded-full bg-sand-50 shadow-[0_8px_24px_rgba(0,0,0,.22)] ring-4 ring-brand-900">
             <ClubLogo src={team.logo_url} name={team.name} size="md" />
           </div>
         </div>
