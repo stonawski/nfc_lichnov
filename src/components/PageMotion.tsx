@@ -2,7 +2,6 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
-  type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
 import { useLocation } from 'react-router-dom'
