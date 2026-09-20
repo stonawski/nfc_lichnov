@@ -292,13 +292,44 @@ export async function deleteNewsArticle(id: string): Promise<void> {
 const playerSelect =
   'id,team_id,facr_player_id,first_name,last_name,birth_date,number,position,photo_url,facr_photo_url,bio,matches_count,goals_count,yellow_cards,red_cards,active,sort_order'
 
+export type CreatePlayerInput = {
+  team_id: string
+  first_name: string
+  last_name: string
+  number?: number | null
+}
+
 export type UpdatePlayerProfileInput = {
+  first_name?: string | null
+  last_name?: string | null
   number: number | null
   position: string | null
   photo_url: string | null
   bio: string | null
   active: boolean
   sort_order: number | null
+}
+
+export async function createPlayer(input: CreatePlayerInput): Promise<Player> {
+  const { data, error } = await supabase
+    .from('players')
+    .insert({
+      team_id: input.team_id,
+      facr_player_id: null,
+      first_name: input.first_name.trim(),
+      last_name: input.last_name.trim(),
+      number: input.number ?? null,
+      position: null,
+      photo_url: null,
+      bio: null,
+      active: true,
+      sort_order: null,
+    })
+    .select(playerSelect)
+    .single()
+
+  if (error) throw error
+  return data as Player
 }
 
 export async function fetchAdminPlayers(teamId?: string): Promise<Player[]> {
@@ -334,6 +365,8 @@ export async function updatePlayerProfile(
   const { data, error } = await supabase
     .from('players')
     .update({
+      ...(input.first_name !== undefined ? { first_name: input.first_name?.trim() || null } : {}),
+      ...(input.last_name !== undefined ? { last_name: input.last_name?.trim() || null } : {}),
       number: input.number,
       position: input.position?.trim() || null,
       photo_url: input.photo_url || null,
