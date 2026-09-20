@@ -282,7 +282,7 @@ export async function fetchGalleries(): Promise<Gallery[]> {
 
 export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> {
   const galleries = await fetchGalleries()
-  return galleries.find((gallery) => gallery.slug === slug) ?? null
+  return galleries.find((gallery) => gallery.slug === slug || gallery.id === slug) ?? null
 }
 
 export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
