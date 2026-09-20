@@ -45,6 +45,8 @@ export function AdminPlayerEditorPage() {
   const player = playerQuery.data
   const team = teamsQuery.data?.find((item) => item.id === player?.team_id)
 
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [number, setNumber] = useState('')
   const [position, setPosition] = useState('')
   const [bio, setBio] = useState('')
@@ -54,6 +56,8 @@ export function AdminPlayerEditorPage() {
   useEffect(() => {
     if (!player) return
 
+    setFirstName(player.first_name ?? '')
+    setLastName(player.last_name ?? '')
     setNumber(player.number == null ? '' : String(player.number))
     setPosition(player.position ?? '')
     setBio(player.bio ?? '')
@@ -63,6 +67,12 @@ export function AdminPlayerEditorPage() {
 
   const payload = useMemo<UpdatePlayerProfileInput>(
     () => ({
+      ...(player?.facr_player_id == null
+        ? {
+            first_name: firstName || null,
+            last_name: lastName || null,
+          }
+        : {}),
       number: number.trim() ? Number(number) : null,
       position: position || null,
       photo_url: player?.photo_url ?? null,
@@ -70,7 +80,17 @@ export function AdminPlayerEditorPage() {
       active,
       sort_order: sortOrder.trim() ? Number(sortOrder) : null,
     }),
-    [active, bio, number, player?.photo_url, position, sortOrder],
+    [
+      active,
+      bio,
+      firstName,
+      lastName,
+      number,
+      player?.facr_player_id,
+      player?.photo_url,
+      position,
+      sortOrder,
+    ],
   )
 
   const saveMutation = useMutation({
@@ -165,7 +185,11 @@ export function AdminPlayerEditorPage() {
     )
   }
 
-  const name = playerName(player.first_name, player.last_name)
+  const isManualPlayer = player.facr_player_id == null
+  const name = playerName(
+    isManualPlayer ? firstName : player.first_name,
+    isManualPlayer ? lastName : player.last_name,
+  )
 
   return (
     <div className="mx-auto max-w-[1180px]">
@@ -234,7 +258,29 @@ export function AdminPlayerEditorPage() {
             Veřejný profil
           </div>
 
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          {isManualPlayer && (
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <Field label="Jméno">
+                <input
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  className="admin-input"
+                  placeholder="Jan"
+                />
+              </Field>
+
+              <Field label="Příjmení">
+                <input
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  className="admin-input"
+                  placeholder="Novák"
+                />
+              </Field>
+            </div>
+          )}
+
+          <div className={`grid gap-5 sm:grid-cols-2 ${isManualPlayer ? 'mt-5' : 'mt-6'}`}>
             <Field label="Číslo dresu">
               <input
                 type="number"
@@ -300,11 +346,12 @@ export function AdminPlayerEditorPage() {
               <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand-700" />
               <div>
                 <div className="text-sm font-extrabold text-brand-900">
-                  Synchronizované údaje neupravujeme
+                  {isManualPlayer ? 'Ručně založený hráč' : 'Synchronizované údaje neupravujeme'}
                 </div>
                 <p className="mt-1 text-xs leading-5 text-ink-500">
-                  Jméno, datum narození, FAČR identifikace a zápasové statistiky jsou
-                  vedené jako zdrojová sportovní data. Tady upravujeme jen prezentaci hráče.
+                  {isManualPlayer
+                    ? 'Tento hráč nemá FAČR ID, takže jméno můžeš upravit přímo v administraci.'
+                    : 'Jméno, datum narození, FAČR identifikace a zápasové statistiky jsou vedené jako zdrojová sportovní data. Tady upravujeme jen prezentaci hráče.'}
                 </p>
               </div>
             </div>
