@@ -11,14 +11,14 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createPlayer, fetchAdminPlayers } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
-import type { Player } from '../../lib/types'
+import type { Player, Team } from '../../lib/types'
 
 function playerName(player: Player) {
   return [player.first_name, player.last_name].filter(Boolean).join(' ') || 'Neznámý hráč'
 }
 
 export function AdminPlayersPage() {
-  const [teamId, setTeamId] = useState<string>('')
+  const [teamId, setTeamId] = useState('')
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState(false)
   const navigate = useNavigate()
@@ -48,6 +48,7 @@ export function AdminPlayersPage() {
   const filteredPlayers = players.filter((player) => {
     if (!normalizedQuery) return true
     const name = playerName(player).toLocaleLowerCase('cs-CZ')
+
     return (
       name.includes(normalizedQuery) ||
       String(player.number ?? '').includes(normalizedQuery) ||
@@ -60,17 +61,28 @@ export function AdminPlayersPage() {
 
   return (
     <div className="mx-auto max-w-[1180px]">
-      <div className="max-w-3xl">
-        <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
-          Týmy
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-3xl">
+          <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+            Týmy
+          </div>
+          <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] text-brand-900 sm:text-5xl">
+            Hráči
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-500">
+            Správa profilových fotografií, čísel, pozic a medailonků hráčů.
+            Identita hráčů synchronizovaných z FAČR zůstává oddělená od ručních úprav.
+          </p>
         </div>
-        <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] text-brand-900 sm:text-5xl">
-          Hráči
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-500">
-          Správa profilových fotografií, čísel, pozic a medailonků hráčů.
-          Identita hráče a FACR údaje zůstávají oddělené od ručních úprav.
-        </p>
+
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700"
+        >
+          <Plus size={17} />
+          Nový hráč
+        </button>
       </div>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -113,8 +125,8 @@ export function AdminPlayersPage() {
           ))}
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 border-t border-sand-200 pt-5 sm:flex-row sm:items-center">
-          <label className="relative block min-w-0 flex-1">
+        <div className="mt-5 border-t border-sand-200 pt-5">
+          <label className="relative block">
             <Search
               size={16}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-500"
@@ -126,19 +138,10 @@ export function AdminPlayersPage() {
               placeholder="Hledat hráče…"
             />
           </label>
-
-          <button
-            type="button"
-            onClick={() => setCreating(true)}
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 text-sm font-bold text-white transition hover:bg-brand-700"
-          >
-            <Plus size={16} />
-            Nový hráč
-          </button>
         </div>
       </section>
 
-      <section className="mt-6 overflow-hidden<section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
+      <section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
         <div className="flex items-center justify-between border-b border-sand-200 px-5 py-4 sm:px-6">
           <div>
             <div className="text-sm font-extrabold text-brand-900">Soupiska</div>
@@ -199,6 +202,7 @@ export function AdminPlayersPage() {
                           {team?.name || 'Tým'}
                         </div>
                       </div>
+
                       <ArrowRight
                         size={16}
                         className="mt-1 shrink-0 text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500"
@@ -211,16 +215,19 @@ export function AdminPlayersPage() {
                           #{player.number}
                         </span>
                       )}
+
                       {player.position && (
                         <span className="rounded-full bg-sand-100 px-2.5 py-1 text-[10px] font-bold text-ink-500">
                           {player.position}
                         </span>
                       )}
+
                       {!player.active && (
                         <span className="rounded-full bg-red-50 px-2.5 py-1 text-[10px] font-bold text-red-700">
                           Neaktivní
                         </span>
                       )}
+
                       {player.photo_url && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700">
                           <ShieldCheck size={10} />
@@ -270,7 +277,7 @@ function CreatePlayerDialog({
   onClose,
   onCreated,
 }: {
-  teams: ReturnType<typeof fetchTeams> extends Promise<infer T> ? T : never
+  teams: Team[]
   initialTeamId: string
   onClose: () => void
   onCreated: (playerId: string) => Promise<void> | void
@@ -315,7 +322,7 @@ function CreatePlayerDialog({
             Přidat hráče ručně
           </h2>
           <p className="mt-3 text-sm leading-6 text-ink-500">
-            Ručně založený hráč nebude mít FAČR ID. Jméno pak půjde upravovat i v jeho profilu.
+            Ručně založený hráč nebude mít FAČR ID. Jeho jméno bude možné později upravovat.
           </p>
         </div>
 
@@ -396,6 +403,7 @@ function CreatePlayerDialog({
             >
               Zrušit
             </button>
+
             <button
               type="submit"
               disabled={
