@@ -109,7 +109,7 @@ export function TeamPage() {
           {matchesQuery.isLoading ? (
             <LoadingState rows={4} />
           ) : matches.length ? (
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="stagger-children grid gap-3 md:grid-cols-2">
               {matches.slice(0, 12).map((match) => {
                 const upcoming = isUpcomingMatch(match.playing_at)
                 const score = matchScore(
@@ -194,7 +194,7 @@ export function TeamPage() {
           <PageHeading eyebrow="Realizační tým" title="Trenéři a vedení týmu" />
 
           {staffQuery.data?.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {staffQuery.data.map((person) => (
                 <div key={person.id} className="rounded-4xl border border-sand-200 bg-white p-6">
                   <div className="text-xl font-extrabold text-brand-900">{person.name}</div>
