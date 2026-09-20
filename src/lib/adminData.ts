@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Gallery, GalleryImage, NewsArticle, Player } from './types'
+import type { Gallery, GalleryImage, NewsArticle, Player, Staff } from './types'
 
 export type CreateGalleryInput = {
   title: string
@@ -392,4 +392,107 @@ export async function setPlayerPhoto(id: string, photoUrl: string | null): Promi
 
   if (error) throw error
   return data as Player
+}
+
+
+const staffSelect =
+  'id,team_id,facr_person_id,name,role,photo_url,bio,active,sort_order'
+
+export type CreateStaffInput = {
+  team_id: string
+  name: string
+  role?: string | null
+}
+
+export type UpdateStaffInput = {
+  name?: string | null
+  role: string | null
+  photo_url: string | null
+  bio: string | null
+  active: boolean
+  sort_order: number | null
+}
+
+export async function fetchAdminStaff(teamId?: string): Promise<Staff[]> {
+  let query = supabase
+    .from('staff')
+    .select(staffSelect)
+    .order('sort_order', { ascending: true, nullsFirst: false })
+    .order('name', { ascending: true })
+
+  if (teamId) query = query.eq('team_id', teamId)
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data ?? []) as Staff[]
+}
+
+export async function fetchAdminStaffById(id: string): Promise<Staff | null> {
+  const { data, error } = await supabase
+    .from('staff')
+    .select(staffSelect)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Staff | null
+}
+
+export async function createStaffMember(input: CreateStaffInput): Promise<Staff> {
+  const { data, error } = await supabase
+    .from('staff')
+    .insert({
+      team_id: input.team_id,
+      facr_person_id: null,
+      name: input.name.trim(),
+      role: input.role?.trim() || null,
+      photo_url: null,
+      bio: null,
+      active: true,
+      sort_order: null,
+    })
+    .select(staffSelect)
+    .single()
+
+  if (error) throw error
+  return data as Staff
+}
+
+export async function updateStaffMember(
+  id: string,
+  input: UpdateStaffInput,
+): Promise<Staff> {
+  const { data, error } = await supabase
+    .from('staff')
+    .update({
+      ...(input.name !== undefined ? { name: input.name?.trim() || null } : {}),
+      role: input.role?.trim() || null,
+      photo_url: input.photo_url || null,
+      bio: input.bio?.trim() || null,
+      active: input.active,
+      sort_order: input.sort_order,
+    })
+    .eq('id', id)
+    .select(staffSelect)
+    .single()
+
+  if (error) throw error
+  return data as Staff
+}
+
+export async function setStaffPhoto(id: string, photoUrl: string | null): Promise<Staff> {
+  const { data, error } = await supabase
+    .from('staff')
+    .update({ photo_url: photoUrl })
+    .eq('id', id)
+    .select(staffSelect)
+    .single()
+
+  if (error) throw error
+  return data as Staff
+}
+
+export async function deleteStaffMember(id: string): Promise<void> {
+  const { error } = await supabase.from('staff').delete().eq('id', id)
+  if (error) throw error
 }
