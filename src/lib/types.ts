@@ -118,16 +118,21 @@ export type Gallery = {
   slug?: string | null
   description?: string | null
   cover_image?: string | null
+  event_date?: string | null
+  published?: boolean | null
+  team_id?: string | null
   created_at?: string | null
 }
 
 export type GalleryImage = {
   id: string
   gallery_id: string
+  object_key?: string | null
   image_url?: string | null
   url?: string | null
   caption?: string | null
   sort_order?: number | null
+  created_at?: string | null
 }
 
 export type TeamMatchSummary = {
