@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
-import type { Gallery, GalleryImage, NewsArticle, Player, Staff } from './types'
+import type { Gallery, GalleryImage, NewsArticle, Player, Staff, Team } from './types'
+import { preferDorostOverMen } from './playerIdentity'
 
 export type CreateGalleryInput = {
   title: string
@@ -333,18 +334,30 @@ export async function createPlayer(input: CreatePlayerInput): Promise<Player> {
 }
 
 export async function fetchAdminPlayers(teamId?: string): Promise<Player[]> {
-  let query = supabase
-    .from('players')
-    .select(playerSelect)
-    .order('sort_order', { ascending: true, nullsFirst: false })
-    .order('last_name', { ascending: true })
-    .order('first_name', { ascending: true })
+  const [playersResult, teamsResult] = await Promise.all([
+    supabase
+      .from('players')
+      .select(playerSelect)
+      .order('sort_order', { ascending: true, nullsFirst: false })
+      .order('last_name', { ascending: true })
+      .order('first_name', { ascending: true }),
+    supabase
+      .from('teams')
+      .select('id,name,short_name,slug,category,logo_url,active,sort_order,season')
+      .eq('active', true),
+  ])
 
-  if (teamId) query = query.eq('team_id', teamId)
+  if (playersResult.error) throw playersResult.error
+  if (teamsResult.error) throw teamsResult.error
 
-  const { data, error } = await query
-  if (error) throw error
-  return (data ?? []) as Player[]
+  const canonicalPlayers = preferDorostOverMen(
+    (playersResult.data ?? []) as Player[],
+    (teamsResult.data ?? []) as Team[],
+  )
+
+  return teamId
+    ? canonicalPlayers.filter((player) => player.team_id === teamId)
+    : canonicalPlayers
 }
 
 export async function fetchAdminPlayerById(id: string): Promise<Player | null> {
