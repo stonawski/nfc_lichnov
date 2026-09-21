@@ -8,7 +8,7 @@ import {
   UsersRound,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import {
   fetchMatchById,
@@ -24,6 +24,7 @@ import {
   matchScore,
 } from '../lib/format'
 import { normalizeTacticalPosition } from '../lib/playerPosition'
+import { safeReturnPath } from '../lib/navigationState'
 import type {
   Match,
   MatchParticipant,
@@ -33,6 +34,8 @@ import type {
 
 export function MatchDetailPage() {
   const { id = '' } = useParams()
+  const location = useLocation()
+  const backTo = safeReturnPath(location.state, '/zapasy')
 
   const matchQuery = useQuery({
     queryKey: ['match', id],
@@ -112,11 +115,11 @@ export function MatchDetailPage() {
       <section className="px-5 pb-10 pt-14 md:px-8 md:pb-14 md:pt-20">
         <div className="mx-auto max-w-[1180px]">
           <Link
-            to="/zapasy"
+            to={backTo}
             className="inline-flex items-center gap-2 text-sm font-bold text-ink-500 transition hover:text-brand-900"
           >
             <ArrowLeft size={16} />
-            Zpět na zápasy
+            {backTo.startsWith('/zapasy') ? 'Zpět na zápasy' : 'Zpět'}
           </Link>
 
           <MatchHero
