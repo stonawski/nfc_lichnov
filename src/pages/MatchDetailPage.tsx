@@ -8,7 +8,7 @@ import {
   UsersRound,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import {
   fetchMatchById,
@@ -34,8 +34,8 @@ import type {
 
 export function MatchDetailPage() {
   const { id = '' } = useParams()
-  const location = useLocation()
-  const backTo = safeReturnPath(location.state, '/zapasy')
+  const [searchParams] = useSearchParams()
+  const backTo = safeReturnPath(searchParams, '/zapasy')
 
   const matchQuery = useQuery({
     queryKey: ['match', id],
