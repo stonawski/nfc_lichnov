@@ -24,13 +24,13 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
           </FooterColumn>
 
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/45">
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/[0.45]">
               Kontakt
             </div>
             <div className="mt-4 text-base font-bold text-brand-900">
               NFC Lichnov
             </div>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-brand-900/58">
+            <p className="mt-2 max-w-sm text-sm leading-6 text-brand-900/[0.58]">
               Kontakty na vedení klubu, trenéry a informace ke sportovnímu
               areálu najdeš přehledně na jednom místě.
             </p>
@@ -60,13 +60,13 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
           </div>
 
           <div className="min-w-0 pb-1">
-            <div className="whitespace-nowrap text-[clamp(4rem,10.8vw,10.8rem)] font-black leading-[.75] tracking-[-0.075em] text-brand-900">
+            <div className="whitespace-nowrap text-[clamp(3rem,10.8vw,10.8rem)] font-black leading-[.75] tracking-[-0.075em] text-brand-900">
               NFC Lichnov
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 pb-5 text-[11px] font-medium text-brand-900/55 sm:flex-row sm:items-center sm:justify-between lg:mt-14">
+        <div className="mt-12 flex flex-col gap-3 pb-5 text-[11px] font-medium text-brand-900/[0.55] sm:flex-row sm:items-center sm:justify-between lg:mt-14">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link to="/klub" className="transition hover:text-brand-900">
               O klubu
@@ -95,7 +95,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/45">
+      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/[0.45]">
         {title}
       </div>
       <div className="mt-4 grid gap-2.5">{children}</div>
@@ -113,7 +113,7 @@ function FooterLink({
   return (
     <Link
       to={to}
-      className="w-fit text-sm font-semibold text-brand-900/78 transition hover:translate-x-0.5 hover:text-brand-500"
+      className="w-fit text-sm font-semibold text-brand-900/[0.78] transition hover:translate-x-0.5 hover:text-brand-500"
     >
       {children}
     </Link>
