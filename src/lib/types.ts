@@ -48,7 +48,9 @@ export type Match = {
 
 export type MatchParticipant = {
   id: string
+  player_id: string | null
   name: string
+  photo_url: string | null
   number: number | null
   position: string | null
   side: 'home' | 'away' | null
