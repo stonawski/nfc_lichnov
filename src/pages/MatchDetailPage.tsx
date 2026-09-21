@@ -368,7 +368,7 @@ function FormationPitch({
         <div>
           <div className="text-sm font-extrabold text-brand-900">{teamName}</div>
           <div className="mt-1 text-xs text-ink-500">
-            Základní sestava {starters.length ? `· ${starters.length} hráčů` : ''}
+            Základní sestava
           </div>
         </div>
 
@@ -437,8 +437,6 @@ function FormationPitch({
             <polygon points="365,555 635,555 690,676 310,676" />
             <circle cx="500" cy="518" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="452,54 548,54 562,88 438,88" strokeOpacity="0.48" />
-            <polygon points="310,676 690,676 742,724 258,724" strokeOpacity="0.48" />
           </g>
 
           <path
@@ -538,37 +536,38 @@ function PitchPlayer({
       className="absolute z-10 w-[98px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[118px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
-      <div className="relative mx-auto flex h-14 w-14 items-end justify-center overflow-hidden rounded-[18px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[68px] sm:w-[68px]">
-        {player.photo_url ? (
-          <img
-            src={player.photo_url}
-            alt=""
-            className="h-full w-full object-cover object-top"
-          />
-        ) : (
-          <div className="grid h-full w-full place-items-center bg-[radial-gradient(circle_at_50%_35%,#fff_0,#f4f1e8_52%,#e5e2d8_100%)] text-xs font-black text-brand-900 sm:text-sm">
-            {initials(player.name)}
-          </div>
-        )}
+      <div className="relative mx-auto w-fit">
+        <div className="flex h-14 w-14 items-end justify-center overflow-hidden rounded-[18px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[68px] sm:w-[68px]">
+          {player.photo_url ? (
+            <img
+              src={player.photo_url}
+              alt=""
+              className="h-full w-full object-cover object-top"
+            />
+          ) : (
+            <div className="grid h-full w-full place-items-center bg-[radial-gradient(circle_at_50%_35%,#fff_0,#f4f1e8_52%,#e5e2d8_100%)] text-xs font-black text-brand-900 sm:text-sm">
+              {initials(player.name)}
+            </div>
+          )}
+        </div>
 
-        <div className="absolute -right-1 -top-1">
+        <div className="absolute -right-5 top-1/2 -translate-y-1/2">
           <PlayerEventBadges player={player} events={events} />
         </div>
       </div>
 
       <div className="relative -mt-1.5 rounded-[7px] bg-[linear-gradient(180deg,#244a3b,#15382c)] px-2 py-1.5 text-white shadow-[0_6px_16px_rgba(24,53,42,0.24)] ring-1 ring-white/35">
-        <div className="truncate text-[9px] font-extrabold leading-none sm:text-[10px]">
+        <div className="flex items-center justify-center gap-1 truncate text-[9px] font-extrabold leading-none sm:text-[10px]">
           {player.number != null && (
-            <span className="mr-1 text-white/65">{player.number}</span>
+            <span className="text-white/65">{player.number}</span>
           )}
-          {shortPlayerName(player.name)}
+          <span className="truncate">{shortPlayerName(player.name)}</span>
+          {player.captain && (
+            <span className="shrink-0 rounded bg-[#e8d9a9] px-1 py-0.5 text-[7px] font-black text-brand-900">
+              K
+            </span>
+          )}
         </div>
-
-        {player.captain && (
-          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded bg-white px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-brand-900 shadow-sm ring-1 ring-sand-200">
-            Kapitán
-          </div>
-        )}
       </div>
     </div>
   )
@@ -620,7 +619,7 @@ function PlayerEventBadges({
   if (!goals && !yellows && !reds) return null
 
   return (
-    <div className={`flex items-center ${compact ? 'gap-1' : 'gap-1.5'}`}>
+    <div className={`flex items-center ${compact ? 'gap-1' : 'gap-1'}`}>
       {goals > 0 && (
         <span
           className={`grid place-items-center rounded-full bg-white shadow-md ring-1 ring-black/5 ${
