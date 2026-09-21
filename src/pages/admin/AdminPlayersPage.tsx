@@ -15,7 +15,7 @@ import {
   TACTICAL_POSITION_OPTIONS,
   tacticalPositionLabel,
 } from '../../lib/playerPosition'
-import { locationPath } from '../../lib/navigationState'
+import { locationPath, withReturnPath } from '../../lib/navigationState'
 import type { Player, Team } from '../../lib/types'
 
 function playerName(player: Player) {
@@ -193,8 +193,7 @@ export function AdminPlayersPage() {
               return (
                 <Link
                   key={player.id}
-                  to={`/admin/hraci/${player.id}`}
-                  state={{ from: returnTo }}
+                  to={withReturnPath(`/admin/hraci/${player.id}`, returnTo)}
                   className="group flex min-w-0 gap-4 rounded-[24px] border border-sand-200 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="h-24 w-20 shrink-0 overflow-hidden rounded-[18px] bg-sand-100">
@@ -282,7 +281,7 @@ export function AdminPlayersPage() {
           onCreated={async (playerId) => {
             await queryClient.invalidateQueries({ queryKey: ['admin-players'] })
             setCreating(false)
-            navigate(`/admin/hraci/${playerId}`, { state: { from: returnTo } })
+            navigate(withReturnPath(`/admin/hraci/${playerId}`, returnTo))
           }}
         />
       )}
