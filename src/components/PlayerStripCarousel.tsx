@@ -1,4 +1,5 @@
 import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
+import { tacticalPositionLabel } from '../lib/playerPosition'
 import type { Player, Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 
@@ -137,7 +138,7 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
                   {fullName}
                 </div>
                 <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
-                  {player.position || 'Hráč'}
+                  {tacticalPositionLabel(player.position) || 'Hráč'}
                 </div>
               </div>
             </article>
