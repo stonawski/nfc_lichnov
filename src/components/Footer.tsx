@@ -1,4 +1,5 @@
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ClubLogo } from './ClubLogo'
 
@@ -36,7 +37,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
           <div className="text-3xl font-black tracking-[-0.055em]">
             NFC Lichnov
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-white/58">
+          <p className="mt-4 max-w-sm text-sm leading-6 text-white/[0.58]">
             Výsledky, zápasy, hráči, aktuality a život klubu na jednom místě.
             Přehledně pro fanoušky, rodiče i všechny, kteří jsou součástí NFC.
           </p>
@@ -68,12 +69,12 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
           <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">
             Kontakt
           </div>
-          <p className="mt-4 max-w-xs text-sm leading-6 text-white/62">
+          <p className="mt-4 max-w-xs text-sm leading-6 text-white/[0.62]">
             Hledáš kontakt na trenéra, vedení klubu nebo informace k areálu?
           </p>
           <Link
             to="/kontakt"
-            className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-white/[0.1]"
+            className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.06] px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-white/[0.1]"
           >
             Kontaktní údaje
             <ArrowUpRight size={14} />
@@ -112,7 +113,7 @@ function FooterColumn({
   children,
 }: {
   title: string
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <div>
@@ -129,12 +130,12 @@ function FooterLink({
   children,
 }: {
   to: string
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <Link
       to={to}
-      className="w-fit text-sm font-medium text-white/68 transition hover:translate-x-0.5 hover:text-white"
+      className="w-fit text-sm font-medium text-white/[0.68] transition hover:translate-x-0.5 hover:text-white"
     >
       {children}
     </Link>
