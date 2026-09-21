@@ -461,8 +461,8 @@ export function HomePage() {
           <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] md:grid-cols-4 md:divide-x md:divide-sand-200">
             {[
               ["O klubu", "/klub"],
-              ["Historie", "/klub#historie"],
-              ["Sportovní areál", "/klub#areal"],
+              ["Historie", "/klub/historie"],
+              ["Sportovní areál", "/klub/areal"],
               ["Kontakt", "/kontakt"],
             ].map(([label, to]) => (
               <Link
