@@ -8,6 +8,7 @@ import { MatchesPage } from './pages/MatchesPage'
 import { NewsDetailPage } from './pages/NewsDetailPage'
 import { NewsPage } from './pages/NewsPage'
 import { ArealPage, ClubPage, ContactPage, HistoryPage } from './pages/StaticPages'
+import { ClubStatsPage } from './pages/ClubStatsPage'
 import { TeamPage } from './pages/TeamPage'
 import { TeamsPage } from './pages/TeamsPage'
 import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/galerie/:slug" element={<GalleryDetailPage />} />
         <Route path="/klub" element={<ClubPage />} />
         <Route path="/klub/historie" element={<HistoryPage />} />
+        <Route path="/klub/statistiky" element={<ClubStatsPage />} />
         <Route path="/klub/areal" element={<ArealPage />} />
         <Route path="/kontakt" element={<ContactPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
