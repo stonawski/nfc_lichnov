@@ -52,6 +52,7 @@ export function MatchesPage() {
     .sort((a, b) => +new Date(b.playing_at) - +new Date(a.playing_at))
 
   const featuredMatch = upcoming[0]
+  const remainingUpcoming = featuredMatch ? upcoming.slice(1) : upcoming
 
   return (
     <main>
@@ -113,17 +114,17 @@ export function MatchesPage() {
             </section>
           )}
 
-          <section className="px-5 py-12 md:px-8 md:py-16">
-            <div className="mx-auto max-w-[1240px]">
-              <SectionHeader
-                eyebrow="Program"
-                title="Nadcházející zápasy"
-                count={upcoming.length}
-              />
+          {remainingUpcoming.length > 0 && (
+            <section className="px-5 py-12 md:px-8 md:py-16">
+              <div className="mx-auto max-w-[1240px]">
+                <SectionHeader
+                  eyebrow="Program"
+                  title="Další zápasy"
+                  count={remainingUpcoming.length}
+                />
 
-              {upcoming.length ? (
                 <div className="stagger-children grid gap-4 lg:grid-cols-2">
-                  {upcoming.slice(featuredMatch ? 1 : 0).map((match) => (
+                  {remainingUpcoming.map((match) => (
                     <MatchCard
                       key={match.id}
                       match={match}
@@ -131,14 +132,9 @@ export function MatchesPage() {
                     />
                   ))}
                 </div>
-              ) : (
-                <EmptyState
-                  title="Žádný další zápas"
-                  text="Pro vybranou kategorii zatím není naplánované další utkání."
-                />
-              )}
-            </div>
-          </section>
+              </div>
+            </section>
+          )}
 
           <section className="bg-sand-100 px-5 py-14 md:px-8 md:py-20">
             <div className="mx-auto max-w-[1240px]">
