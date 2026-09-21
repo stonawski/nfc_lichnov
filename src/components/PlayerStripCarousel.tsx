@@ -6,9 +6,14 @@ import { ClubLogo } from './ClubLogo'
 type PlayerStripCarouselProps = {
   team: Team
   players: Player[]
+  flush?: boolean
 }
 
-export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps) {
+export function PlayerStripCarousel({
+  team,
+  players,
+  flush = false,
+}: PlayerStripCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef(false)
   const dragStartX = useRef(0)
@@ -83,8 +88,16 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
   }
 
   return (
-    <section className="content-enter player-strip relative mb-14 mt-3 w-full bg-brand-900 text-white">
-      <div className="pointer-events-none absolute inset-x-0 top-[-15px] z-30 h-[5px] bg-[#00923F]" />
+    <section
+      className={`content-enter player-strip relative w-full bg-brand-900 text-white ${
+        flush ? 'mb-0 mt-0' : 'mb-14 mt-3'
+      }`}
+    >
+      <div
+        className={`pointer-events-none absolute inset-x-0 z-30 bg-[#00923F] ${
+          flush ? 'top-0 h-[4px]' : 'top-[-15px] h-[5px]'
+        }`}
+      />
 
       <div
         ref={trackRef}
@@ -146,13 +159,21 @@ export function PlayerStripCarousel({ team, players }: PlayerStripCarouselProps)
         })}
       </div>
 
-      <div className="relative z-30 h-[17px] bg-sand-50">
+      <div
+        className={`relative z-30 h-[17px] ${
+          flush ? 'bg-sand-100' : 'bg-sand-50'
+        }`}
+      >
         <div
           className="pointer-events-none absolute inset-x-0 top-[13px] flex -translate-y-1/2 items-center"
           style={{ filter: 'drop-shadow(0 12px 12px rgba(24, 53, 42, 0.3))' }}
         >
           <div className="h-[7px] flex-1 bg-[#18352a]" />
-          <div className="grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full bg-sand-50 ring-4 ring-brand-900">
+          <div
+            className={`grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full ring-4 ring-brand-900 ${
+              flush ? 'bg-sand-100' : 'bg-sand-50'
+            }`}
+          >
             <ClubLogo src={team.logo_url} name={team.name} size="md" />
           </div>
           <div className="h-[7px] flex-1 bg-[#18352a]" />
