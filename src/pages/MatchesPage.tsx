@@ -18,7 +18,7 @@ import {
   isUpcomingMatch,
   matchScore,
 } from '../lib/format'
-import { locationPath } from '../lib/navigationState'
+import { locationPath, withReturnPath } from '../lib/navigationState'
 import type { Match, Team } from '../lib/types'
 
 export function MatchesPage() {
@@ -209,8 +209,7 @@ function FeaturedMatch({
 }) {
   return (
     <Link
-      to={`/zapasy/${match.id}`}
-      state={{ from: returnTo }}
+      to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
       className="group relative block overflow-hidden rounded-[38px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 lg:p-10"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(0,146,63,.42),transparent_32%),radial-gradient(circle_at_88%_82%,rgba(255,255,255,.08),transparent_28%)]" />
@@ -297,8 +296,7 @@ function MatchCard({
 
   return (
     <Link
-      to={`/zapasy/${match.id}`}
-      state={{ from: returnTo }}
+      to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
       className="group block rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft sm:p-6"
     >
       <div className="flex items-center justify-between gap-4">
