@@ -66,4 +66,5 @@ export const competitionMilestones = [
   { afterSeason: '2008/09', type: 'relegation', from: '1. A třída', to: '1. B třída' },
   { afterSeason: '2012/13', type: 'relegation', from: '1. B třída', to: 'Okresní přebor' },
   { afterSeason: '2021/22', type: 'relegation', from: 'Okresní přebor', to: '3. třída' },
+  { afterSeason: '2022/23', type: 'promotion', from: '3. třída', to: 'Okresní přebor' },
 ] as const
