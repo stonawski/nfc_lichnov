@@ -1,12 +1,38 @@
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Facebook, Instagram } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+
+const SOCIAL_LINKS = [
+  {
+    label: 'Facebook',
+    href: 'https://cs-cz.facebook.com/NFCLichnov/',
+    icon: <Facebook size={19} strokeWidth={1.9} />,
+  },
+  {
+    label: 'Instagram',
+    href: 'https://www.instagram.com/nfc_lichnov_z.s?igsh=YXBjOGkyazJjencx',
+    icon: <Instagram size={19} strokeWidth={1.9} />,
+  },
+  {
+    label: 'TikTok',
+    href: 'https://www.tiktok.com/@nfc.lichnov?_r=1&_t=ZN-96ej7l3cT9K',
+    icon: <TikTokIcon />,
+  },
+]
 
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#0b281f] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#0d3025_0%,#0b281f_48%,#071d17_100%)]" />
-      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-brand-500/[0.28] blur-[105px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
+
+      <img
+        src="/nfc-footer-logo.webp"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-[46%] -left-[24%] h-[150%] max-w-none select-none object-contain opacity-[0.055] sm:-bottom-[52%] sm:-left-[18%] sm:h-[165%] lg:-bottom-[64%] lg:-left-[10%] lg:h-[190%]"
+      />
+
+      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-brand-500/[0.24] blur-[105px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
       <div className="pointer-events-none absolute left-[29%] top-[66%] h-[190px] w-[360px] -translate-x-1/2 -translate-y-1/2 rotate-[9deg] rounded-[43%_57%_39%_61%/59%_38%_62%_41%] bg-[#9af0b8]/[0.34] blur-[72px] sm:h-[230px] sm:w-[430px] lg:h-[270px] lg:w-[500px]" />
 
       <div className="relative mx-auto max-w-[1460px] px-5 pb-5 pt-14 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
@@ -45,20 +71,33 @@ export function Footer() {
               Kontaktní údaje
               <ArrowUpRight size={14} />
             </Link>
+
+            <div className="mt-7">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/[0.38]">
+                Sleduj nás
+              </div>
+              <div className="mt-3 flex items-center gap-2.5">
+                {SOCIAL_LINKS.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                    className="grid h-10 w-10 place-items-center rounded-full border border-white/[0.16] bg-white/[0.055] text-white/80 transition duration-200 hover:-translate-y-0.5 hover:border-white/[0.3] hover:bg-white/[0.12] hover:text-white"
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
           </FooterSection>
         </div>
 
-        <div className="mt-24 grid items-end gap-8 sm:mt-28 lg:mt-36 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-10">
-          <div className="flex h-[138px] w-[138px] items-center justify-center sm:h-[164px] sm:w-[164px] lg:h-[206px] lg:w-[206px]">
-            <img
-              src="/nfc-footer-logo.webp"
-              alt="Logo NFC Lichnov"
-              className="h-full w-full object-contain drop-shadow-[0_16px_36px_rgba(0,0,0,.18)]"
-            />
-          </div>
-
-          <div className="min-w-0 pb-1 lg:pl-10 xl:pl-16">
-            <div className="whitespace-nowrap text-[clamp(3.4rem,11.8vw,12.4rem)] font-black leading-[.72] tracking-[-0.078em] text-white">
+        <div className="mt-28 flex justify-end sm:mt-32 lg:mt-40">
+          <div className="min-w-0 translate-x-[2vw] pb-1 text-right lg:translate-x-[3vw]">
+            <div className="whitespace-nowrap text-[clamp(3.9rem,13vw,13.5rem)] font-black leading-[.7] tracking-[-0.082em] text-white">
               NFC Lichnov
             </div>
           </div>
@@ -104,5 +143,22 @@ function FooterLink({
     >
       {children}
     </Link>
+  )
+}
+
+function TikTokIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M14.2 4.2c.66 1.76 1.88 2.82 3.8 3.16v3.1a8.1 8.1 0 0 1-3.78-1.06v5.64a5.24 5.24 0 1 1-4.52-5.19v3.15a2.14 2.14 0 1 0 1.38 2V4.2h3.12Z"
+        fill="currentColor"
+      />
+    </svg>
   )
 }
