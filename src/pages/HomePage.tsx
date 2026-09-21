@@ -293,7 +293,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Program"
@@ -346,20 +346,22 @@ export function HomePage() {
       </section>
 
       {men && (
-        <div className="py-8 md:py-14">
-          {menPlayersQuery.isLoading ? (
-            <div className="px-5 md:px-8">
-              <div className="mx-auto max-w-[1240px]">
-                <LoadingState rows={3} />
-              </div>
+        menPlayersQuery.isLoading ? (
+          <section className="bg-white px-5 py-10 md:px-8">
+            <div className="mx-auto max-w-[1240px]">
+              <LoadingState rows={3} />
             </div>
-          ) : menPlayersQuery.data?.length ? (
-            <PlayerStripCarousel team={men} players={menPlayersQuery.data} />
-          ) : null}
-        </div>
+          </section>
+        ) : menPlayersQuery.data?.length ? (
+          <PlayerStripCarousel
+            team={men}
+            players={menPlayersQuery.data}
+            flush
+          />
+        ) : null
       )}
 
-      <section className="px-5 py-8 md:px-8 md:py-16">
+      <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
@@ -397,7 +399,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Od mužů po nejmenší"
@@ -418,7 +420,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-12 md:px-8 md:py-20">
+      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
             <div>
@@ -449,14 +451,14 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="NFC Lichnov"
             title="Klub je víc než sestava."
           />
 
-          <div className="grid border-y border-sand-200 md:grid-cols-4 md:divide-x md:divide-sand-200">
+          <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] md:grid-cols-4 md:divide-x md:divide-sand-200">
             {[
               ["O klubu", "/klub"],
               ["Historie", "/klub#historie"],
@@ -466,7 +468,7 @@ export function HomePage() {
               <Link
                 key={label}
                 to={to}
-                className="group flex items-center justify-between border-b border-sand-200 px-1 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 last:border-b-0 md:border-b-0 md:px-6 md:py-9"
+                className="group flex items-center justify-between border-b border-sand-200 px-5 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 transition hover:bg-white last:border-b-0 md:border-b-0 md:px-6 md:py-9"
               >
                 {label}
                 <ArrowUpRight
@@ -660,7 +662,7 @@ function TeamEditorialGrid({ teams }: { teams: Team[] }) {
           <Link
             key={team.id}
             to={`/tymy/${team.slug}`}
-            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-soft ${span}`}
+            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-[#f4f1e9] p-6 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft ${span}`}
           >
             <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-500/10 transition duration-500 group-hover:scale-125" />
             <div className="absolute bottom-0 right-0 h-24 w-24 rounded-tl-full border-l border-t border-brand-500/10 opacity-0 transition group-hover:opacity-100" />
