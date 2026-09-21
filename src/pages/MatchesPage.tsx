@@ -6,8 +6,8 @@ import {
   MapPin,
   Trophy,
 } from 'lucide-react'
-import { useMemo, useState, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, type ReactNode } from 'react'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
 import {
@@ -18,10 +18,13 @@ import {
   isUpcomingMatch,
   matchScore,
 } from '../lib/format'
+import { locationPath } from '../lib/navigationState'
 import type { Match, Team } from '../lib/types'
 
 export function MatchesPage() {
-  const [teamId, setTeamId] = useState('all')
+  const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedTeamSlug = searchParams.get('team') || 'all'
   const teamsQuery = useQuery({
     queryKey: ['teams'],
     queryFn: fetchTeams,
@@ -38,6 +41,21 @@ export function MatchesPage() {
     () => new Map(teams.map((team) => [team.id, team])),
     [teams],
   )
+  const selectedTeam =
+    selectedTeamSlug === 'all'
+      ? null
+      : teams.find((team) => team.slug === selectedTeamSlug) ?? null
+  const teamId = selectedTeam?.id ?? 'all'
+  const returnTo = locationPath(location.pathname, location.search)
+
+  const setTeamFilter = (slug: string) => {
+    const next = new URLSearchParams(searchParams)
+
+    if (slug === 'all') next.delete('team')
+    else next.set('team', slug)
+
+    setSearchParams(next, { replace: true })
+  }
 
   const matches = (matchesQuery.data ?? []).filter(
     (match) => teamId === 'all' || match.team_id === teamId,
@@ -77,15 +95,15 @@ export function MatchesPage() {
 
           <div className="mt-10 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-4 sm:p-5">
             <div className="flex flex-wrap gap-2">
-              <Filter active={teamId === 'all'} onClick={() => setTeamId('all')}>
+              <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
                 Všechny týmy
               </Filter>
 
               {teams.map((team) => (
                 <Filter
                   key={team.id}
-                  active={teamId === team.id}
-                  onClick={() => setTeamId(team.id)}
+                  active={selectedTeamSlug === team.slug}
+                  onClick={() => setTeamFilter(team.slug)}
                 >
                   {team.name}
                 </Filter>
@@ -109,6 +127,7 @@ export function MatchesPage() {
                 <FeaturedMatch
                   match={featuredMatch}
                   team={teamMap.get(featuredMatch.team_id)}
+                  returnTo={returnTo}
                 />
               </div>
             </section>
@@ -129,6 +148,7 @@ export function MatchesPage() {
                       key={match.id}
                       match={match}
                       team={teamMap.get(match.team_id)}
+                      returnTo={returnTo}
                     />
                   ))}
                 </div>
@@ -151,6 +171,7 @@ export function MatchesPage() {
                       key={match.id}
                       match={match}
                       team={teamMap.get(match.team_id)}
+                      returnTo={returnTo}
                     />
                   ))}
                 </div>
@@ -177,10 +198,19 @@ export function MatchesPage() {
   )
 }
 
-function FeaturedMatch({ match, team }: { match: Match; team?: Team }) {
+function FeaturedMatch({
+  match,
+  team,
+  returnTo,
+}: {
+  match: Match
+  team?: Team
+  returnTo: string
+}) {
   return (
     <Link
       to={`/zapasy/${match.id}`}
+      state={{ from: returnTo }}
       className="group relative block overflow-hidden rounded-[38px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 lg:p-10"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(0,146,63,.42),transparent_32%),radial-gradient(circle_at_88%_82%,rgba(255,255,255,.08),transparent_28%)]" />
@@ -246,7 +276,15 @@ function FeaturedMatch({ match, team }: { match: Match; team?: Team }) {
   )
 }
 
-function MatchCard({ match, team }: { match: Match; team?: Team }) {
+function MatchCard({
+  match,
+  team,
+  returnTo,
+}: {
+  match: Match
+  team?: Team
+  returnTo: string
+}) {
   const upcoming = isUpcomingMatch(match.playing_at)
   const score = matchScore(
     match.score_home,
@@ -260,6 +298,7 @@ function MatchCard({ match, team }: { match: Match; team?: Team }) {
   return (
     <Link
       to={`/zapasy/${match.id}`}
+      state={{ from: returnTo }}
       className="group block rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft sm:p-6"
     >
       <div className="flex items-center justify-between gap-4">
