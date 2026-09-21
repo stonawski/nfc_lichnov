@@ -1,109 +1,382 @@
 import { useQuery } from '@tanstack/react-query'
-import { CalendarClock } from 'lucide-react'
+import {
+  ArrowRight,
+  CalendarClock,
+  ChevronRight,
+  MapPin,
+  Trophy,
+} from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
-import { formatMatchDate, formatMatchDay, formatMatchTime, isUpcomingMatch, matchScore } from '../lib/format'
+import {
+  formatMatchDate,
+  formatMatchDay,
+  formatMatchTime,
+  initials,
+  isUpcomingMatch,
+  matchScore,
+} from '../lib/format'
+import type { Match, Team } from '../lib/types'
 
 export function MatchesPage() {
   const [teamId, setTeamId] = useState('all')
-  const teamsQuery = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
-  const matchesQuery = useQuery({ queryKey: ['matches', 'current'], queryFn: fetchCurrentMatches, retry: false })
+  const teamsQuery = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    retry: false,
+  })
+  const matchesQuery = useQuery({
+    queryKey: ['matches', 'current'],
+    queryFn: fetchCurrentMatches,
+    retry: false,
+  })
 
+  const teams = teamsQuery.data ?? []
   const teamMap = useMemo(
-    () => new Map((teamsQuery.data ?? []).map((team) => [team.id, team])),
-    [teamsQuery.data],
+    () => new Map(teams.map((team) => [team.id, team])),
+    [teams],
   )
 
   const matches = (matchesQuery.data ?? []).filter(
     (match) => teamId === 'all' || match.team_id === teamId,
   )
 
+  const upcoming = matches
+    .filter((match) => isUpcomingMatch(match.playing_at))
+    .sort((a, b) => +new Date(a.playing_at) - +new Date(b.playing_at))
+
+  const results = matches
+    .filter((match) => !isUpcomingMatch(match.playing_at))
+    .sort((a, b) => +new Date(b.playing_at) - +new Date(a.playing_at))
+
+  const featuredMatch = upcoming[0]
+
   return (
-    <main className="px-5 py-16 md:px-8 md:py-24">
-      <div className="mx-auto max-w-[1100px]">
-        <Header eyebrow="Zápasy" title="Program a výsledky" />
+    <main>
+      <section className="px-5 pb-10 pt-16 md:px-8 md:pb-14 md:pt-24">
+        <div className="mx-auto max-w-[1240px]">
+          <div className="grid gap-8 lg:grid-cols-[1fr_.52fr] lg:items-end">
+            <div className="max-w-4xl">
+              <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+                Zápasy
+              </div>
+              <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.06em] text-brand-900 sm:text-6xl md:text-7xl">
+                Program.
+                <span className="block text-brand-500">Výsledky. Detail.</span>
+              </h1>
+            </div>
 
-        <div className="mb-8 flex flex-wrap gap-2">
-          <Filter active={teamId === 'all'} onClick={() => setTeamId('all')}>
-            Všechny
-          </Filter>
-          {(teamsQuery.data ?? []).map((team) => (
-            <Filter key={team.id} active={teamId === team.id} onClick={() => setTeamId(team.id)}>
-              {team.name}
-            </Filter>
-          ))}
-        </div>
-
-        {matchesQuery.isLoading ? (
-          <LoadingState rows={6} />
-        ) : matches.length ? (
-          <div className="stagger-children space-y-3">
-            {matches.map((match) => {
-              const upcoming = isUpcomingMatch(match.playing_at)
-              const score = matchScore(
-                match.score_home,
-                match.score_away,
-                match.manual_override,
-                match.manual_score_home,
-                match.manual_score_away,
-                match.playing_at,
-              )
-
-              return (
-                <div
-                  key={match.id}
-                  className="grid gap-4 rounded-4xl border border-sand-200 bg-white p-5 md:grid-cols-[150px_1fr_110px] md:items-center"
-                >
-                  <div>
-                    <div className="text-xs font-bold text-brand-500">
-                      {teamMap.get(match.team_id)?.name}
-                    </div>
-                    <div className="mt-1 text-xs text-ink-500">
-                      {upcoming ? 'Nadcházející utkání' : formatMatchDate(match.playing_at)}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm font-semibold">
-                    <span className="text-right">{match.home_team_name}</span>
-
-                    {upcoming ? (
-                      <div className="min-w-[78px] rounded-2xl bg-brand-50 px-3 py-2 text-center ring-1 ring-brand-500/10">
-                        <div className="text-lg font-black tracking-[-0.04em] text-brand-900">
-                          {formatMatchDay(match.playing_at)}
-                        </div>
-                        <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-bold text-brand-500">
-                          <CalendarClock size={12} />
-                          {formatMatchTime(match.playing_at)}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-2xl font-black text-brand-900">{score ?? '—'}</span>
-                    )}
-
-                    <span>{match.away_team_name}</span>
-                  </div>
-
-                  <div className="text-right text-xs text-ink-500">
-                    {match.round || match.competition_name || ''}
-                  </div>
-                </div>
-              )
-            })}
+            <p className="max-w-md text-sm leading-7 text-ink-500 lg:justify-self-end">
+              Přehled soutěžních zápasů všech kategorií NFC Lichnov. Každý zápas můžeš
+              otevřít a zobrazit jeho detail, sestavu i průběh, pokud jsou data dostupná.
+            </p>
           </div>
-        ) : (
-          <EmptyState title="Žádné zápasy" text="Pro vybraný filtr nejsou k dispozici zápasy." />
-        )}
-      </div>
+
+          <div className="mt-10 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-4 sm:p-5">
+            <div className="flex flex-wrap gap-2">
+              <Filter active={teamId === 'all'} onClick={() => setTeamId('all')}>
+                Všechny týmy
+              </Filter>
+
+              {teams.map((team) => (
+                <Filter
+                  key={team.id}
+                  active={teamId === team.id}
+                  onClick={() => setTeamId(team.id)}
+                >
+                  {team.name}
+                </Filter>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {matchesQuery.isLoading || teamsQuery.isLoading ? (
+        <section className="px-5 py-10 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <LoadingState rows={6} />
+          </div>
+        </section>
+      ) : matches.length ? (
+        <>
+          {featuredMatch && (
+            <section className="px-5 pb-8 md:px-8 md:pb-12">
+              <div className="mx-auto max-w-[1240px]">
+                <FeaturedMatch
+                  match={featuredMatch}
+                  team={teamMap.get(featuredMatch.team_id)}
+                />
+              </div>
+            </section>
+          )}
+
+          <section className="px-5 py-12 md:px-8 md:py-16">
+            <div className="mx-auto max-w-[1240px]">
+              <SectionHeader
+                eyebrow="Program"
+                title="Nadcházející zápasy"
+                count={upcoming.length}
+              />
+
+              {upcoming.length ? (
+                <div className="stagger-children grid gap-4 lg:grid-cols-2">
+                  {upcoming.slice(featuredMatch ? 1 : 0).map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      team={teamMap.get(match.team_id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="Žádný další zápas"
+                  text="Pro vybranou kategorii zatím není naplánované další utkání."
+                />
+              )}
+            </div>
+          </section>
+
+          <section className="bg-sand-100 px-5 py-14 md:px-8 md:py-20">
+            <div className="mx-auto max-w-[1240px]">
+              <SectionHeader
+                eyebrow="Odehráno"
+                title="Poslední výsledky"
+                count={results.length}
+              />
+
+              {results.length ? (
+                <div className="stagger-children grid gap-4 lg:grid-cols-2">
+                  {results.map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      team={teamMap.get(match.team_id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="Žádné výsledky"
+                  text="Pro vybranou kategorii zatím nejsou dostupné odehrané zápasy."
+                />
+              )}
+            </div>
+          </section>
+        </>
+      ) : (
+        <section className="px-5 py-16 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <EmptyState
+              title="Žádné zápasy"
+              text="Pro vybraný filtr nejsou k dispozici žádná utkání."
+            />
+          </div>
+        </section>
+      )}
     </main>
   )
 }
 
-function Header({ eyebrow, title }: { eyebrow: string; title: string }) {
+function FeaturedMatch({ match, team }: { match: Match; team?: Team }) {
   return (
-    <div className="mb-10">
-      <div className="text-xs font-bold uppercase tracking-[.18em] text-brand-500">{eyebrow}</div>
-      <h1 className="mt-3 text-5xl font-black tracking-[-.06em] text-brand-900">{title}</h1>
+    <Link
+      to={`/zapasy/${match.id}`}
+      className="group relative block overflow-hidden rounded-[38px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 lg:p-10"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(0,146,63,.42),transparent_32%),radial-gradient(circle_at_88%_82%,rgba(255,255,255,.08),transparent_28%)]" />
+
+      <div className="relative">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+            <span>Nejbližší zápas</span>
+            {team?.name && <span>· {team.name}</span>}
+          </div>
+
+          <div className="inline-flex items-center gap-2 text-xs font-bold text-white/70 transition group-hover:text-white">
+            Detail zápasu
+            <ArrowRight size={15} className="transition group-hover:translate-x-1" />
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+          <TeamIdentity
+            name={match.home_team_name}
+            logo={match.home_team_logo}
+            align="right"
+            large
+          />
+
+          <div className="text-center">
+            <div className="rounded-[24px] border border-white/10 bg-white/[0.07] px-5 py-4">
+              <div className="text-3xl font-black tracking-[-0.055em]">
+                {formatMatchDay(match.playing_at)}
+              </div>
+              <div className="mt-1 inline-flex items-center gap-1.5 text-xs font-bold text-white/65">
+                <CalendarClock size={14} />
+                {formatMatchTime(match.playing_at)}
+              </div>
+            </div>
+          </div>
+
+          <TeamIdentity
+            name={match.away_team_name}
+            logo={match.away_team_logo}
+            align="left"
+            large
+          />
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/50">
+          {match.competition_name && (
+            <span className="inline-flex items-center gap-1.5">
+              <Trophy size={13} />
+              {match.competition_name}
+            </span>
+          )}
+          {match.round && <span>{match.round}</span>}
+          {match.pitch_name && (
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin size={13} />
+              {match.pitch_name}
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function MatchCard({ match, team }: { match: Match; team?: Team }) {
+  const upcoming = isUpcomingMatch(match.playing_at)
+  const score = matchScore(
+    match.score_home,
+    match.score_away,
+    match.manual_override,
+    match.manual_score_home,
+    match.manual_score_away,
+    match.playing_at,
+  )
+
+  return (
+    <Link
+      to={`/zapasy/${match.id}`}
+      className="group block rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft sm:p-6"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-xs font-bold text-brand-500">{team?.name || 'NFC Lichnov'}</div>
+          <div className="mt-1 text-xs text-ink-500">
+            {formatMatchDate(match.playing_at)}
+          </div>
+        </div>
+
+        <ChevronRight
+          size={18}
+          className="text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500"
+        />
+      </div>
+
+      <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <TeamIdentity name={match.home_team_name} logo={match.home_team_logo} align="right" />
+
+        <div className="min-w-[76px] text-center">
+          {upcoming ? (
+            <div className="rounded-2xl bg-brand-50 px-3 py-2 ring-1 ring-brand-500/10">
+              <div className="text-base font-black tracking-[-0.04em] text-brand-900">
+                {formatMatchTime(match.playing_at)}
+              </div>
+              <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.11em] text-brand-500">
+                Výkop
+              </div>
+            </div>
+          ) : (
+            <div className="text-3xl font-black tracking-[-0.055em] text-brand-900">
+              {score ?? '—'}
+            </div>
+          )}
+        </div>
+
+        <TeamIdentity name={match.away_team_name} logo={match.away_team_logo} align="left" />
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-sand-200 pt-4 text-[11px] text-ink-500">
+        {match.competition_name && <span>{match.competition_name}</span>}
+        {match.round && <span>{match.round}</span>}
+        {match.pitch_name && <span>{match.pitch_name}</span>}
+      </div>
+    </Link>
+  )
+}
+
+function TeamIdentity({
+  name,
+  logo,
+  align,
+  large = false,
+}: {
+  name: string
+  logo: string | null
+  align: 'left' | 'right'
+  large?: boolean
+}) {
+  const reverse = align === 'right'
+
+  return (
+    <div
+      className={`flex min-w-0 items-center gap-3 ${
+        reverse ? 'flex-row-reverse text-right' : 'text-left'
+      }`}
+    >
+      <div
+        className={`grid shrink-0 place-items-center overflow-hidden rounded-2xl bg-white/90 ring-1 ring-black/5 ${
+          large ? 'h-16 w-16 sm:h-20 sm:w-20' : 'h-11 w-11'
+        }`}
+      >
+        {logo ? (
+          <img src={logo} alt="" className="h-full w-full object-contain p-2" />
+        ) : (
+          <span className="text-xs font-black text-brand-900">{initials(name)}</span>
+        )}
+      </div>
+
+      <div
+        className={`min-w-0 font-extrabold tracking-[-0.035em] ${
+          large ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-sm sm:text-base'
+        }`}
+      >
+        {name}
+      </div>
+    </div>
+  )
+}
+
+function SectionHeader({
+  eyebrow,
+  title,
+  count,
+}: {
+  eyebrow: string
+  title: string
+  count: number
+}) {
+  return (
+    <div className="mb-8 flex items-end justify-between gap-5">
+      <div>
+        <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          {eyebrow}
+        </div>
+        <h2 className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900 sm:text-4xl">
+          {title}
+        </h2>
+      </div>
+
+      <div className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink-500 ring-1 ring-sand-200">
+        {count}
+      </div>
     </div>
   )
 }
@@ -121,10 +394,10 @@ function Filter({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+      className={`rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
         active
           ? 'bg-brand-900 text-white'
-          : 'bg-white text-ink-900 ring-1 ring-sand-200 hover:bg-sand-100'
+          : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
       }`}
     >
       {children}
