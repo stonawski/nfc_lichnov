@@ -8,7 +8,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
   deleteStaffMember,
@@ -24,8 +24,8 @@ import { safeReturnPath } from '../../lib/navigationState'
 export function AdminStaffEditorPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
-  const backTo = safeReturnPath(location.state, '/admin/realizacni-tym')
+  const [searchParams] = useSearchParams()
+  const backTo = safeReturnPath(searchParams, '/admin/realizacni-tym')
   const queryClient = useQueryClient()
 
   const staffQuery = useQuery({
