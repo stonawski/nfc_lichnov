@@ -11,7 +11,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { createStaffMember, fetchAdminStaff } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
-import { locationPath } from '../../lib/navigationState'
+import { locationPath, withReturnPath } from '../../lib/navigationState'
 import type { Staff, Team } from '../../lib/types'
 
 export function AdminStaffPage() {
@@ -183,8 +183,7 @@ export function AdminStaffPage() {
               return (
                 <Link
                   key={person.id}
-                  to={`/admin/realizacni-tym/${person.id}`}
-                  state={{ from: returnTo }}
+                  to={withReturnPath(`/admin/realizacni-tym/${person.id}`, returnTo)}
                   className="group flex min-w-0 gap-4 rounded-[24px] border border-sand-200 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="h-24 w-20 shrink-0 overflow-hidden rounded-[18px] bg-sand-100">
@@ -263,7 +262,7 @@ export function AdminStaffPage() {
           onCreated={async (staffId) => {
             await queryClient.invalidateQueries({ queryKey: ['admin-staff'] })
             setCreating(false)
-            navigate(`/admin/realizacni-tym/${staffId}`, { state: { from: returnTo } })
+            navigate(withReturnPath(`/admin/realizacni-tym/${staffId}`, returnTo))
           }}
         />
       )}
