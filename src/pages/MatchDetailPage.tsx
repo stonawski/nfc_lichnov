@@ -128,8 +128,8 @@ export function MatchDetailPage() {
       </section>
 
       <section className="px-5 py-10 md:px-8 md:py-14">
-        <div className="mx-auto grid max-w-[1180px] gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
-          <div className="rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
+        <div className="mx-auto grid max-w-[1180px] gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
+          <div className="overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
             <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
 
             {participantsQuery.isLoading ? (
@@ -377,7 +377,7 @@ function FormationPitch({
         </div>
       </div>
 
-      <div className="relative min-h-[560px] overflow-hidden rounded-[30px] border border-sand-200 bg-[#e7ebe7] shadow-inner sm:min-h-[650px]">
+      <div className="relative -mx-5 min-h-[590px] overflow-hidden bg-[#dce4de] shadow-inner sm:-mx-7 sm:min-h-[690px]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,.96),rgba(246,247,244,.72)_30%,transparent_58%),linear-gradient(180deg,#eef1ee_0%,#dce3dd_42%,#cad8cf_100%)]" />
         <div className="absolute inset-x-0 top-0 h-[38%] bg-[linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,0))]" />
 
@@ -404,15 +404,15 @@ function FormationPitch({
           </defs>
 
           <polygon
-            points="210,82 790,82 930,640 70,640"
+            points="270,72 730,72 1040,700 -40,700"
             fill="url(#broadcastPitchFill)"
             filter="url(#broadcastPitchShadow)"
           />
 
-          <polygon points="210,82 355,82 285,640 70,640" fill="#ffffff" opacity="0.09" />
-          <polygon points="500,82 645,82 715,640 500,640" fill="#ffffff" opacity="0.07" />
+          <polygon points="270,72 390,72 280,700 -40,700" fill="#ffffff" opacity="0.09" />
+          <polygon points="500,72 620,72 760,700 500,700" fill="#ffffff" opacity="0.07" />
           <polygon
-            points="210,82 790,82 930,640 70,640"
+            points="270,72 730,72 1040,700 -40,700"
             fill="url(#broadcastPitchShade)"
           />
 
@@ -424,32 +424,32 @@ function FormationPitch({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polygon points="224,96 776,96 906,620 94,620" />
-            <line x1="158" y1="350" x2="842" y2="350" />
-            <ellipse cx="500" cy="350" rx="100" ry="49" />
-            <circle cx="500" cy="350" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <polygon points="286,88 714,88 1005,676 -5,676" />
+            <line x1="142" y1="352" x2="858" y2="352" />
+            <ellipse cx="500" cy="352" rx="112" ry="50" />
+            <circle cx="500" cy="352" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="365,96 635,96 665,208 335,208" />
-            <polygon points="432,96 568,96 582,145 418,145" />
-            <circle cx="500" cy="166" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <polygon points="382,88 618,88 654,204 346,204" />
+            <polygon points="438,88 562,88 578,140 422,140" />
+            <circle cx="500" cy="161" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="295,500 705,500 748,620 252,620" />
-            <polygon points="405,558 595,558 616,620 384,620" />
-            <circle cx="500" cy="523" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <polygon points="246,488 754,488 840,676 160,676" />
+            <polygon points="365,555 635,555 690,676 310,676" />
+            <circle cx="500" cy="518" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="448,62 552,62 568,96 432,96" strokeOpacity="0.48" />
-            <polygon points="384,620 616,620 636,660 364,660" strokeOpacity="0.48" />
+            <polygon points="452,54 548,54 562,88 438,88" strokeOpacity="0.48" />
+            <polygon points="310,676 690,676 742,724 258,724" strokeOpacity="0.48" />
           </g>
 
           <path
-            d="M 412 208 Q 500 250 588 208"
+            d="M 402 204 Q 500 246 598 204"
             fill="none"
             stroke="#ffffff"
             strokeOpacity="0.52"
             strokeWidth="2"
           />
           <path
-            d="M 366 500 Q 500 444 634 500"
+            d="M 325 488 Q 500 420 675 488"
             fill="none"
             stroke="#ffffff"
             strokeOpacity="0.52"
@@ -457,14 +457,14 @@ function FormationPitch({
           />
 
           <path
-            d="M 210 82 L 70 640"
+            d="M 270 72 L -40 700"
             fill="none"
             stroke="#18352a"
             strokeOpacity="0.08"
             strokeWidth="18"
           />
           <path
-            d="M 790 82 L 930 640"
+            d="M 730 72 L 1040 700"
             fill="none"
             stroke="#18352a"
             strokeOpacity="0.05"
@@ -472,7 +472,7 @@ function FormationPitch({
           />
         </svg>
 
-        <div className="pointer-events-none absolute inset-x-[4%] bottom-[3%] top-[5%]">
+        <div className="pointer-events-none absolute inset-x-[1.5%] bottom-[2%] top-[5%]">
           {placements.map(({ player, x, y }) => (
             <PitchPlayer
               key={player.id}
@@ -581,7 +581,7 @@ function PlayerAvatar({
   player: MatchParticipant
   small?: boolean
 }) {
-  const size = small ? 'h-9 w-9' : 'h-12 w-12 sm:h-14 sm:w-14'
+  const size = small ? 'h-9 w-9' : 'h-11 w-11 sm:h-14 sm:w-14'
 
   return (
     <div
@@ -702,11 +702,11 @@ function placeLine(players: MatchParticipant[], y: number) {
 
   const [start, end] =
     y <= 22
-      ? [players.length === 1 ? 50 : 32, players.length === 1 ? 50 : 68]
+      ? [players.length === 1 ? 50 : 27, players.length === 1 ? 50 : 73]
       : y <= 48
-        ? [players.length === 1 ? 50 : 22, players.length === 1 ? 50 : 78]
+        ? [players.length === 1 ? 50 : 16, players.length === 1 ? 50 : 84]
         : y <= 72
-          ? [players.length === 1 ? 50 : 16, players.length === 1 ? 50 : 84]
+          ? [players.length === 1 ? 50 : 10, players.length === 1 ? 50 : 90]
           : [50, 50]
 
   const step = players.length <= 1 ? 0 : (end - start) / (players.length - 1)
@@ -804,7 +804,7 @@ function TimelineItem({ event }: { event: MatchTimelineEvent }) {
         : 'bg-brand-900 text-white'
 
   return (
-    <div className="relative grid min-h-16 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[1fr_56px_1fr] sm:gap-3">
+    <div className="relative grid min-h-16 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[minmax(0,1fr)_50px_minmax(0,1fr)] sm:gap-2">
       <div
         className={`hidden sm:block ${
           isAway ? 'sm:col-start-3' : 'sm:col-start-1 sm:row-start-1'
@@ -851,7 +851,7 @@ function EventCard({
 
   return (
     <div className={align === 'right' ? 'text-right' : 'text-left'}>
-      <div className="inline-block max-w-full rounded-2xl bg-white px-3.5 py-3 ring-1 ring-sand-200">
+      <div className="inline-block max-w-full rounded-2xl bg-white px-3 py-2.5 ring-1 ring-sand-200">
         <div
           className={`flex items-center gap-2 ${
             align === 'right' ? 'justify-end' : 'justify-start'
