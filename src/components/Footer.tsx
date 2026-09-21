@@ -1,24 +1,24 @@
-import { ArrowUpRight, Facebook, Instagram } from 'lucide-react'
-import type { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { ArrowUpRight, Facebook, Instagram } from "lucide-react";
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 const SOCIAL_LINKS = [
   {
-    label: 'Facebook',
-    href: 'https://cs-cz.facebook.com/NFCLichnov/',
+    label: "Facebook",
+    href: "https://cs-cz.facebook.com/NFCLichnov/",
     icon: <Facebook size={19} strokeWidth={1.9} />,
   },
   {
-    label: 'Instagram',
-    href: 'https://www.instagram.com/nfc_lichnov_z.s?igsh=YXBjOGkyazJjencx',
+    label: "Instagram",
+    href: "https://www.instagram.com/nfc_lichnov_z.s?igsh=YXBjOGkyazJjencx",
     icon: <Instagram size={19} strokeWidth={1.9} />,
   },
   {
-    label: 'TikTok',
-    href: 'https://www.tiktok.com/@nfc.lichnov?_r=1&_t=ZN-96ej7l3cT9K',
+    label: "TikTok",
+    href: "https://www.tiktok.com/@nfc.lichnov?_r=1&_t=ZN-96ej7l3cT9K",
     icon: <TikTokIcon />,
   },
-]
+];
 
 export function Footer() {
   return (
@@ -29,7 +29,7 @@ export function Footer() {
         src="/nfc-footer-logo.webp"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-[46%] -left-[24%] h-[150%] max-w-none select-none object-contain opacity-[0.055] sm:-bottom-[52%] sm:-left-[18%] sm:h-[165%] lg:-bottom-[64%] lg:-left-[10%] lg:h-[190%]"
+        className="pointer-events-none absolute -bottom-[46%] -left-[24%] h-[150%] max-w-none select-none object-contain opacity-[0.055] sm:-bottom-[52%] sm:-left-[18%] sm:h-[265%] lg:-bottom-[164%] lg:-left-[10%] lg:h-[290%]"
       />
 
       <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-[#164936]/[0.48] blur-[110px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
@@ -108,17 +108,17 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function FooterSection({
   children,
-  className = '',
+  className = "",
 }: {
-  children: ReactNode
-  className?: string
+  children: ReactNode;
+  className?: string;
 }) {
-  return <div className={className}>{children}</div>
+  return <div className={className}>{children}</div>;
 }
 
 function FooterHeading({ children }: { children: ReactNode }) {
@@ -126,16 +126,10 @@ function FooterHeading({ children }: { children: ReactNode }) {
     <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/[0.38]">
       {children}
     </div>
-  )
+  );
 }
 
-function FooterLink({
-  to,
-  children,
-}: {
-  to: string
-  children: ReactNode
-}) {
+function FooterLink({ to, children }: { to: string; children: ReactNode }) {
   return (
     <Link
       to={to}
@@ -143,7 +137,7 @@ function FooterLink({
     >
       {children}
     </Link>
-  )
+  );
 }
 
 function TikTokIcon() {
@@ -160,5 +154,5 @@ function TikTokIcon() {
         fill="currentColor"
       />
     </svg>
-  )
+  );
 }
