@@ -419,8 +419,79 @@ async function fetchOptionalMatchRows(
 export async function fetchMatchParticipants(match: Match): Promise<MatchParticipant[]> {
   ensureConfigured()
 
+  const { data: matchPlayers, error: matchPlayersError } = await supabase
+    .from('match_players')
+    .select('id,match_id,player_id,team_side,lineup_type,number,position,captain')
+    .eq('match_id', match.id)
+
+  if (!matchPlayersError && (matchPlayers ?? []).length) {
+    const rows = (matchPlayers ?? []) as Array<{
+      id: string
+      match_id: string
+      player_id: string
+      team_side: string | null
+      lineup_type: string | null
+      number: number | null
+      position: string | null
+      captain: boolean | null
+    }>
+
+    const playerIds = [...new Set(rows.map((row) => row.player_id).filter(Boolean))]
+    const { data: players, error: playersError } = playerIds.length
+      ? await supabase
+          .from('players')
+          .select('id,first_name,last_name,number,position')
+          .in('id', playerIds)
+      : { data: [], error: null }
+
+    if (playersError) throw playersError
+
+    const playerById = new Map(
+      ((players ?? []) as Array<{
+        id: string
+        first_name: string | null
+        last_name: string | null
+        number: number | null
+        position: string | null
+      }>).map((player) => [player.id, player]),
+    )
+
+    return rows.map((row) => {
+      const player = playerById.get(row.player_id)
+      const lineupType = row.lineup_type?.toLocaleLowerCase('cs-CZ') ?? ''
+      const substitute =
+        lineupType.includes('sub') ||
+        lineupType.includes('bench') ||
+        lineupType.includes('náhrad') ||
+        lineupType.includes('nahrad')
+      const starter =
+        lineupType.includes('start') ||
+        lineupType.includes('basic') ||
+        lineupType.includes('základ') ||
+        lineupType.includes('zaklad')
+
+      return {
+        id: row.id,
+        name:
+          [player?.first_name, player?.last_name].filter(Boolean).join(' ').trim() ||
+          'Neznámý hráč',
+        number: row.number ?? player?.number ?? null,
+        position: row.position ?? player?.position ?? null,
+        side:
+          row.team_side === 'home'
+            ? 'home'
+            : row.team_side === 'away'
+              ? 'away'
+              : null,
+        starter: substitute ? false : starter ? true : null,
+        captain: row.captain,
+        role: row.lineup_type,
+      }
+    })
+  }
+
   const rows = await fetchOptionalMatchRows(
-    ['match_players', 'match_lineups', 'match_squad', 'match_rosters', 'match_participants'],
+    ['match_lineups', 'match_squad', 'match_rosters', 'match_participants'],
     match,
   )
 
@@ -434,6 +505,14 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
 
       if (!name) return null
 
+      const lineupType = textValue(row, ['lineup_type', 'role', 'lineup_role', 'status'])
+        ?.toLocaleLowerCase('cs-CZ')
+      const substitute =
+        lineupType?.includes('sub') ||
+        lineupType?.includes('bench') ||
+        lineupType?.includes('náhrad') ||
+        lineupType?.includes('nahrad')
+
       return {
         id:
           textValue(row, ['id', 'player_id', 'facr_player_id']) ||
@@ -442,9 +521,11 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         number: numberValue(row, ['number', 'shirt_number', 'jersey_number']),
         position: textValue(row, ['position', 'player_position']),
         side: sideValue(row, match),
-        starter: booleanValue(row, ['starter', 'is_starter', 'starting', 'started']),
+        starter: substitute
+          ? false
+          : booleanValue(row, ['starter', 'is_starter', 'starting', 'started']),
         captain: booleanValue(row, ['captain', 'is_captain']),
-        role: textValue(row, ['role', 'lineup_role', 'status']),
+        role: textValue(row, ['lineup_type', 'role', 'lineup_role', 'status']),
       }
     })
     .filter((item): item is MatchParticipant => item != null)
