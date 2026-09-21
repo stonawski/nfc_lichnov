@@ -8,16 +8,31 @@ import {
   UsersRound,
 } from 'lucide-react'
 import { useMemo, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { createStaffMember, fetchAdminStaff } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
+import { locationPath } from '../../lib/navigationState'
 import type { Staff, Team } from '../../lib/types'
 
 export function AdminStaffPage() {
-  const [teamId, setTeamId] = useState('')
-  const [query, setQuery] = useState('')
   const [creating, setCreating] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const teamId = searchParams.get('team') || ''
+  const query = searchParams.get('q') || ''
+  const returnTo = locationPath(location.pathname, location.search)
+
+  const setListParam = (key: 'team' | 'q', value: string) => {
+    const next = new URLSearchParams(searchParams)
+    const normalized = value.trim()
+
+    if (normalized) next.set(key, value)
+    else next.delete(key)
+
+    setSearchParams(next, { replace: true })
+  }
+
   const queryClient = useQueryClient()
 
   const teamsQuery = useQuery({
@@ -92,7 +107,7 @@ export function AdminStaffPage() {
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => setTeamId('')}
+            onClick={() => setListParam('team', '')}
             className={`rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
               teamId === ''
                 ? 'bg-brand-900 text-white'
@@ -106,7 +121,7 @@ export function AdminStaffPage() {
             <button
               key={team.id}
               type="button"
-              onClick={() => setTeamId(team.id)}
+              onClick={() => setListParam('team', team.id)}
               className={`rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
                 teamId === team.id
                   ? 'bg-brand-900 text-white'
@@ -126,7 +141,7 @@ export function AdminStaffPage() {
             />
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => setListParam('q', event.target.value)}
               className="admin-input !pl-11"
               placeholder="Hledat trenéra nebo roli…"
             />
@@ -169,6 +184,7 @@ export function AdminStaffPage() {
                 <Link
                   key={person.id}
                   to={`/admin/realizacni-tym/${person.id}`}
+                  state={{ from: returnTo }}
                   className="group flex min-w-0 gap-4 rounded-[24px] border border-sand-200 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="h-24 w-20 shrink-0 overflow-hidden rounded-[18px] bg-sand-100">
@@ -247,7 +263,7 @@ export function AdminStaffPage() {
           onCreated={async (staffId) => {
             await queryClient.invalidateQueries({ queryKey: ['admin-staff'] })
             setCreating(false)
-            navigate(`/admin/realizacni-tym/${staffId}`)
+            navigate(`/admin/realizacni-tym/${staffId}`, { state: { from: returnTo } })
           }}
         />
       )}
