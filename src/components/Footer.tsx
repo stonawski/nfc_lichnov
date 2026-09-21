@@ -1,104 +1,92 @@
 import { ArrowUpRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ClubLogo } from './ClubLogo'
 
-export function Footer({ logoUrl }: { logoUrl?: string | null }) {
+export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#f7f4ed] text-brand-900">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(247,244,237,0)_0%,rgba(199,232,207,.34)_50%,rgba(82,174,110,.58)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(ellipse_at_22%_100%,rgba(0,146,63,.34),transparent_52%),radial-gradient(ellipse_at_74%_100%,rgba(137,211,156,.28),transparent_48%)]" />
+    <footer className="relative overflow-hidden bg-[#0b281f] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#0d3025_0%,#0b281f_48%,#071d17_100%)]" />
+      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[360px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/35 blur-[95px] sm:h-[440px] sm:w-[720px] lg:h-[520px] lg:w-[860px]" />
+      <div className="pointer-events-none absolute left-[30%] top-[70%] h-[180px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#78d69a]/20 blur-[70px]" />
 
-      <div className="relative mx-auto max-w-[1440px] px-5 pb-6 pt-14 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[.8fr_.8fr_1.2fr] lg:gap-20">
-          <FooterColumn title="Klub">
-            <FooterLink to="/klub">O klubu</FooterLink>
-            <FooterLink to="/klub#historie">Historie</FooterLink>
-            <FooterLink to="/aktuality">Aktuality</FooterLink>
-          </FooterColumn>
-
-          <FooterColumn title="Objevuj">
-            <FooterLink to="/tymy">Týmy</FooterLink>
-            <FooterLink to="/zapasy">Zápasy</FooterLink>
-            <FooterLink to="/galerie">Galerie</FooterLink>
-          </FooterColumn>
-
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/[0.45]">
-              Kontakt
+      <div className="relative mx-auto max-w-[1460px] px-5 pb-5 pt-14 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-0">
+          <FooterSection className="lg:pr-14">
+            <FooterHeading>Klub</FooterHeading>
+            <div className="mt-5 grid gap-2.5">
+              <FooterLink to="/klub">O klubu</FooterLink>
+              <FooterLink to="/klub#historie">Historie</FooterLink>
+              <FooterLink to="/aktuality">Aktuality</FooterLink>
             </div>
-            <div className="mt-4 text-base font-bold text-brand-900">
+          </FooterSection>
+
+          <FooterSection className="lg:border-l lg:border-white/[0.14] lg:px-14">
+            <FooterHeading>Objevuj</FooterHeading>
+            <div className="mt-5 grid gap-2.5">
+              <FooterLink to="/tymy">Týmy</FooterLink>
+              <FooterLink to="/zapasy">Zápasy</FooterLink>
+              <FooterLink to="/galerie">Galerie</FooterLink>
+            </div>
+          </FooterSection>
+
+          <FooterSection className="lg:border-l lg:border-white/[0.14] lg:pl-14">
+            <FooterHeading>Kontakt</FooterHeading>
+            <div className="mt-5 text-base font-bold text-white">
               NFC Lichnov
             </div>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-brand-900/[0.58]">
+            <p className="mt-2 max-w-sm text-sm leading-6 text-white/[0.58]">
               Kontakty na vedení klubu, trenéry a informace ke sportovnímu
               areálu najdeš přehledně na jednom místě.
             </p>
             <Link
               to="/kontakt"
-              className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-brand-700 transition hover:text-brand-500"
+              className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white/80 transition hover:text-white"
             >
               Kontaktní údaje
               <ArrowUpRight size={14} />
             </Link>
-          </div>
+          </FooterSection>
         </div>
 
-        <div className="mt-24 grid items-end gap-7 lg:mt-32 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-10">
-          <div className="flex h-[132px] w-[132px] items-center justify-center sm:h-[150px] sm:w-[150px] lg:h-[180px] lg:w-[180px]">
-            {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt="Logo NFC Lichnov"
-                className="h-full w-full object-contain drop-shadow-[0_14px_28px_rgba(24,53,42,.12)]"
-              />
-            ) : (
-              <div className="scale-[1.85]">
-                <ClubLogo name="NFC Lichnov" size="lg" />
-              </div>
-            )}
+        <div className="mt-24 grid items-end gap-8 sm:mt-28 lg:mt-36 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-10">
+          <div className="flex h-[138px] w-[138px] items-center justify-center sm:h-[164px] sm:w-[164px] lg:h-[206px] lg:w-[206px]">
+            <img
+              src="/nfc-footer-logo.webp"
+              alt="Logo NFC Lichnov"
+              className="h-full w-full object-contain drop-shadow-[0_16px_36px_rgba(0,0,0,.18)]"
+            />
           </div>
 
           <div className="min-w-0 pb-1">
-            <div className="whitespace-nowrap text-[clamp(3rem,10.8vw,10.8rem)] font-black leading-[.75] tracking-[-0.075em] text-brand-900">
+            <div className="whitespace-nowrap text-[clamp(3rem,10.7vw,11rem)] font-black leading-[.74] tracking-[-0.075em] text-white">
               NFC Lichnov
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 pb-5 text-[11px] font-medium text-brand-900/[0.55] sm:flex-row sm:items-center sm:justify-between lg:mt-14">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link to="/klub" className="transition hover:text-brand-900">
-              O klubu
-            </Link>
-            <Link to="/kontakt" className="transition hover:text-brand-900">
-              Kontakt
-            </Link>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>Web vytvořil Stonawski</span>
-            <span>© {new Date().getFullYear()} NFC Lichnov</span>
-          </div>
+        <div className="mt-12 flex flex-col gap-3 pb-4 text-[11px] font-medium text-white/[0.48] sm:flex-row sm:items-center sm:justify-between lg:mt-14">
+          <div>Web vytvořil Stonawski</div>
+          <div>© {new Date().getFullYear()} NFC Lichnov</div>
         </div>
       </div>
     </footer>
   )
 }
 
-function FooterColumn({
-  title,
+function FooterSection({
   children,
+  className = '',
 }: {
-  title: string
   children: ReactNode
+  className?: string
 }) {
+  return <div className={className}>{children}</div>
+}
+
+function FooterHeading({ children }: { children: ReactNode }) {
   return (
-    <div>
-      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/[0.45]">
-        {title}
-      </div>
-      <div className="mt-4 grid gap-2.5">{children}</div>
+    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/[0.38]">
+      {children}
     </div>
   )
 }
@@ -113,7 +101,7 @@ function FooterLink({
   return (
     <Link
       to={to}
-      className="w-fit text-sm font-semibold text-brand-900/[0.78] transition hover:translate-x-0.5 hover:text-brand-500"
+      className="w-fit text-sm font-semibold text-white/[0.72] transition hover:translate-x-0.5 hover:text-white"
     >
       {children}
     </Link>
