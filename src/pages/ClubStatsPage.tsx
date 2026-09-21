@@ -36,12 +36,18 @@ export function ClubStatsPage() {
   const [showAllSeasons, setShowAllSeasons] = useState(false)
 
   const activeRanking = rankingMode === 'matches' ? appearanceRanking : scoringRanking
+  const rankedPlayers = useMemo(
+    () => activeRanking.map((player, index) => ({ player, rank: index + 1 })),
+    [activeRanking],
+  )
 
   const filteredRanking = useMemo(() => {
     const normalizedQuery = normalizeSearch(query)
-    if (!normalizedQuery) return activeRanking
-    return activeRanking.filter((player) => normalizeSearch(player.name).includes(normalizedQuery))
-  }, [activeRanking, query])
+    if (!normalizedQuery) return rankedPlayers
+    return rankedPlayers.filter(({ player }) =>
+      normalizeSearch(player.name).includes(normalizedQuery),
+    )
+  }, [rankedPlayers, query])
 
   const visiblePlayers =
     showAllPlayers || query.trim() ? filteredRanking : filteredRanking.slice(0, 30)
@@ -270,8 +276,8 @@ export function ClubStatsPage() {
             <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-5">
               <div className="grid grid-cols-3 gap-4">
                 <DarkStat value="59" label="sezon" />
-                <DarkStat value="9" label="postupů" />
-                <DarkStat value="4" label="sestupy" />
+                <DarkStat value="8" label="postupů" />
+                <DarkStat value="6" label="sestupů" />
               </div>
               <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-6 text-white/45">
                 Počty postupů a sestupů vycházejí ze změny úrovně soutěže mezi
@@ -382,7 +388,13 @@ function StatsHero() {
   )
 }
 
-function PlayerTable({ rows, mode }: { rows: HistoricalPlayerStat[]; mode: RankingMode }) {
+function PlayerTable({
+  rows,
+  mode,
+}: {
+  rows: Array<{ player: HistoricalPlayerStat; rank: number }>
+  mode: RankingMode
+}) {
   return (
     <div>
       <div className="grid grid-cols-[46px_minmax(0,1fr)_78px_72px] gap-2 border-b border-sand-200 bg-[#fbfaf6] px-4 py-3 text-[8px] font-black uppercase tracking-[0.12em] text-ink-500 sm:grid-cols-[60px_minmax(0,1fr)_110px_100px] sm:px-6 sm:text-[9px]">
@@ -397,19 +409,19 @@ function PlayerTable({ rows, mode }: { rows: HistoricalPlayerStat[]; mode: Ranki
           Pro tento dotaz jsme žádného hráče nenašli.
         </div>
       ) : (
-        rows.map((player, index) => (
+        rows.map(({ player, rank }) => (
           <div
             key={`${player.sourceOrder}-${player.name}-${player.matches}`}
             className={`grid grid-cols-[46px_minmax(0,1fr)_78px_72px] items-center gap-2 border-b border-sand-200 px-4 py-3.5 last:border-b-0 sm:grid-cols-[60px_minmax(0,1fr)_110px_100px] sm:px-6 ${
-              !querylessRank(index, player, mode) ? '' : 'bg-[#fbfaf6]'
+              rank <= 3 ? 'bg-[#fbfaf6]' : ''
             }`}
           >
             <div
               className={`text-sm font-black ${
-                index < 3 ? 'text-brand-500' : 'text-ink-500'
+                rank <= 3 ? 'text-brand-500' : 'text-ink-500'
               }`}
             >
-              {String(index + 1).padStart(2, '0')}
+              {String(rank).padStart(2, '0')}
             </div>
             <div className="min-w-0 truncate text-sm font-bold text-brand-900 sm:text-base">
               {player.name}
@@ -429,9 +441,6 @@ function PlayerTable({ rows, mode }: { rows: HistoricalPlayerStat[]; mode: Ranki
   )
 }
 
-function querylessRank(index: number, _player: HistoricalPlayerStat, _mode: RankingMode) {
-  return index < 3
-}
 
 function RankingTab({
   active,
