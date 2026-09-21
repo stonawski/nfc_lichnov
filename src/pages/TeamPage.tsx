@@ -196,10 +196,37 @@ export function TeamPage() {
           {staffQuery.data?.length ? (
             <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {staffQuery.data.map((person) => (
-                <div key={person.id} className="rounded-4xl border border-sand-200 bg-white p-6">
-                  <div className="text-xl font-extrabold text-brand-900">{person.name}</div>
-                  <div className="mt-1 text-sm text-ink-500">{person.role || 'Realizační tým'}</div>
-                </div>
+                <article
+                  key={person.id}
+                  className="overflow-hidden rounded-4xl border border-sand-200 bg-white"
+                >
+                  <div className="aspect-[4/3] bg-sand-100">
+                    {person.photo_url ? (
+                      <img
+                        src={person.photo_url}
+                        alt={person.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-top"
+                      />
+                    ) : (
+                      <div className="h-full bg-[radial-gradient(circle_at_30%_20%,rgba(0,146,63,.15),transparent_34%)]" />
+                    )}
+                  </div>
+
+                  <div className="p-6">
+                    <div className="text-xl font-extrabold tracking-[-0.035em] text-brand-900">
+                      {person.name}
+                    </div>
+                    <div className="mt-1 text-sm font-semibold text-brand-500">
+                      {person.role || 'Realizační tým'}
+                    </div>
+                    {person.bio && (
+                      <p className="mt-4 text-sm leading-6 text-ink-500">
+                        {person.bio}
+                      </p>
+                    )}
+                  </div>
+                </article>
               ))}
             </div>
           ) : (

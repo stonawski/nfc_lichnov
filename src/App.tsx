@@ -14,11 +14,12 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 import { AdminGalleriesPage } from './pages/admin/AdminGalleriesPage'
 import { AdminGalleryDetailPage } from './pages/admin/AdminGalleryDetailPage'
 import { AdminLoginPage } from './pages/admin/AdminLoginPage'
-import { AdminModulePlaceholderPage } from './pages/admin/AdminModulePlaceholderPage'
 import { AdminNewsEditorPage } from './pages/admin/AdminNewsEditorPage'
 import { AdminNewsPage } from './pages/admin/AdminNewsPage'
 import { AdminPlayerEditorPage } from './pages/admin/AdminPlayerEditorPage'
 import { AdminPlayersPage } from './pages/admin/AdminPlayersPage'
+import { AdminStaffEditorPage } from './pages/admin/AdminStaffEditorPage'
+import { AdminStaffPage } from './pages/admin/AdminStaffPage'
 
 export default function App() {
   return (
@@ -34,10 +35,8 @@ export default function App() {
           <Route path="aktuality/:id" element={<AdminNewsEditorPage />} />
           <Route path="hraci" element={<AdminPlayersPage />} />
           <Route path="hraci/:id" element={<AdminPlayerEditorPage />} />
-          <Route
-            path="realizacni-tym"
-            element={<AdminModulePlaceholderPage module="realizacni-tym" />}
-          />
+          <Route path="realizacni-tym" element={<AdminStaffPage />} />
+          <Route path="realizacni-tym/:id" element={<AdminStaffEditorPage />} />
         </Route>
       </Route>
 
