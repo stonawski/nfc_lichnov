@@ -278,7 +278,7 @@ function RecordCard({
   label,
   detail,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   eyebrow: string
   value: string
   label: string
