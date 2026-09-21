@@ -2,11 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import {
   ArrowRight,
   CalendarClock,
+  ChevronDown,
   ChevronRight,
   MapPin,
   Trophy,
 } from 'lucide-react'
-import { useMemo, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
@@ -24,6 +25,8 @@ import type { Match, Team } from '../lib/types'
 export function MatchesPage() {
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false)
+  const [showAllResults, setShowAllResults] = useState(false)
   const selectedTeamSlug = searchParams.get('team') || 'all'
   const teamsQuery = useQuery({
     queryKey: ['teams'],
@@ -71,12 +74,33 @@ export function MatchesPage() {
 
   const featuredMatch = upcoming[0]
   const remainingUpcoming = featuredMatch ? upcoming.slice(1) : upcoming
+  const visibleUpcoming = showAllUpcoming
+    ? remainingUpcoming
+    : remainingUpcoming.slice(0, 3)
+  const visibleResults = showAllResults ? results : results.slice(0, 4)
+
+  useEffect(() => {
+    setShowAllUpcoming(false)
+    setShowAllResults(false)
+  }, [selectedTeamSlug])
 
   return (
     <main>
-      <section className="px-5 pb-10 pt-16 md:px-8 md:pb-14 md:pt-24">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="grid gap-8 lg:grid-cols-[1fr_.52fr] lg:items-end">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+        <div className="pointer-events-none absolute inset-0 bg-sand-50">
+          <img
+            src="/hero-lichnov-field.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
+            style={{ filter: 'saturate(.78) contrast(.9) brightness(1.1)' }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.92)_28%,rgba(250,248,243,.52)_58%,rgba(250,248,243,.18)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.12)_58%,#faf8f3_100%)]" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1240px]">
+          <div className="grid gap-8 py-8 lg:grid-cols-[1fr_.52fr] lg:items-end lg:py-12">
             <div className="max-w-4xl">
               <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
                 Zápasy
@@ -88,12 +112,12 @@ export function MatchesPage() {
             </div>
 
             <p className="max-w-md text-sm leading-7 text-ink-500 lg:justify-self-end">
-              Přehled soutěžních zápasů všech kategorií NFC Lichnov. Každý zápas můžeš
-              otevřít a zobrazit jeho detail, sestavu i průběh, pokud jsou data dostupná.
+              Přehled soutěžních zápasů všech kategorií NFC Lichnov. Vyber tým
+              a otevři detail utkání se sestavou a průběhem, pokud jsou data dostupná.
             </p>
           </div>
 
-          <div className="mt-10 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-4 sm:p-5">
+          <div className="rounded-[30px] border border-white/80 bg-white/75 p-4 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-5">
             <div className="flex flex-wrap gap-2">
               <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
                 Všechny týmy
@@ -114,49 +138,60 @@ export function MatchesPage() {
       </section>
 
       {matchesQuery.isLoading || teamsQuery.isLoading ? (
-        <section className="px-5 py-10 md:px-8">
+        <section className="bg-white px-5 py-16 md:px-8 md:py-20">
           <div className="mx-auto max-w-[1240px]">
             <LoadingState rows={6} />
           </div>
         </section>
       ) : matches.length ? (
         <>
-          {featuredMatch && (
-            <section className="px-5 pb-8 md:px-8 md:pb-12">
-              <div className="mx-auto max-w-[1240px]">
-                <FeaturedMatch
-                  match={featuredMatch}
-                  team={teamMap.get(featuredMatch.team_id)}
-                  returnTo={returnTo}
-                />
-              </div>
-            </section>
-          )}
+          <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+            <div className="mx-auto max-w-[1240px]">
+              <SectionHeader
+                eyebrow="Program"
+                title="Následující zápasy"
+                count={upcoming.length}
+              />
 
-          {remainingUpcoming.length > 0 && (
-            <section className="px-5 py-12 md:px-8 md:py-16">
-              <div className="mx-auto max-w-[1240px]">
-                <SectionHeader
-                  eyebrow="Program"
-                  title="Další zápasy"
-                  count={remainingUpcoming.length}
-                />
+              {featuredMatch ? (
+                <>
+                  <FeaturedMatch
+                    match={featuredMatch}
+                    team={teamMap.get(featuredMatch.team_id)}
+                    returnTo={returnTo}
+                  />
 
-                <div className="stagger-children grid gap-4 lg:grid-cols-2">
-                  {remainingUpcoming.map((match) => (
-                    <MatchCard
-                      key={match.id}
-                      match={match}
-                      team={teamMap.get(match.team_id)}
-                      returnTo={returnTo}
+                  {visibleUpcoming.length > 0 && (
+                    <div className="stagger-children mt-4 grid gap-4 lg:grid-cols-2">
+                      {visibleUpcoming.map((match) => (
+                        <MatchCard
+                          key={match.id}
+                          match={match}
+                          team={teamMap.get(match.team_id)}
+                          returnTo={returnTo}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {remainingUpcoming.length > 3 && (
+                    <ExpandButton
+                      expanded={showAllUpcoming}
+                      onClick={() => setShowAllUpcoming((value) => !value)}
+                      hiddenCount={remainingUpcoming.length - 3}
                     />
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
+                  )}
+                </>
+              ) : (
+                <EmptyState
+                  title="Další zápasy zatím nejsou k dispozici"
+                  text="Pro vybranou kategorii zatím není naplánované další utkání."
+                />
+              )}
+            </div>
+          </section>
 
-          <section className="bg-sand-100 px-5 py-14 md:px-8 md:py-20">
+          <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Odehráno"
@@ -165,16 +200,26 @@ export function MatchesPage() {
               />
 
               {results.length ? (
-                <div className="stagger-children grid gap-4 lg:grid-cols-2">
-                  {results.map((match) => (
-                    <MatchCard
-                      key={match.id}
-                      match={match}
-                      team={teamMap.get(match.team_id)}
-                      returnTo={returnTo}
+                <>
+                  <div className="stagger-children grid gap-4 lg:grid-cols-2">
+                    {visibleResults.map((match) => (
+                      <MatchCard
+                        key={match.id}
+                        match={match}
+                        team={teamMap.get(match.team_id)}
+                        returnTo={returnTo}
+                      />
+                    ))}
+                  </div>
+
+                  {results.length > 4 && (
+                    <ExpandButton
+                      expanded={showAllResults}
+                      onClick={() => setShowAllResults((value) => !value)}
+                      hiddenCount={results.length - 4}
                     />
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <EmptyState
                   title="Žádné výsledky"
@@ -185,7 +230,7 @@ export function MatchesPage() {
           </section>
         </>
       ) : (
-        <section className="px-5 py-16 md:px-8">
+        <section className="bg-white px-5 py-16 md:px-8 md:py-24">
           <div className="mx-auto max-w-[1240px]">
             <EmptyState
               title="Žádné zápasy"
@@ -410,6 +455,32 @@ function SectionHeader({
       <div className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink-500 ring-1 ring-sand-200">
         {count}
       </div>
+    </div>
+  )
+}
+
+function ExpandButton({
+  expanded,
+  onClick,
+  hiddenCount,
+}: {
+  expanded: boolean
+  onClick: () => void
+  hiddenCount: number
+}) {
+  return (
+    <div className="mt-7 flex justify-center">
+      <button
+        type="button"
+        onClick={onClick}
+        className="group inline-flex items-center gap-2 rounded-2xl border border-sand-200 bg-white px-4 py-2.5 text-sm font-bold text-brand-900 shadow-[0_8px_24px_rgba(24,53,42,.05)] transition hover:-translate-y-0.5 hover:border-brand-500/20 hover:shadow-soft"
+      >
+        {expanded ? 'Zobrazit méně' : `Zobrazit další (${hiddenCount})`}
+        <ChevronDown
+          size={15}
+          className={`transition duration-200 ${expanded ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
+        />
+      </button>
     </div>
   )
 }
