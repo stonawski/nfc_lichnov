@@ -1,4 +1,5 @@
 import { CalendarDays, Goal, Trophy, Users } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 type Leader = {
   rank: number
