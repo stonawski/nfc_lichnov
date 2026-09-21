@@ -317,7 +317,7 @@ export function AdminPlayerEditorPage() {
                 ))}
               </select>
               <p className="mt-2 text-xs leading-5 text-ink-500">
-                Tato pozice určuje, kde se hráč zobrazí v grafické sestavě zápasu.
+                Pozice je doporučení pro grafickou sestavu. Zápas se vždy zobrazí ve formaci 4–4–2 a volná místa se doplní automaticky.
               </p>
             </Field>
 
