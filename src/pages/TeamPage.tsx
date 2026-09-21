@@ -191,7 +191,7 @@ export function TeamPage() {
         </div>
       </section>
 
-      <section id="zapasy" className="scroll-mt-28 px-5 py-12 md:px-8 md:py-18">
+      <section id="zapasy" className="scroll-mt-28 px-5 py-12 md:px-8 md:py-20">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Program"
