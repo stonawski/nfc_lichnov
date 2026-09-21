@@ -100,10 +100,6 @@ export function TeamPage() {
   const upcoming = matches
     .filter((match) => isUpcomingMatch(match.playing_at))
     .sort((a, b) => +new Date(a.playing_at) - +new Date(b.playing_at))
-  const results = matches
-    .filter((match) => !isUpcomingMatch(match.playing_at))
-    .sort((a, b) => +new Date(b.playing_at) - +new Date(a.playing_at))
-
   const standings = standingsQuery.data ?? []
   const lichnovStanding = standings.find((row) =>
     /lichnov/i.test(row.team_name || row.club_name || ''),
@@ -124,7 +120,6 @@ export function TeamPage() {
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.82)_22%,rgba(250,248,243,.28)_58%,rgba(250,248,243,.08)_100%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.12)_55%,#faf8f3_100%)]" />
           </div>
-          <div className="absolute -left-36 top-20 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-[1240px]">
@@ -136,9 +131,7 @@ export function TeamPage() {
               className="absolute inset-0 h-full w-full object-cover object-[68%_center] opacity-[0.16]"
             />
             <div className="absolute inset-0 bg-[linear-gradient(95deg,#18352a_0%,rgba(24,53,42,.96)_45%,rgba(24,53,42,.72)_100%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(0,146,63,.48),transparent_28%),radial-gradient(circle_at_92%_78%,rgba(255,255,255,.10),transparent_30%)]" />
-            <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
-            <div className="absolute -right-8 -top-10 h-52 w-52 rounded-full border border-white/[0.06]" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,146,63,.22)_0%,transparent_42%,rgba(255,255,255,.05)_100%)]" />
             <div className="pointer-events-none absolute -bottom-9 -left-3 select-none text-[120px] font-black leading-none tracking-[-0.08em] text-white/[0.025] sm:text-[180px]">
               NFC
             </div>
@@ -216,87 +209,103 @@ export function TeamPage() {
         </div>
       </section>
 
-      <section id="zapasy" className="relative scroll-mt-28 px-5 py-16 md:px-8 md:py-24">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-40 top-24 h-96 w-96 rounded-full bg-brand-500/[0.055] blur-3xl" />
-          <div className="absolute left-[5%] top-16 h-px w-[34%] bg-gradient-to-r from-brand-500/0 via-brand-500/20 to-brand-500/0" />
-        </div>
-        <div className="relative mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Program"
-            title="Zápasy"
-            aside={
-              <Link
-                to={`/zapasy?team=${team.slug}`}
-                className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 transition hover:text-brand-500"
-              >
-                Všechny zápasy
-                <ArrowRight size={15} />
-              </Link>
-            }
-          />
+      <section id="zapasy" className="scroll-mt-28 px-5 py-16 md:px-8 md:py-24">
+        <div className="mx-auto max-w-[1240px]">
+          <SectionHeading eyebrow="Program" title="Zápasy" />
 
           {matchesQuery.isLoading ? (
-            <LoadingState rows={4} />
-          ) : matches.length ? (
-            <div className="grid gap-5 lg:grid-cols-[1.08fr_.92fr]">
+            <LoadingState rows={3} />
+          ) : upcoming.length ? (
+            <div className="grid gap-4 lg:grid-cols-[1fr_1fr_.56fr]">
               <div>
                 <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Nejbližší program
+                  Nadcházející zápas
                 </div>
-
-                {upcoming.length ? (
-                  <div className="space-y-3">
-                    {upcoming.slice(0, 4).map((match, index) => (
-                      <TeamMatchCard
-                        key={match.id}
-                        match={match}
-                        returnTo={returnTo}
-                        featured={index === 0}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-7">
-                    <div className="text-base font-extrabold text-brand-900">
-                      Další zápas zatím není naplánovaný.
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-ink-500">
-                      Jakmile bude nový termín dostupný, objeví se tady.
-                    </p>
-                  </div>
-                )}
+                <TeamMatchCard
+                  match={upcoming[0]}
+                  returnTo={returnTo}
+                  featured
+                />
               </div>
 
-              <div>
-                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Poslední výsledky
-                </div>
-
-                {results.length ? (
-                  <div className="space-y-3">
-                    {results.slice(0, 4).map((match) => (
-                      <TeamMatchCard
-                        key={match.id}
-                        match={match}
-                        returnTo={returnTo}
-                      />
-                    ))}
+              {upcoming[1] ? (
+                <div>
+                  <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                    Další zápas
                   </div>
-                ) : (
-                  <div className="rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-7">
-                    <div className="text-base font-extrabold text-brand-900">
-                      Výsledky zatím nejsou k dispozici.
+                  <TeamMatchCard
+                    match={upcoming[1]}
+                    returnTo={returnTo}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                    Další zápas
+                  </div>
+                  <div className="flex min-h-[205px] items-center rounded-[28px] border border-sand-200 bg-white p-6 shadow-[0_12px_32px_rgba(24,53,42,.05)]">
+                    <div>
+                      <div className="text-base font-extrabold text-brand-900">
+                        Zatím není naplánovaný
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-ink-500">
+                        Další termín se zobrazí automaticky po synchronizaci.
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
+
+              <div className="lg:pt-[25px]">
+                <Link
+                  to={`/zapasy?team=${team.slug}`}
+                  className="group flex min-h-[205px] h-full flex-col justify-between rounded-[28px] bg-brand-50 p-6 text-brand-900 ring-1 ring-brand-500/10 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
+                >
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
+                      Kompletní program
+                    </div>
+                    <div className="mt-3 text-2xl font-black tracking-[-0.045em]">
+                      Všechny zápasy
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-ink-500">
+                      Celý program a výsledky této kategorie.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
+                    Zobrazit přehled
+                    <ArrowRight
+                      size={16}
+                      className="transition group-hover:translate-x-1"
+                    />
+                  </div>
+                </Link>
               </div>
             </div>
           ) : (
-            <EmptyState
-              title="Žádné zápasy"
-              text="Pro tuto kategorii zatím nejsou k dispozici zápasy."
-            />
+            <div className="grid gap-4 lg:grid-cols-[1fr_.42fr]">
+              <EmptyState
+                title="Další zápas zatím není naplánovaný"
+                text="Jakmile bude nový termín dostupný, objeví se tady."
+              />
+              <Link
+                to={`/zapasy?team=${team.slug}`}
+                className="group flex min-h-[190px] flex-col justify-between rounded-[28px] bg-brand-50 p-6 text-brand-900 ring-1 ring-brand-500/10 transition hover:bg-white hover:shadow-soft"
+              >
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
+                    Archiv
+                  </div>
+                  <div className="mt-3 text-2xl font-black tracking-[-0.045em]">
+                    Všechny zápasy
+                  </div>
+                </div>
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
+                  Zobrazit přehled <ArrowRight size={16} />
+                </div>
+              </Link>
+            </div>
           )}
         </div>
       </section>
@@ -306,12 +315,7 @@ export function TeamPage() {
           id="tabulka"
           className="relative scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
         >
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute -left-28 bottom-[-7rem] h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
-          </div>
-
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[42px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 md:p-10">
-            <div className="pointer-events-none absolute right-[-6rem] top-[-6rem] h-64 w-64 rounded-full border border-white/10" />
             <div className="pointer-events-none absolute right-4 top-4 text-[110px] font-black leading-none tracking-[-0.08em] text-white/[0.025]">
               {lichnovStanding?.rank ?? 'NFC'}
             </div>
@@ -353,13 +357,8 @@ export function TeamPage() {
 
       <section id="hraci" className="relative scroll-mt-28 py-16 md:py-24">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[linear-gradient(180deg,rgba(243,239,230,.72),rgba(250,248,243,0))]" />
-        <div className="pointer-events-none absolute right-[8%] top-10 h-36 w-36 rounded-full border border-brand-900/[0.06]" />
         <div className="relative px-5 md:px-8">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-32 top-16 h-80 w-80 rounded-full bg-brand-500/[0.065] blur-3xl" />
-          <div className="absolute left-[7%] top-28 h-44 w-44 rounded-full border border-brand-900/[0.045]" />
-        </div>
-        <div className="relative mx-auto max-w-[1240px]">
+          <div className="mx-auto max-w-[1240px]">
             <SectionHeading
               eyebrow="Kabina"
               title="Hráči"
@@ -396,11 +395,6 @@ export function TeamPage() {
         id="realizacni-tym"
         className="relative scroll-mt-28 bg-sand-100 px-5 pb-20 pt-16 md:px-8 md:pb-28 md:pt-24"
       >
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-32 top-16 h-80 w-80 rounded-full bg-brand-500/[0.065] blur-3xl" />
-          <div className="absolute left-[7%] top-28 h-44 w-44 rounded-full border border-brand-900/[0.045]" />
-          <div className="absolute bottom-16 left-[16%] h-px w-[38%] bg-gradient-to-r from-transparent via-brand-900/10 to-transparent" />
-        </div>
         <div className="relative mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Realizační tým"
@@ -488,10 +482,8 @@ function SectionHeading({
   return (
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
-          <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-          <span>{eyebrow}</span>
-          <span className="hidden h-px w-10 bg-brand-500/30 sm:block" />
+        <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          {eyebrow}
         </div>
         <h2 className="mt-2 text-4xl font-black tracking-[-0.055em] text-brand-900 sm:text-5xl">
           {title}
@@ -654,7 +646,7 @@ function TeamMatchCard({
       className={`group block overflow-hidden rounded-[28px] border transition duration-300 hover:-translate-y-0.5 hover:shadow-soft ${
         featured
           ? 'border-brand-900 bg-brand-900 text-white'
-          : 'border-sand-200 bg-[#fbfaf6] text-ink-900 hover:bg-white'
+          : 'border-sand-200 bg-white text-ink-900 shadow-[0_12px_32px_rgba(24,53,42,.05)] hover:border-brand-500/20'
       }`}
     >
       <div className="flex items-center justify-between gap-4 px-5 pt-4">
