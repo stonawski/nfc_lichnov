@@ -25,13 +25,6 @@ export function Footer() {
     <footer className="relative overflow-hidden bg-brand-900 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#1b3b2f_0%,#18352a_46%,#143126_74%,#10291f_100%)]" />
 
-      <img
-        src="/nfc-footer-logo.webp"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-[46%] -left-[24%] h-[150%] max-w-none select-none object-contain opacity-[0.055] sm:-bottom-[52%] sm:-left-[18%] sm:h-[265%] lg:-bottom-[164%] lg:-left-[10%] lg:h-[290%]"
-      />
-
       <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-[#20513e]/[0.34] blur-[110px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
       <div className="pointer-events-none absolute left-[29%] top-[66%] h-[190px] w-[360px] -translate-x-1/2 -translate-y-1/2 rotate-[9deg] rounded-[43%_57%_39%_61%/59%_38%_62%_41%] bg-[#2a5a46]/[0.30] blur-[78px] sm:h-[230px] sm:w-[430px] lg:h-[270px] lg:w-[500px]" />
 
