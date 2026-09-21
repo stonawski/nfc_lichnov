@@ -397,9 +397,8 @@ async function fetchOptionalMatchRows(
 ): Promise<UnknownRow[]> {
   for (const table of tableNames) {
     const byId = await supabase.from(table).select('*').eq('match_id', match.id)
-    if (!byId.error) {
-      if ((byId.data ?? []).length) return (byId.data ?? []) as UnknownRow[]
-      continue
+    if (!byId.error && (byId.data ?? []).length) {
+      return (byId.data ?? []) as UnknownRow[]
     }
 
     if (match.facr_match_id != null) {
