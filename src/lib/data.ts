@@ -14,6 +14,7 @@ import type {
   TeamSeason,
 } from './types'
 import { TEAM_ORDER } from './format'
+import { isPlayerOwnedByDorost } from './playerIdentity'
 
 function ensureConfigured() {
   if (!isSupabaseConfigured) {
@@ -204,26 +205,7 @@ export async function fetchDisplayPlayersByTeam(team: Team): Promise<Player[]> {
   if (!dorost) return players
 
   const dorostPlayers = await fetchPlayersByTeam(dorost.id)
-  const dorostFacrIds = new Set(
-    dorostPlayers
-      .map((player) => player.facr_player_id)
-      .filter((id): id is number => id != null),
-  )
-  const normalizeName = (player: Player) =>
-    [player.first_name, player.last_name]
-      .filter(Boolean)
-      .join(' ')
-      .trim()
-      .toLocaleLowerCase('cs-CZ')
-
-  const dorostNames = new Set(dorostPlayers.map(normalizeName).filter(Boolean))
-
-  return players.filter((player) => {
-    if (player.facr_player_id != null && dorostFacrIds.has(player.facr_player_id)) return false
-
-    const normalizedName = normalizeName(player)
-    return !normalizedName || !dorostNames.has(normalizedName)
-  })
+  return players.filter((player) => !isPlayerOwnedByDorost(player, dorostPlayers))
 }
 
 export async function fetchStaffByTeam(teamId: string): Promise<Staff[]> {
@@ -440,7 +422,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     const { data: players, error: playersError } = playerIds.length
       ? await supabase
           .from('players')
-          .select('id,first_name,last_name,number,position')
+          .select('id,first_name,last_name,number,position,photo_url')
           .in('id', playerIds)
       : { data: [], error: null }
 
@@ -453,6 +435,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         last_name: string | null
         number: number | null
         position: string | null
+        photo_url: string | null
       }>).map((player) => [player.id, player]),
     )
 
@@ -472,9 +455,11 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
 
       return {
         id: row.id,
+        player_id: row.player_id,
         name:
           [player?.first_name, player?.last_name].filter(Boolean).join(' ').trim() ||
           'Neznámý hráč',
+        photo_url: player?.photo_url ?? null,
         number: row.number ?? player?.number ?? null,
         position: row.position ?? player?.position ?? null,
         side:
@@ -517,7 +502,9 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         id:
           textValue(row, ['id', 'player_id', 'facr_player_id']) ||
           `${match.id}-participant-${index}`,
+        player_id: textValue(row, ['player_id']),
         name,
+        photo_url: textValue(row, ['photo_url', 'player_photo_url']),
         number: numberValue(row, ['number', 'shirt_number', 'jersey_number']),
         position: textValue(row, ['position', 'player_position']),
         side: sideValue(row, match),
