@@ -781,12 +781,29 @@ function eventKind(event: MatchTimelineEvent): TimelineEventKind {
 function Timeline({ events }: { events: MatchTimelineEvent[] }) {
   return (
     <div className="relative mt-6 min-h-[700px] sm:min-h-[720px]">
-      <div className="absolute bottom-8 left-[28px] top-8 w-px bg-sand-200 sm:left-1/2" />
+      <div className="absolute bottom-7 left-[28px] top-8 w-px bg-sand-200 sm:left-1/2" />
 
       <div className="relative flex min-h-[700px] flex-col justify-evenly gap-4 sm:min-h-[720px]">
         {events.map((event) => (
           <TimelineItem key={event.id} event={event} />
         ))}
+        <TimelineEnd />
+      </div>
+    </div>
+  )
+}
+
+function TimelineEnd() {
+  return (
+    <div className="relative grid min-h-14 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[minmax(0,1fr)_50px_minmax(0,1fr)] sm:gap-2">
+      <div className="relative z-10 grid h-12 w-12 place-items-center self-center rounded-full border-4 border-[#fbfaf6] bg-brand-900 text-center text-white shadow-sm sm:col-start-2 sm:mx-auto">
+        <div className="text-xs font-black">90'</div>
+      </div>
+
+      <div className="self-center sm:col-start-3">
+        <div className="inline-flex rounded-full bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand-700 ring-1 ring-brand-500/10">
+          Konec
+        </div>
       </div>
     </div>
   )
