@@ -662,7 +662,7 @@ function TeamEditorialGrid({ teams }: { teams: Team[] }) {
           <Link
             key={team.id}
             to={`/tymy/${team.slug}`}
-            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-soft ${span}`}
+            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-[#f4f1e9] p-6 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft ${span}`}
           >
             <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-500/10 transition duration-500 group-hover:scale-125" />
             <div className="absolute bottom-0 right-0 h-24 w-24 rounded-tl-full border-l border-t border-brand-500/10 opacity-0 transition group-hover:opacity-100" />
