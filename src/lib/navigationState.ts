@@ -1,17 +1,16 @@
-export type ReturnNavigationState = {
-  from?: string
-}
-
 export function locationPath(pathname: string, search = '') {
   return `${pathname}${search}`
 }
 
+export function withReturnPath(target: string, from: string) {
+  const separator = target.includes('?') ? '&' : '?'
+  return `${target}${separator}from=${encodeURIComponent(from)}`
+}
+
 export function safeReturnPath(
-  state: unknown,
+  searchParams: URLSearchParams,
   fallback: string,
 ): string {
-  if (!state || typeof state !== 'object') return fallback
-
-  const from = (state as ReturnNavigationState).from
-  return typeof from === 'string' && from.startsWith('/') ? from : fallback
+  const from = searchParams.get('from')
+  return from && from.startsWith('/') ? from : fallback
 }
