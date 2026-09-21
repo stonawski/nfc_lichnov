@@ -320,21 +320,33 @@ function FormationPitch({
     midfield: [],
     attack: [],
   }
+  const unassigned: MatchParticipant[] = []
 
   starters.forEach((person) => {
-    rows[classifyPosition(person)].push(person)
+    const line = classifyPosition(person)
+    if (line) rows[line].push(person)
+    else unassigned.push(person)
   })
 
   if (!rows.goalkeeper.length && starters.length) {
-    const goalkeeperIndex = starters.findIndex((person) => person.number === 1)
-    if (goalkeeperIndex >= 0) {
-      const goalkeeper = starters[goalkeeperIndex]
-      Object.values(rows).forEach((line) => {
-        const index = line.findIndex((person) => person.id === goalkeeper.id)
-        if (index >= 0) line.splice(index, 1)
-      })
+    const goalkeeper =
+      unassigned.find((person) => person.number === 1) ||
+      unassigned[0]
+
+    if (goalkeeper) {
       rows.goalkeeper.push(goalkeeper)
+      unassigned.splice(unassigned.indexOf(goalkeeper), 1)
     }
+  }
+
+  while (rows.defence.length < 4 && unassigned.length) {
+    rows.defence.push(unassigned.shift()!)
+  }
+  while (rows.midfield.length < 4 && unassigned.length) {
+    rows.midfield.push(unassigned.shift()!)
+  }
+  while (unassigned.length) {
+    rows.attack.push(unassigned.shift()!)
   }
 
   const placements = [
@@ -476,7 +488,7 @@ function PlayerAvatar({
   )
 }
 
-function classifyPosition(player: MatchParticipant): FormationLine {
+function classifyPosition(player: MatchParticipant): FormationLine | null {
   const value = (player.position || '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -500,16 +512,26 @@ function classifyPosition(player: MatchParticipant): FormationLine {
   }
 
   if (
-    value.includes('fw') ||
-    value.includes('st') ||
+    value === 'fw' ||
+    value === 'st' ||
     value.includes('forward') ||
     value.includes('striker') ||
+    value.includes('winger') ||
     value.includes('utoc')
   ) {
     return 'attack'
   }
 
-  return 'midfield'
+  if (
+    value.includes('mf') ||
+    value.includes('mid') ||
+    value.includes('zalo') ||
+    value.includes('stred')
+  ) {
+    return 'midfield'
+  }
+
+  return null
 }
 
 function placeLine(players: MatchParticipant[], y: number) {
