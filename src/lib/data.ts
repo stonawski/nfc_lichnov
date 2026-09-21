@@ -461,7 +461,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
           'Neznámý hráč',
         photo_url: player?.photo_url ?? null,
         number: row.number ?? player?.number ?? null,
-        position: row.position ?? player?.position ?? null,
+        position: player?.position ?? row.position ?? null,
         side:
           row.team_side === 'home'
             ? 'home'
