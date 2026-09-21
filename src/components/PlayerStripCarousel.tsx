@@ -89,7 +89,7 @@ export function PlayerStripCarousel({
 
   return (
     <section
-      className={`content-enter player-strip relative w-full bg-brand-900 text-white ${
+      className={`content-enter player-strip relative z-20 w-full bg-brand-900 text-white ${
         flush ? 'mb-0 mt-0' : 'mb-14 mt-3'
       }`}
     >
@@ -165,7 +165,7 @@ export function PlayerStripCarousel({
         }`}
       >
         <div
-          className="pointer-events-none absolute inset-x-0 top-[13px] flex -translate-y-1/2 items-center"
+          className="pointer-events-none absolute inset-x-0 top-[13px] z-50 flex -translate-y-1/2 items-center"
           style={{ filter: 'drop-shadow(0 12px 12px rgba(24, 53, 42, 0.3))' }}
         >
           <div className="h-[7px] flex-1 bg-[#18352a]" />
