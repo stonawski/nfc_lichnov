@@ -6,11 +6,10 @@ import { ClubLogo } from './ClubLogo'
 export function Footer({ logoUrl }: { logoUrl?: string | null }) {
   return (
     <footer className="relative overflow-hidden bg-brand-900 text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,#18352a_0%,#123126_48%,#0b271d_100%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.9)_0,rgba(255,255,255,.9)_1px,transparent_1px,transparent_28px)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-brand-500/70" />
-      <div className="relative border-b border-white/10">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-6 px-5 py-9 sm:flex-row sm:items-center sm:justify-between md:px-8 md:py-11">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(125deg,#18352a_0%,#12392a_44%,#0f2f24_72%,#0a241b_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(0,146,63,.13),transparent_34%),radial-gradient(circle_at_84%_82%,rgba(255,255,255,.035),transparent_36%)]" />
+      <div className="relative">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-6 px-5 pb-5 pt-10 sm:flex-row sm:items-center sm:justify-between md:px-8 md:pb-6 md:pt-12">
           <div className="flex items-center gap-4">
             <div className="grid h-14 w-14 shrink-0 place-items-center rounded-[18px] bg-white">
               <ClubLogo src={logoUrl} name="NFC Lichnov" size="md" />
@@ -20,7 +19,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
                 NFC Lichnov
               </div>
               <div className="mt-1 max-w-xl text-xl font-extrabold leading-tight tracking-[-0.035em] sm:text-2xl">
-                Fotbal v Lichnově. Od nejmenších až po muže.
+                Oficiální web NFC Lichnov
               </div>
             </div>
           </div>
@@ -28,7 +27,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
         </div>
       </div>
 
-      <div className="relative mx-auto grid max-w-[1240px] gap-10 px-5 py-12 sm:grid-cols-2 md:px-8 lg:grid-cols-[1.35fr_.72fr_.82fr_1fr] lg:gap-14 lg:py-14">
+      <div className="relative mx-auto grid max-w-[1240px] gap-10 px-5 pb-10 pt-7 sm:grid-cols-2 md:px-8 lg:grid-cols-[1.35fr_.72fr_.82fr_1fr] lg:gap-14 lg:py-14">
         <div>
           <div className="text-3xl font-black tracking-[-0.055em]">
             NFC Lichnov
@@ -69,7 +68,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10">
+      <div className="relative">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-4 px-5 py-5 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between md:px-8">
           <div>© {new Date().getFullYear()} NFC Lichnov</div>
 
