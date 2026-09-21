@@ -362,7 +362,7 @@ function booleanValue(row: UnknownRow, keys: string[]): boolean | null {
   return null
 }
 
-function sideValue(row: UnknownRow): 'home' | 'away' | null {
+function sideValue(row: UnknownRow, match?: Match): 'home' | 'away' | null {
   const side = textValue(row, ['side', 'team_side', 'home_away'])?.toLowerCase()
   if (side === 'home' || side === 'domaci' || side === 'domácí') return 'home'
   if (side === 'away' || side === 'hoste' || side === 'hosté') return 'away'
@@ -370,6 +370,23 @@ function sideValue(row: UnknownRow): 'home' | 'away' | null {
   const isHome = booleanValue(row, ['is_home', 'home'])
   if (isHome === true) return 'home'
   if (isHome === false) return 'away'
+
+  if (match) {
+    const teamName = textValue(row, ['team_name', 'club_name', 'team'])
+      ?.toLocaleLowerCase('cs-CZ')
+      .trim()
+
+    if (teamName) {
+      const homeName = match.home_team_name.toLocaleLowerCase('cs-CZ').trim()
+      const awayName = match.away_team_name.toLocaleLowerCase('cs-CZ').trim()
+      if (teamName === homeName || homeName.includes(teamName) || teamName.includes(homeName)) {
+        return 'home'
+      }
+      if (teamName === awayName || awayName.includes(teamName) || teamName.includes(awayName)) {
+        return 'away'
+      }
+    }
+  }
 
   return null
 }
@@ -404,7 +421,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
   ensureConfigured()
 
   const rows = await fetchOptionalMatchRows(
-    ['match_players', 'match_lineups', 'match_squad', 'match_participants'],
+    ['match_players', 'match_lineups', 'match_squad', 'match_rosters', 'match_participants'],
     match,
   )
 
@@ -425,7 +442,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         name,
         number: numberValue(row, ['number', 'shirt_number', 'jersey_number']),
         position: textValue(row, ['position', 'player_position']),
-        side: sideValue(row),
+        side: sideValue(row, match),
         starter: booleanValue(row, ['starter', 'is_starter', 'starting', 'started']),
         captain: booleanValue(row, ['captain', 'is_captain']),
         role: textValue(row, ['role', 'lineup_role', 'status']),
@@ -438,7 +455,7 @@ export async function fetchMatchTimeline(match: Match): Promise<MatchTimelineEve
   ensureConfigured()
 
   const rows = await fetchOptionalMatchRows(
-    ['match_events', 'match_timeline', 'match_incidents'],
+    ['match_events', 'match_timeline', 'match_incidents', 'match_actions'],
     match,
   )
 
@@ -468,7 +485,7 @@ export async function fetchMatchTimeline(match: Match): Promise<MatchTimelineEve
         label,
         player_name: playerName,
         secondary_player_name: secondaryPlayerName,
-        side: sideValue(row),
+        side: sideValue(row, match),
         score_home: numberValue(row, ['score_home', 'home_score']),
         score_away: numberValue(row, ['score_away', 'away_score']),
       }
