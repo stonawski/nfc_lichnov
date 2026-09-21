@@ -20,7 +20,7 @@ import {
   isUpcomingMatch,
   matchScore,
 } from '../lib/format'
-import { locationPath } from '../lib/navigationState'
+import { locationPath, withReturnPath } from '../lib/navigationState'
 import type { Match } from '../lib/types'
 
 export function TeamPage() {
@@ -127,8 +127,7 @@ export function TeamPage() {
                 return (
                   <Link
                     key={match.id}
-                    to={`/zapasy/${match.id}`}
-                    state={{ from: returnTo }}
+                    to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
                     className="block rounded-4xl border border-sand-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-soft"
                   >
                     <div className="flex items-center justify-between gap-4 text-xs text-ink-500">
