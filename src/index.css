@@ -169,7 +169,7 @@ button {
 }
 
 .page-motion-shell {
-  background: #FAF8F3;
+  background: transparent;
 }
 
 .route-content-enter {
