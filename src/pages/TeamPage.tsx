@@ -107,19 +107,17 @@ export function TeamPage() {
 
   return (
     <main className="overflow-hidden bg-sand-50">
-      <section className="relative -mt-[84px] px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
+      <section className="relative flow-root -mt-[84px] px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute right-[-6%] top-0 h-[88%] w-[78%] opacity-55">
-            <img
-              src="/hero-lichnov-field.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-[70%_center]"
-              style={{ filter: 'saturate(.72) contrast(.9) brightness(1.12)' }}
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.82)_22%,rgba(250,248,243,.28)_58%,rgba(250,248,243,.08)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.12)_55%,#faf8f3_100%)]" />
-          </div>
+          <img
+            src="/hero-lichnov-field.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-[76%_center] opacity-55"
+            style={{ filter: 'saturate(.72) contrast(.9) brightness(1.12)' }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.96)_22%,rgba(250,248,243,.64)_48%,rgba(250,248,243,.20)_72%,rgba(250,248,243,.08)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.05)_55%,#faf8f3_100%)]" />
         </div>
 
         <div className="relative mx-auto max-w-[1240px]">
