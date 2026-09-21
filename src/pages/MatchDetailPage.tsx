@@ -23,6 +23,10 @@ import {
   isUpcomingMatch,
   matchScore,
 } from '../lib/format'
+import {
+  normalizeTacticalPosition,
+  tacticalPositionPoint,
+} from '../lib/playerPosition'
 import type {
   Match,
   MatchParticipant,
@@ -320,6 +324,23 @@ function FormationPitch({
     (person) => person.starter === false || !starterIds.has(person.id),
   )
 
+  const tacticalPlacements = spreadTacticalPlacements(
+    starters
+      .map((player) => {
+        const point = tacticalPositionPoint(player.position)
+        return point ? { player, ...point } : null
+      })
+      .filter(
+        (
+          item,
+        ): item is { player: MatchParticipant; x: number; y: number } =>
+          item != null,
+      ),
+  )
+  const tacticallyPlacedIds = new Set(
+    tacticalPlacements.map(({ player }) => player.id),
+  )
+
   const rows: Record<FormationLine, MatchParticipant[]> = {
     goalkeeper: [],
     defence: [],
@@ -328,21 +349,25 @@ function FormationPitch({
   }
   const unassigned: MatchParticipant[] = []
 
-  starters.forEach((person) => {
-    const line = classifyPosition(person)
-    if (line) rows[line].push(person)
-    else unassigned.push(person)
-  })
+  starters
+    .filter((player) => !tacticallyPlacedIds.has(player.id))
+    .forEach((person) => {
+      const line = classifyPosition(person)
+      if (line) rows[line].push(person)
+      else unassigned.push(person)
+    })
 
-  if (!rows.goalkeeper.length && starters.length) {
+  if (
+    !tacticalPlacements.some(({ player }) => classifyPosition(player) === 'goalkeeper') &&
+    !rows.goalkeeper.length &&
+    unassigned.length
+  ) {
     const goalkeeper =
       unassigned.find((person) => person.number === 1) ||
       unassigned[0]
 
-    if (goalkeeper) {
-      rows.goalkeeper.push(goalkeeper)
-      unassigned.splice(unassigned.indexOf(goalkeeper), 1)
-    }
+    rows.goalkeeper.push(goalkeeper)
+    unassigned.splice(unassigned.indexOf(goalkeeper), 1)
   }
 
   while (rows.defence.length < 4 && unassigned.length) {
@@ -356,6 +381,7 @@ function FormationPitch({
   }
 
   const placements = [
+    ...tacticalPlacements,
     ...placeLine(rows.attack, 17),
     ...placeLine(rows.midfield, 42),
     ...placeLine(rows.defence, 67),
@@ -614,49 +640,51 @@ function PlayerEventBadges({
 }
 
 function classifyPosition(player: MatchParticipant): FormationLine | null {
+  const tactical = normalizeTacticalPosition(player.position)
+
+  if (tactical === 'GK') return 'goalkeeper'
+  if (['RB', 'RCB', 'CB', 'LCB', 'LB'].includes(tactical ?? '')) return 'defence'
+  if (['DM', 'RCM', 'CM', 'LCM', 'AM'].includes(tactical ?? '')) return 'midfield'
+  if (['RW', 'LW', 'ST'].includes(tactical ?? '')) return 'attack'
+
   const value = (player.position || '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase('cs-CZ')
 
-  if (
-    value.includes('gk') ||
-    value.includes('goal') ||
-    value.includes('brankar')
-  ) {
-    return 'goalkeeper'
-  }
-
-  if (
-    value.includes('df') ||
-    value.includes('def') ||
-    value.includes('obr') ||
-    value.includes('back')
-  ) {
-    return 'defence'
-  }
-
-  if (
-    value === 'fw' ||
-    value === 'st' ||
-    value.includes('forward') ||
-    value.includes('striker') ||
-    value.includes('winger') ||
-    value.includes('utoc')
-  ) {
+  if (value.includes('brankar')) return 'goalkeeper'
+  if (value.includes('obr') || value.includes('back')) return 'defence'
+  if (value.includes('zalo') || value.includes('mid')) return 'midfield'
+  if (value.includes('utoc') || value.includes('forward') || value.includes('striker')) {
     return 'attack'
   }
 
-  if (
-    value.includes('mf') ||
-    value.includes('mid') ||
-    value.includes('zalo') ||
-    value.includes('stred')
-  ) {
-    return 'midfield'
-  }
-
   return null
+}
+
+function spreadTacticalPlacements(
+  placements: Array<{ player: MatchParticipant; x: number; y: number }>,
+) {
+  const groups = new Map<string, Array<{ player: MatchParticipant; x: number; y: number }>>()
+
+  placements.forEach((placement) => {
+    const key = `${placement.x}:${placement.y}`
+    const group = groups.get(key) ?? []
+    group.push(placement)
+    groups.set(key, group)
+  })
+
+  return [...groups.values()].flatMap((group) => {
+    if (group.length === 1) return group
+
+    const spread = group[0].y <= 25 ? 13 : group[0].y <= 55 ? 15 : 16
+    const center = (group.length - 1) / 2
+
+    return group.map((placement, index) => ({
+      ...placement,
+      x: Math.max(9, Math.min(91, placement.x + (index - center) * spread)),
+    }))
+  })
 }
 
 function placeLine(players: MatchParticipant[], y: number) {
