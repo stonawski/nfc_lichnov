@@ -298,6 +298,7 @@ export type CreatePlayerInput = {
   first_name: string
   last_name: string
   number?: number | null
+  position?: string | null
 }
 
 export type UpdatePlayerProfileInput = {
@@ -320,7 +321,7 @@ export async function createPlayer(input: CreatePlayerInput): Promise<Player> {
       first_name: input.first_name.trim(),
       last_name: input.last_name.trim(),
       number: input.number ?? null,
-      position: null,
+      position: input.position?.trim() || null,
       photo_url: null,
       bio: null,
       active: true,
