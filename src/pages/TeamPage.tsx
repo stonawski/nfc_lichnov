@@ -324,7 +324,7 @@ export function TeamPage() {
                 <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
                   Tabulka
                 </h2>
-                <p className="mt-4 max-w-sm text-sm leading-6 text-white/58">
+                <p className="mt-4 max-w-sm text-sm leading-6 text-white/[0.58]">
                   Aktuální pořadí týmu v soutěži. NFC Lichnov je zvýrazněný,
                   abys jeho pozici našel okamžitě.
                 </p>
@@ -396,7 +396,12 @@ export function TeamPage() {
         id="realizacni-tym"
         className="relative scroll-mt-28 bg-sand-100 px-5 pb-20 pt-16 md:px-8 md:pb-28 md:pt-24"
       >
-        <div className="mx-auto max-w-[1240px]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-32 top-16 h-80 w-80 rounded-full bg-brand-500/[0.065] blur-3xl" />
+          <div className="absolute left-[7%] top-28 h-44 w-44 rounded-full border border-brand-900/[0.045]" />
+          <div className="absolute bottom-16 left-[16%] h-px w-[38%] bg-gradient-to-r from-transparent via-brand-900/10 to-transparent" />
+        </div>
+        <div className="relative mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Realizační tým"
             title="Trenéři a vedení týmu"
@@ -414,7 +419,7 @@ export function TeamPage() {
               {staffQuery.data.map((person) => (
                 <article
                   key={person.id}
-                  className="group overflow-hidden rounded-[30px] border border-white/80 bg-white/82 shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft"
+                  className="group overflow-hidden rounded-[30px] border border-white/80 bg-white/[0.82] shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft"
                 >
                   <div className="grid grid-cols-[116px_1fr] sm:block">
                     <div className="relative min-h-[156px] overflow-hidden bg-sand-100 sm:aspect-[4/3] sm:min-h-0">
@@ -483,8 +488,10 @@ function SectionHeading({
   return (
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
-          {eyebrow}
+        <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+          <span>{eyebrow}</span>
+          <span className="hidden h-px w-10 bg-brand-500/30 sm:block" />
         </div>
         <h2 className="mt-2 text-4xl font-black tracking-[-0.055em] text-brand-900 sm:text-5xl">
           {title}
