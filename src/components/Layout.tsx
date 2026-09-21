@@ -6,7 +6,11 @@ import { Navigation } from './Navigation'
 import { PageMotion } from './PageMotion'
 
 export function Layout() {
-  const { data: teams = [] } = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    retry: false,
+  })
 
   return (
     <div className="flex min-h-screen flex-col bg-sand-50 text-ink-900">
