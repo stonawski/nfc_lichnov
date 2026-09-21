@@ -106,7 +106,7 @@ export function TeamPage() {
   )
 
   return (
-    <main className="overflow-hidden bg-sand-50">
+    <main className="bg-sand-50">
       <section className="relative flow-root -mt-[84px] px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <img
