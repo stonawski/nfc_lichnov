@@ -356,10 +356,10 @@ function FormationPitch({
   }
 
   const placements = [
-    ...placeLine(rows.attack, 18),
+    ...placeLine(rows.attack, 17),
     ...placeLine(rows.midfield, 42),
-    ...placeLine(rows.defence, 66),
-    ...placeLine(rows.goalkeeper, 88),
+    ...placeLine(rows.defence, 67),
+    ...placeLine(rows.goalkeeper, 89),
   ]
 
   return (
@@ -377,86 +377,102 @@ function FormationPitch({
         </div>
       </div>
 
-      <div className="relative min-h-[560px] overflow-hidden rounded-[30px] bg-[#071d14] shadow-inner sm:min-h-[650px]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-5%,rgba(255,255,255,.20),transparent_35%),radial-gradient(circle_at_50%_90%,rgba(0,146,63,.24),transparent_55%),linear-gradient(180deg,#0d3123_0%,#071d14_100%)]" />
+      <div className="relative min-h-[560px] overflow-hidden rounded-[30px] border border-sand-200 bg-[#e7ebe7] shadow-inner sm:min-h-[650px]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,.96),rgba(246,247,244,.72)_30%,transparent_58%),linear-gradient(180deg,#eef1ee_0%,#dce3dd_42%,#cad8cf_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-[38%] bg-[linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,0))]" />
 
         <svg
           aria-hidden="true"
-          viewBox="0 0 1000 680"
+          viewBox="0 0 1000 700"
           preserveAspectRatio="none"
           className="absolute inset-0 h-full w-full"
         >
           <defs>
-            <linearGradient id="formationPitchFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2a8258" />
-              <stop offset="55%" stopColor="#176a45" />
-              <stop offset="100%" stopColor="#0f5135" />
+            <linearGradient id="broadcastPitchFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#d8e1da" stopOpacity="0.74" />
+              <stop offset="50%" stopColor="#c1d1c6" stopOpacity="0.80" />
+              <stop offset="100%" stopColor="#a8c0b0" stopOpacity="0.90" />
             </linearGradient>
-            <linearGradient id="formationPitchGlow" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.02" />
-              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.02" />
+            <linearGradient id="broadcastPitchShade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.14" />
+              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.02" />
+              <stop offset="100%" stopColor="#173d2d" stopOpacity="0.10" />
             </linearGradient>
-            <filter id="formationPitchShadow" x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="18" stdDeviation="18" floodColor="#000000" floodOpacity="0.38" />
+            <filter id="broadcastPitchShadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="24" stdDeviation="22" floodColor="#18352a" floodOpacity="0.16" />
             </filter>
           </defs>
 
           <polygon
-            points="180,54 820,54 966,630 34,630"
-            fill="url(#formationPitchFill)"
-            filter="url(#formationPitchShadow)"
+            points="210,82 790,82 930,640 70,640"
+            fill="url(#broadcastPitchFill)"
+            filter="url(#broadcastPitchShadow)"
           />
 
-          <polygon points="180,54 340,54 248,630 34,630" fill="#ffffff" opacity="0.025" />
-          <polygon points="500,54 660,54 752,630 500,630" fill="#ffffff" opacity="0.025" />
+          <polygon points="210,82 355,82 285,640 70,640" fill="#ffffff" opacity="0.09" />
+          <polygon points="500,82 645,82 715,640 500,640" fill="#ffffff" opacity="0.07" />
           <polygon
-            points="180,54 820,54 966,630 34,630"
-            fill="url(#formationPitchGlow)"
+            points="210,82 790,82 930,640 70,640"
+            fill="url(#broadcastPitchShade)"
           />
 
           <g
             fill="none"
             stroke="#ffffff"
-            strokeOpacity="0.58"
+            strokeOpacity="0.72"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polygon points="194,72 806,72 940,610 60,610" />
-            <line x1="130" y1="341" x2="870" y2="341" />
-            <ellipse cx="500" cy="341" rx="102" ry="52" />
-            <circle cx="500" cy="341" r="3.5" fill="#ffffff" fillOpacity="0.58" />
+            <polygon points="224,96 776,96 906,620 94,620" />
+            <line x1="158" y1="350" x2="842" y2="350" />
+            <ellipse cx="500" cy="350" rx="100" ry="49" />
+            <circle cx="500" cy="350" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="358,72 642,72 672,198 328,198" />
-            <polygon points="430,72 570,72 584,130 416,130" />
-            <circle cx="500" cy="154" r="3.5" fill="#ffffff" fillOpacity="0.58" />
+            <polygon points="365,96 635,96 665,208 335,208" />
+            <polygon points="432,96 568,96 582,145 418,145" />
+            <circle cx="500" cy="166" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="302,502 698,502 742,610 258,610" />
-            <polygon points="407,556 593,556 610,610 390,610" />
-            <circle cx="500" cy="520" r="3.5" fill="#ffffff" fillOpacity="0.58" />
+            <polygon points="295,500 705,500 748,620 252,620" />
+            <polygon points="405,558 595,558 616,620 384,620" />
+            <circle cx="500" cy="523" r="4" fill="#ffffff" fillOpacity="0.72" />
 
-            <polygon points="445,42 555,42 570,72 430,72" strokeOpacity="0.42" />
-            <polygon points="390,610 610,610 628,648 372,648" strokeOpacity="0.42" />
+            <polygon points="448,62 552,62 568,96 432,96" strokeOpacity="0.48" />
+            <polygon points="384,620 616,620 636,660 364,660" strokeOpacity="0.48" />
           </g>
 
           <path
-            d="M 404 198 Q 500 250 596 198"
+            d="M 412 208 Q 500 250 588 208"
             fill="none"
             stroke="#ffffff"
-            strokeOpacity="0.34"
+            strokeOpacity="0.52"
             strokeWidth="2"
           />
           <path
-            d="M 372 502 Q 500 440 628 502"
+            d="M 366 500 Q 500 444 634 500"
             fill="none"
             stroke="#ffffff"
-            strokeOpacity="0.34"
+            strokeOpacity="0.52"
             strokeWidth="2"
+          />
+
+          <path
+            d="M 210 82 L 70 640"
+            fill="none"
+            stroke="#18352a"
+            strokeOpacity="0.08"
+            strokeWidth="18"
+          />
+          <path
+            d="M 790 82 L 930 640"
+            fill="none"
+            stroke="#18352a"
+            strokeOpacity="0.05"
+            strokeWidth="18"
           />
         </svg>
 
-        <div className="pointer-events-none absolute inset-x-[5%] bottom-[3%] top-[4%]">
+        <div className="pointer-events-none absolute inset-x-[4%] bottom-[3%] top-[5%]">
           {placements.map(({ player, x, y }) => (
             <PitchPlayer
               key={player.id}
@@ -468,8 +484,8 @@ function FormationPitch({
           ))}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#05150f]/78 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-[15%] top-0 h-24 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,.16),transparent_68%)]" />
+        <div className="pointer-events-none absolute inset-x-[10%] top-[3%] h-24 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,.92),transparent_72%)]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#18352a]/10 to-transparent" />
       </div>
 
       {substitutes.length > 0 && (
@@ -519,26 +535,38 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[92px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[108px]"
+      className="absolute z-10 w-[98px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[118px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
-      <div className="relative mx-auto w-fit">
-        <PlayerAvatar player={player} />
-        <div className="absolute -right-4 -top-2">
+      <div className="relative mx-auto flex h-14 w-14 items-end justify-center overflow-hidden rounded-[18px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[68px] sm:w-[68px]">
+        {player.photo_url ? (
+          <img
+            src={player.photo_url}
+            alt=""
+            className="h-full w-full object-cover object-top"
+          />
+        ) : (
+          <div className="grid h-full w-full place-items-center bg-[radial-gradient(circle_at_50%_35%,#fff_0,#f4f1e8_52%,#e5e2d8_100%)] text-xs font-black text-brand-900 sm:text-sm">
+            {initials(player.name)}
+          </div>
+        )}
+
+        <div className="absolute -right-1 -top-1">
           <PlayerEventBadges player={player} events={events} />
         </div>
       </div>
 
-      <div className="relative -mt-1 rounded-xl bg-brand-900 px-2 py-1.5 text-white shadow-lg ring-1 ring-white/15">
+      <div className="relative -mt-1.5 rounded-[7px] bg-[linear-gradient(180deg,#244a3b,#15382c)] px-2 py-1.5 text-white shadow-[0_6px_16px_rgba(24,53,42,0.24)] ring-1 ring-white/35">
         <div className="truncate text-[9px] font-extrabold leading-none sm:text-[10px]">
           {player.number != null && (
-            <span className="mr-1 text-white/55">{player.number}</span>
+            <span className="mr-1 text-white/65">{player.number}</span>
           )}
           {shortPlayerName(player.name)}
         </div>
+
         {player.captain && (
-          <div className="absolute -right-1.5 -top-2 rounded-full bg-[#e8d9a9] px-1.5 py-0.5 text-[8px] font-black text-brand-900">
-            C
+          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded bg-white px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-brand-900 shadow-sm ring-1 ring-sand-200">
+            Kapitán
           </div>
         )}
       </div>
@@ -674,11 +702,11 @@ function placeLine(players: MatchParticipant[], y: number) {
 
   const [start, end] =
     y <= 22
-      ? [players.length === 1 ? 50 : 31, players.length === 1 ? 50 : 69]
+      ? [players.length === 1 ? 50 : 32, players.length === 1 ? 50 : 68]
       : y <= 48
-        ? [players.length === 1 ? 50 : 20, players.length === 1 ? 50 : 80]
+        ? [players.length === 1 ? 50 : 22, players.length === 1 ? 50 : 78]
         : y <= 72
-          ? [players.length === 1 ? 50 : 15, players.length === 1 ? 50 : 85]
+          ? [players.length === 1 ? 50 : 16, players.length === 1 ? 50 : 84]
           : [50, 50]
 
   const step = players.length <= 1 ? 0 : (end - start) / (players.length - 1)
@@ -736,21 +764,11 @@ function eventKind(event: MatchTimelineEvent): TimelineEventKind {
 }
 
 function Timeline({ events }: { events: MatchTimelineEvent[] }) {
-  const goals = events.filter((event) => eventKind(event) === 'goal').length
-  const yellows = events.filter((event) => eventKind(event) === 'yellow').length
-  const reds = events.filter((event) => eventKind(event) === 'red').length
-
   return (
-    <div className="mt-6">
-      <div className="grid grid-cols-3 gap-2">
-        <TimelineStat label="Góly" value={goals} marker="goal" />
-        <TimelineStat label="Žluté" value={yellows} marker="yellow" />
-        <TimelineStat label="Červené" value={reds} marker="red" />
-      </div>
+    <div className="relative mt-6 min-h-[700px] sm:min-h-[720px]">
+      <div className="absolute bottom-8 left-[28px] top-8 w-px bg-sand-200 sm:left-1/2" />
 
-      <div className="relative mt-6 space-y-3 pl-14">
-        <div className="absolute bottom-3 left-[25px] top-3 w-px bg-brand-900/10" />
-
+      <div className="relative flex min-h-[700px] flex-col justify-evenly gap-4 sm:min-h-[720px]">
         {events.map((event) => (
           <TimelineItem key={event.id} event={event} />
         ))}
@@ -759,31 +777,8 @@ function Timeline({ events }: { events: MatchTimelineEvent[] }) {
   )
 }
 
-function TimelineStat({
-  label,
-  value,
-  marker,
-}: {
-  label: string
-  value: number
-  marker: 'goal' | 'yellow' | 'red'
-}) {
-  return (
-    <div className="rounded-2xl bg-white px-3 py-3 ring-1 ring-sand-200">
-      <div className="flex items-center justify-between gap-2">
-        <EventMarker kind={marker} small />
-        <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
-          {value}
-        </div>
-      </div>
-      <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-500">
-        {label}
-      </div>
-    </div>
-  )
-}
-
 function TimelineItem({ event }: { event: MatchTimelineEvent }) {
+  const isAway = event.side === 'away'
   const kind = eventKind(event)
   const eventName =
     kind === 'goal'
@@ -801,65 +796,91 @@ function TimelineItem({ event }: { event: MatchTimelineEvent }) {
       ? `${event.score_home}:${event.score_away}`
       : null
 
-  const minuteClasses =
+  const minuteClass =
     kind === 'yellow'
       ? 'bg-yellow-400 text-brand-900'
       : kind === 'red'
         ? 'bg-red-600 text-white'
-        : kind === 'goal'
-          ? 'bg-brand-500 text-white'
-          : 'bg-brand-900 text-white'
-
-  const cardAccent =
-    kind === 'yellow'
-      ? 'border-l-yellow-400'
-      : kind === 'red'
-        ? 'border-l-red-600'
-        : kind === 'goal'
-          ? 'border-l-brand-500'
-          : 'border-l-sand-300'
+        : 'bg-brand-900 text-white'
 
   return (
-    <div className="relative">
+    <div className="relative grid min-h-16 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[1fr_56px_1fr] sm:gap-3">
       <div
-        className={`absolute -left-14 top-3 z-10 grid h-12 w-12 place-items-center rounded-full border-4 border-[#fbfaf6] text-center shadow-sm ${minuteClasses}`}
+        className={`hidden sm:block ${
+          isAway ? 'sm:col-start-3' : 'sm:col-start-1 sm:row-start-1'
+        }`}
+      >
+        {!isAway && (
+          <EventCard event={event} title={eventName} score={score} align="right" />
+        )}
+      </div>
+
+      <div
+        className={`relative z-10 grid h-12 w-12 place-items-center self-center rounded-full border-4 border-[#fbfaf6] text-center shadow-sm sm:col-start-2 sm:row-start-1 sm:mx-auto ${minuteClass}`}
       >
         <div className="text-xs font-black">
           {event.minute != null ? `${event.minute}'` : '•'}
         </div>
       </div>
 
-      <div
-        className={`rounded-[20px] border border-sand-200 border-l-4 bg-white px-4 py-3.5 shadow-[0_8px_24px_rgba(24,53,42,0.04)] ${cardAccent}`}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <EventMarker kind={kind} />
-            <div className="text-xs font-extrabold text-brand-900">{eventName}</div>
-          </div>
+      <div className="sm:hidden">
+        <EventCard event={event} title={eventName} score={score} align="left" />
+      </div>
 
-          {score && (
-            <div className="shrink-0 rounded-full bg-brand-50 px-2 py-1 text-[10px] font-black text-brand-700">
-              {score}
-            </div>
-          )}
+      {isAway && (
+        <div className="hidden sm:col-start-3 sm:row-start-1 sm:block">
+          <EventCard event={event} title={eventName} score={score} align="left" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function EventCard({
+  event,
+  title,
+  score,
+  align,
+}: {
+  event: MatchTimelineEvent
+  title: string
+  score: string | null
+  align: 'left' | 'right'
+}) {
+  const kind = eventKind(event)
+
+  return (
+    <div className={align === 'right' ? 'text-right' : 'text-left'}>
+      <div className="inline-block max-w-full rounded-2xl bg-white px-3.5 py-3 ring-1 ring-sand-200">
+        <div
+          className={`flex items-center gap-2 ${
+            align === 'right' ? 'justify-end' : 'justify-start'
+          }`}
+        >
+          {align === 'left' && <EventMarker kind={kind} />}
+          <div className="text-xs font-extrabold text-brand-900">{title}</div>
+          {align === 'right' && <EventMarker kind={kind} />}
         </div>
 
         {event.player_name && (
-          <div className="mt-2 text-sm font-bold text-ink-900">
+          <div className="mt-1 text-sm font-semibold text-ink-900">
             {event.player_name}
           </div>
         )}
 
         {event.secondary_player_name && (
-          <div className="mt-1 text-[11px] leading-5 text-ink-500">
+          <div className="mt-1 text-[11px] text-ink-500">
             {event.secondary_player_name}
           </div>
         )}
 
-        {!event.player_name && event.label !== eventName && (
-          <div className="mt-2 text-[11px] leading-5 text-ink-500">
-            {event.label}
+        {!event.player_name && event.label !== title && (
+          <div className="mt-1 text-[11px] text-ink-500">{event.label}</div>
+        )}
+
+        {score && (
+          <div className="mt-1 text-[10px] font-black text-brand-500">
+            {score}
           </div>
         )}
       </div>
@@ -867,19 +888,11 @@ function TimelineItem({ event }: { event: MatchTimelineEvent }) {
   )
 }
 
-function EventMarker({
-  kind,
-  small = false,
-}: {
-  kind: TimelineEventKind | 'goal' | 'yellow' | 'red'
-  small?: boolean
-}) {
+function EventMarker({ kind }: { kind: TimelineEventKind }) {
   if (kind === 'goal') {
     return (
       <span
-        className={`grid place-items-center rounded-full bg-brand-50 ${
-          small ? 'h-6 w-6 text-[11px]' : 'h-7 w-7 text-xs'
-        }`}
+        className="grid h-5 w-5 place-items-center rounded-full bg-brand-50 text-[10px]"
         aria-hidden="true"
       >
         ⚽
@@ -890,9 +903,9 @@ function EventMarker({
   if (kind === 'yellow' || kind === 'red') {
     return (
       <span
-        className={`rounded-[2px] shadow-sm ${
+        className={`h-4 w-2.5 rounded-[2px] ${
           kind === 'yellow' ? 'bg-yellow-400' : 'bg-red-600'
-        } ${small ? 'h-5 w-3' : 'h-5 w-3.5'}`}
+        }`}
         aria-hidden="true"
       />
     )
@@ -901,9 +914,7 @@ function EventMarker({
   if (kind === 'substitution') {
     return (
       <span
-        className={`grid place-items-center rounded-full bg-brand-50 font-black text-brand-700 ${
-          small ? 'h-6 w-6 text-[10px]' : 'h-7 w-7 text-xs'
-        }`}
+        className="grid h-5 w-5 place-items-center rounded-full bg-brand-50 text-[9px] font-black text-brand-700"
         aria-hidden="true"
       >
         ↔
@@ -911,12 +922,7 @@ function EventMarker({
     )
   }
 
-  return (
-    <span
-      className={`rounded-full bg-sand-200 ${small ? 'h-3 w-3' : 'h-3.5 w-3.5'}`}
-      aria-hidden="true"
-    />
-  )
+  return <span className="h-2.5 w-2.5 rounded-full bg-sand-300" aria-hidden="true" />
 }
 
 function CompactSectionHeader({
