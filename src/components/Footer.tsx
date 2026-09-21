@@ -23,7 +23,7 @@ const SOCIAL_LINKS = [
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#0b281f] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#0d3025_0%,#0b281f_48%,#071d17_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#0e3026_0%,#0c2b22_48%,#09231b_100%)]" />
 
       <img
         src="/nfc-footer-logo.webp"
@@ -32,8 +32,8 @@ export function Footer() {
         className="pointer-events-none absolute -bottom-[46%] -left-[24%] h-[150%] max-w-none select-none object-contain opacity-[0.055] sm:-bottom-[52%] sm:-left-[18%] sm:h-[165%] lg:-bottom-[64%] lg:-left-[10%] lg:h-[190%]"
       />
 
-      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-brand-500/[0.24] blur-[105px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
-      <div className="pointer-events-none absolute left-[29%] top-[66%] h-[190px] w-[360px] -translate-x-1/2 -translate-y-1/2 rotate-[9deg] rounded-[43%_57%_39%_61%/59%_38%_62%_41%] bg-[#9af0b8]/[0.34] blur-[72px] sm:h-[230px] sm:w-[430px] lg:h-[270px] lg:w-[500px]" />
+      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-[#164936]/[0.48] blur-[110px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
+      <div className="pointer-events-none absolute left-[29%] top-[66%] h-[190px] w-[360px] -translate-x-1/2 -translate-y-1/2 rotate-[9deg] rounded-[43%_57%_39%_61%/59%_38%_62%_41%] bg-[#1d513d]/[0.42] blur-[78px] sm:h-[230px] sm:w-[430px] lg:h-[270px] lg:w-[500px]" />
 
       <div className="relative mx-auto max-w-[1460px] px-5 pb-5 pt-14 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-0">
@@ -103,7 +103,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pb-4 text-[11px] font-medium text-white/[0.48] lg:mt-14">
+        <div className="mt-12 flex justify-end pb-4 text-right text-[11px] font-medium text-white/[0.48] lg:mt-14">
           Vytvořil Daniel Stonawski | Všechna práva vyhrazena
         </div>
       </div>
