@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export function Footer() {
   return (
-    <footer className="mt-24 bg-brand-900 text-white">
+    <footer className="bg-brand-900 text-white">
       <div className="mx-auto grid max-w-[1240px] gap-12 px-5 py-14 md:grid-cols-[1.5fr_1fr_1fr] md:px-8">
         <div>
           <div className="text-2xl font-extrabold tracking-[-0.04em]">NFC Lichnov</div>
