@@ -469,7 +469,7 @@ function EventCard({
         </div>
 
         {event.player_name && (
-          <div className="mt-1 text-sm font-semibold text-ink-700">
+          <div className="mt-1 text-sm font-semibold text-ink-900">
             {event.player_name}
           </div>
         )}
