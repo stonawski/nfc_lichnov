@@ -50,11 +50,11 @@ export function PageMotion({ children }: { children: ReactNode }) {
       if (nextUrl.origin !== window.location.origin) return
 
       const currentUrl = new URL(window.location.href)
-      const sameDocument =
-        nextUrl.pathname === currentUrl.pathname &&
-        nextUrl.search === currentUrl.search
+      const sameRoute = nextUrl.pathname === currentUrl.pathname
 
-      if (sameDocument) return
+      // Query/hash-only changes are UI state, not a new page. Let React Router
+      // update the current screen without the global leave/enter transition.
+      if (sameRoute) return
 
       const root = rootRef.current
       if (!root) return
@@ -144,11 +144,11 @@ export function PageMotion({ children }: { children: ReactNode }) {
       observer.disconnect()
       clearTimer(enterTimerRef)
     }
-  }, [location.key])
+  }, [location.pathname])
 
   return (
     <div ref={rootRef} className="page-motion-shell">
-      <div key={location.key} className="route-content-enter">
+      <div key={location.pathname} className="route-content-enter">
         {children}
       </div>
     </div>
