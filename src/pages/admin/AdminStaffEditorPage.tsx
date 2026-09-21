@@ -8,7 +8,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
   deleteStaffMember,
@@ -19,10 +19,13 @@ import {
 } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
+import { safeReturnPath } from '../../lib/navigationState'
 
 export function AdminStaffEditorPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const backTo = safeReturnPath(searchParams, '/admin/realizacni-tym')
   const queryClient = useQueryClient()
 
   const staffQuery = useQuery({
@@ -132,7 +135,7 @@ export function AdminStaffEditorPage() {
         queryClient.invalidateQueries({ queryKey: ['admin-staff'] }),
         queryClient.invalidateQueries({ queryKey: ['staff'] }),
       ])
-      navigate('/admin/realizacni-tym', { replace: true })
+      navigate(backTo, { replace: true })
     },
   })
 
@@ -178,7 +181,7 @@ export function AdminStaffEditorPage() {
           Člen realizačního týmu nebyl nalezen
         </h1>
         <Link
-          to="/admin/realizacni-tym"
+          to={backTo}
           className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white"
         >
           <ArrowLeft size={16} />
@@ -193,7 +196,7 @@ export function AdminStaffEditorPage() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <Link
-            to="/admin/realizacni-tym"
+            to={backTo}
             className="inline-flex items-center gap-2 text-sm font-semibold text-ink-500 transition hover:text-brand-900"
           >
             <ArrowLeft size={16} />

@@ -9,7 +9,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
   fetchAdminPlayerById,
@@ -20,6 +20,7 @@ import {
 import { fetchTeams } from '../../lib/data'
 import { formatDate } from '../../lib/format'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
+import { safeReturnPath } from '../../lib/navigationState'
 import {
   TACTICAL_POSITION_OPTIONS,
   tacticalPositionLabel,
@@ -31,6 +32,8 @@ function playerName(firstName: string | null, lastName: string | null) {
 
 export function AdminPlayerEditorPage() {
   const { id = '' } = useParams()
+  const [searchParams] = useSearchParams()
+  const backTo = safeReturnPath(searchParams, '/admin/hraci')
   const queryClient = useQueryClient()
 
   const playerQuery = useQuery({
@@ -179,7 +182,7 @@ export function AdminPlayerEditorPage() {
           Hráč nebyl nalezen
         </h1>
         <Link
-          to="/admin/hraci"
+          to={backTo}
           className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white"
         >
           <ArrowLeft size={16} />
@@ -200,7 +203,7 @@ export function AdminPlayerEditorPage() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <Link
-            to="/admin/hraci"
+            to={backTo}
             className="inline-flex items-center gap-2 text-sm font-semibold text-ink-500 transition hover:text-brand-900"
           >
             <ArrowLeft size={16} />
