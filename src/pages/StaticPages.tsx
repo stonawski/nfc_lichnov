@@ -112,15 +112,21 @@ export function ClubPage() {
         <div className="mx-auto max-w-[1240px]">
           <SectionEyebrow>Poznej klub</SectionEyebrow>
           <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] text-brand-900 md:text-5xl">
-            Historie, areál i kontakt.
+            Historie, čísla, areál i kontakt.
           </h2>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-3">
+          <div className="mt-9 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <ExploreCard
               to="/klub/historie"
               eyebrow="Od roku 1963"
               title="Historie klubu"
               text="Od TJ Sokol Lichnov přes vznik NFC až po modernizaci areálu a mládež."
+            />
+            <ExploreCard
+              to="/klub/statistiky"
+              eyebrow="Historie v číslech"
+              title="Statistiky"
+              text="Rekordmani v počtu zápasů, nejlepší střelci a archiv jednotlivých sezon."
             />
             <ExploreCard
               to="/klub/areal"
