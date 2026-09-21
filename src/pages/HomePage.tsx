@@ -451,7 +451,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-18 md:pt-24">
+      <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="NFC Lichnov"
