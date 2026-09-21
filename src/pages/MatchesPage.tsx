@@ -86,9 +86,9 @@ export function MatchesPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-9 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-11 md:pt-[132px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
         <div className="pointer-events-none absolute inset-0 bg-sand-50">
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[72%] lg:w-[62%]">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-[78%] lg:w-[68%]">
             <img
               src="/hero-lichnov-field.webp"
               alt=""
@@ -96,9 +96,9 @@ export function MatchesPage() {
               className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
               style={{ filter: 'saturate(.74) contrast(.9) brightness(1.08)' }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.88)_24%,rgba(250,248,243,.38)_58%,rgba(250,248,243,.12)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.92)_22%,rgba(250,248,243,.48)_54%,rgba(250,248,243,.14)_100%)]" />
           </div>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.06)_0%,rgba(250,248,243,.14)_62%,#faf8f3_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.12)_46%,rgba(250,248,243,.56)_78%,#faf8f3_100%)]" />
         </div>
 
         <div className="relative mx-auto max-w-[1240px]">
@@ -135,6 +135,16 @@ export function MatchesPage() {
               ))}
             </div>
           </div>
+
+          {!matchesQuery.isLoading && !teamsQuery.isLoading && featuredMatch && (
+            <div className="mt-10 md:mt-12">
+              <FeaturedMatch
+                match={featuredMatch}
+                team={teamMap.get(featuredMatch.team_id)}
+                returnTo={returnTo}
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -146,18 +156,6 @@ export function MatchesPage() {
         </section>
       ) : matches.length ? (
         <>
-          {featuredMatch && (
-            <section className="bg-sand-100 px-5 py-12 md:px-8 md:py-16">
-              <div className="mx-auto max-w-[1240px]">
-                <FeaturedMatch
-                  match={featuredMatch}
-                  team={teamMap.get(featuredMatch.team_id)}
-                  returnTo={returnTo}
-                />
-              </div>
-            </section>
-          )}
-
           <section className="bg-white px-5 py-16 md:px-8 md:py-24">
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
