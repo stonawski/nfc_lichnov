@@ -293,7 +293,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Program"
@@ -346,20 +346,22 @@ export function HomePage() {
       </section>
 
       {men && (
-        <div className="py-8 md:py-14">
-          {menPlayersQuery.isLoading ? (
-            <div className="px-5 md:px-8">
-              <div className="mx-auto max-w-[1240px]">
-                <LoadingState rows={3} />
-              </div>
+        menPlayersQuery.isLoading ? (
+          <section className="bg-white px-5 py-10 md:px-8">
+            <div className="mx-auto max-w-[1240px]">
+              <LoadingState rows={3} />
             </div>
-          ) : menPlayersQuery.data?.length ? (
-            <PlayerStripCarousel team={men} players={menPlayersQuery.data} />
-          ) : null}
-        </div>
+          </section>
+        ) : menPlayersQuery.data?.length ? (
+          <PlayerStripCarousel
+            team={men}
+            players={menPlayersQuery.data}
+            flush
+          />
+        ) : null
       )}
 
-      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-14 md:px-8 md:py-20">
+      <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
@@ -449,7 +451,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-18 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="NFC Lichnov"
