@@ -9,7 +9,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
   fetchAdminPlayerById,
@@ -32,8 +32,8 @@ function playerName(firstName: string | null, lastName: string | null) {
 
 export function AdminPlayerEditorPage() {
   const { id = '' } = useParams()
-  const location = useLocation()
-  const backTo = safeReturnPath(location.state, '/admin/hraci')
+  const [searchParams] = useSearchParams()
+  const backTo = safeReturnPath(searchParams, '/admin/hraci')
   const queryClient = useQueryClient()
 
   const playerQuery = useQuery({
