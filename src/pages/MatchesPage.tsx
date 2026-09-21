@@ -76,7 +76,7 @@ export function MatchesPage() {
   const remainingUpcoming = featuredMatch ? upcoming.slice(1) : upcoming
   const visibleUpcoming = showAllUpcoming
     ? remainingUpcoming
-    : remainingUpcoming.slice(0, 3)
+    : remainingUpcoming.slice(0, 4)
   const visibleResults = showAllResults ? results : results.slice(0, 4)
 
   useEffect(() => {
@@ -86,38 +86,39 @@ export function MatchesPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-9 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-11 md:pt-[132px]">
         <div className="pointer-events-none absolute inset-0 bg-sand-50">
-          <img
-            src="/hero-lichnov-field.webp"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-            style={{ filter: 'saturate(.78) contrast(.9) brightness(1.1)' }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.92)_28%,rgba(250,248,243,.52)_58%,rgba(250,248,243,.18)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.12)_58%,#faf8f3_100%)]" />
+          <div className="absolute right-0 top-0 h-full w-full sm:w-[72%] lg:w-[62%]">
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
+              style={{ filter: 'saturate(.74) contrast(.9) brightness(1.08)' }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.88)_24%,rgba(250,248,243,.38)_58%,rgba(250,248,243,.12)_100%)]" />
+          </div>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.06)_0%,rgba(250,248,243,.14)_62%,#faf8f3_100%)]" />
         </div>
 
         <div className="relative mx-auto max-w-[1240px]">
-          <div className="grid gap-8 py-8 lg:grid-cols-[1fr_.52fr] lg:items-end lg:py-12">
-            <div className="max-w-4xl">
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          <div className="grid gap-5 py-5 lg:grid-cols-[1fr_.48fr] lg:items-end lg:py-7">
+            <div className="max-w-3xl">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 Zápasy
               </div>
-              <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.06em] text-brand-900 sm:text-6xl md:text-7xl">
+              <h1 className="mt-3 text-4xl font-black leading-[0.94] tracking-[-0.06em] text-brand-900 sm:text-5xl md:text-6xl">
                 Program.
                 <span className="block text-brand-500">Výsledky. Detail.</span>
               </h1>
             </div>
 
-            <p className="max-w-md text-sm leading-7 text-ink-500 lg:justify-self-end">
-              Přehled soutěžních zápasů všech kategorií NFC Lichnov. Vyber tým
-              a otevři detail utkání se sestavou a průběhem, pokud jsou data dostupná.
+            <p className="max-w-md text-sm leading-6 text-ink-500 lg:justify-self-end">
+              Vyber kategorii a projdi si nejbližší program i odehrané zápasy.
             </p>
           </div>
 
-          <div className="rounded-[30px] border border-white/80 bg-white/75 p-4 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-5">
+          <div className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
             <div className="flex flex-wrap gap-2">
               <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
                 Všechny týmy
@@ -145,47 +146,51 @@ export function MatchesPage() {
         </section>
       ) : matches.length ? (
         <>
+          {featuredMatch && (
+            <section className="bg-sand-100 px-5 py-12 md:px-8 md:py-16">
+              <div className="mx-auto max-w-[1240px]">
+                <FeaturedMatch
+                  match={featuredMatch}
+                  team={teamMap.get(featuredMatch.team_id)}
+                  returnTo={returnTo}
+                />
+              </div>
+            </section>
+          )}
+
           <section className="bg-white px-5 py-16 md:px-8 md:py-24">
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Program"
                 title="Následující zápasy"
-                count={upcoming.length}
+                count={remainingUpcoming.length}
               />
 
-              {featuredMatch ? (
+              {remainingUpcoming.length ? (
                 <>
-                  <FeaturedMatch
-                    match={featuredMatch}
-                    team={teamMap.get(featuredMatch.team_id)}
-                    returnTo={returnTo}
-                  />
+                  <div className="stagger-children grid gap-4 lg:grid-cols-2">
+                    {visibleUpcoming.map((match) => (
+                      <MatchCard
+                        key={match.id}
+                        match={match}
+                        team={teamMap.get(match.team_id)}
+                        returnTo={returnTo}
+                      />
+                    ))}
+                  </div>
 
-                  {visibleUpcoming.length > 0 && (
-                    <div className="stagger-children mt-4 grid gap-4 lg:grid-cols-2">
-                      {visibleUpcoming.map((match) => (
-                        <MatchCard
-                          key={match.id}
-                          match={match}
-                          team={teamMap.get(match.team_id)}
-                          returnTo={returnTo}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {remainingUpcoming.length > 3 && (
+                  {remainingUpcoming.length > 4 && (
                     <ExpandButton
                       expanded={showAllUpcoming}
                       onClick={() => setShowAllUpcoming((value) => !value)}
-                      hiddenCount={remainingUpcoming.length - 3}
+                      hiddenCount={remainingUpcoming.length - 4}
                     />
                   )}
                 </>
               ) : (
                 <EmptyState
                   title="Další zápasy zatím nejsou k dispozici"
-                  text="Pro vybranou kategorii zatím není naplánované další utkání."
+                  text="Pro vybranou kategorii je zatím naplánovaný jen nejbližší zápas."
                 />
               )}
             </div>
