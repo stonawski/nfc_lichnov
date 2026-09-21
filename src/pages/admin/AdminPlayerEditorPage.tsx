@@ -20,6 +20,10 @@ import {
 import { fetchTeams } from '../../lib/data'
 import { formatDate } from '../../lib/format'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
+import {
+  TACTICAL_POSITION_OPTIONS,
+  tacticalPositionLabel,
+} from '../../lib/playerPosition'
 
 function playerName(firstName: string | null, lastName: string | null) {
   return [firstName, lastName].filter(Boolean).join(' ') || 'Neznámý hráč'
@@ -294,12 +298,27 @@ export function AdminPlayerEditorPage() {
             </Field>
 
             <Field label="Pozice">
-              <input
+              <select
                 value={position}
                 onChange={(event) => setPosition(event.target.value)}
                 className="admin-input"
-                placeholder="Záložník"
-              />
+              >
+                <option value="">Bez pozice</option>
+                {position &&
+                  !TACTICAL_POSITION_OPTIONS.some((option) => option.code === position) && (
+                    <option value={position}>
+                      {tacticalPositionLabel(position) || position}
+                    </option>
+                  )}
+                {TACTICAL_POSITION_OPTIONS.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-xs leading-5 text-ink-500">
+                Tato pozice určuje, kde se hráč zobrazí v grafické sestavě zápasu.
+              </p>
             </Field>
 
             <Field label="Pořadí v týmu">
