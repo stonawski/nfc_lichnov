@@ -377,9 +377,9 @@ function FormationPitch({
         </div>
       </div>
 
-      <div className="relative -mx-5 min-h-[590px] overflow-hidden bg-[#dce4de] shadow-inner sm:-mx-7 sm:min-h-[690px]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,.96),rgba(246,247,244,.72)_30%,transparent_58%),linear-gradient(180deg,#eef1ee_0%,#dce3dd_42%,#cad8cf_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-[38%] bg-[linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,0))]" />
+      <div className="relative -mx-5 min-h-[590px] overflow-hidden bg-[#c9d8ce] sm:-mx-7 sm:min-h-[690px]">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#e7ece8_0%,#d6e0d9_30%,#bfd1c5_68%,#afc7b7_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-[34%] bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,.95),rgba(255,255,255,.32)_46%,transparent_76%)]" />
 
         <svg
           aria-hidden="true"
@@ -388,86 +388,41 @@ function FormationPitch({
           className="absolute inset-0 h-full w-full"
         >
           <defs>
-            <linearGradient id="broadcastPitchFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#d8e1da" stopOpacity="0.74" />
-              <stop offset="50%" stopColor="#c1d1c6" stopOpacity="0.80" />
-              <stop offset="100%" stopColor="#a8c0b0" stopOpacity="0.90" />
+            <linearGradient id="broadcastGrass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#dbe5de" stopOpacity="0.40" />
+              <stop offset="100%" stopColor="#8fb39b" stopOpacity="0.38" />
             </linearGradient>
-            <linearGradient id="broadcastPitchShade" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.14" />
-              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#173d2d" stopOpacity="0.10" />
-            </linearGradient>
-            <filter id="broadcastPitchShadow" x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="24" stdDeviation="22" floodColor="#18352a" floodOpacity="0.16" />
-            </filter>
           </defs>
 
-          <polygon
-            points="270,72 730,72 1040,700 -40,700"
-            fill="url(#broadcastPitchFill)"
-            filter="url(#broadcastPitchShadow)"
-          />
+          <rect width="1000" height="700" fill="url(#broadcastGrass)" />
 
-          <polygon points="270,72 390,72 280,700 -40,700" fill="#ffffff" opacity="0.09" />
-          <polygon points="500,72 620,72 760,700 500,700" fill="#ffffff" opacity="0.07" />
-          <polygon
-            points="270,72 730,72 1040,700 -40,700"
-            fill="url(#broadcastPitchShade)"
-          />
+          <polygon points="260,65 380,65 238,690 -20,690" fill="#ffffff" opacity="0.055" />
+          <polygon points="500,65 620,65 760,690 500,690" fill="#ffffff" opacity="0.045" />
 
           <g
             fill="none"
             stroke="#ffffff"
-            strokeOpacity="0.72"
+            strokeOpacity="0.76"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polygon points="286,88 714,88 1005,676 -5,676" />
-            <line x1="142" y1="352" x2="858" y2="352" />
-            <ellipse cx="500" cy="352" rx="112" ry="50" />
-            <circle cx="500" cy="352" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <polygon points="260,65 740,65 1000,690 0,690" />
 
-            <polygon points="382,88 618,88 654,204 346,204" />
-            <polygon points="438,88 562,88 578,140 422,140" />
-            <circle cx="500" cy="161" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <line x1="133" y1="370" x2="867" y2="370" />
+            <ellipse cx="500" cy="370" rx="108" ry="48" />
+            <circle cx="500" cy="370" r="4" fill="#ffffff" fillOpacity="0.76" />
 
-            <polygon points="246,488 754,488 840,676 160,676" />
-            <polygon points="365,555 635,555 690,676 310,676" />
-            <circle cx="500" cy="518" r="4" fill="#ffffff" fillOpacity="0.72" />
+            <polygon points="380,65 620,65 646,190 354,190" />
+            <polygon points="442,65 558,65 564,130 436,130" />
+            <circle cx="500" cy="158" r="4" fill="#ffffff" fillOpacity="0.76" />
+            <path d="M 405 190 Q 500 238 595 190" />
 
+            <polygon points="246,520 754,520 796,690 204,690" />
+            <polygon points="376,600 624,600 635,690 365,690" />
+            <circle cx="500" cy="570" r="4" fill="#ffffff" fillOpacity="0.76" />
+            <path d="M 335 520 Q 500 448 665 520" />
           </g>
-
-          <path
-            d="M 402 204 Q 500 246 598 204"
-            fill="none"
-            stroke="#ffffff"
-            strokeOpacity="0.52"
-            strokeWidth="2"
-          />
-          <path
-            d="M 325 488 Q 500 420 675 488"
-            fill="none"
-            stroke="#ffffff"
-            strokeOpacity="0.52"
-            strokeWidth="2"
-          />
-
-          <path
-            d="M 270 72 L -40 700"
-            fill="none"
-            stroke="#18352a"
-            strokeOpacity="0.08"
-            strokeWidth="18"
-          />
-          <path
-            d="M 730 72 L 1040 700"
-            fill="none"
-            stroke="#18352a"
-            strokeOpacity="0.05"
-            strokeWidth="18"
-          />
         </svg>
 
         <div className="pointer-events-none absolute inset-x-[1.5%] bottom-[2%] top-[5%]">
@@ -482,8 +437,7 @@ function FormationPitch({
           ))}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-[10%] top-[3%] h-24 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,.92),transparent_72%)]" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#18352a]/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-[8%] top-0 h-28 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,.72),transparent_72%)]" />
       </div>
 
       {substitutes.length > 0 && (
@@ -551,8 +505,16 @@ function PitchPlayer({
           )}
         </div>
 
-        <div className="absolute -right-5 top-1/2 -translate-y-1/2">
-          <PlayerEventBadges player={player} events={events} />
+        <div className="absolute -right-5 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1">
+          {player.captain && (
+            <span
+              className="grid h-5 min-w-5 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5"
+              title="Kapitán"
+            >
+              K
+            </span>
+          )}
+          <PlayerEventBadges player={player} events={events} vertical />
         </div>
       </div>
 
@@ -562,11 +524,6 @@ function PitchPlayer({
             <span className="text-white/65">{player.number}</span>
           )}
           <span className="truncate">{shortPlayerName(player.name)}</span>
-          {player.captain && (
-            <span className="shrink-0 rounded bg-[#e8d9a9] px-1 py-0.5 text-[7px] font-black text-brand-900">
-              K
-            </span>
-          )}
         </div>
       </div>
     </div>
@@ -603,10 +560,12 @@ function PlayerEventBadges({
   player,
   events,
   compact = false,
+  vertical = false,
 }: {
   player: MatchParticipant
   events: MatchTimelineEvent[]
   compact?: boolean
+  vertical?: boolean
 }) {
   const playerName = normalizePersonName(player.name)
   const playerEvents = events.filter(
@@ -619,7 +578,11 @@ function PlayerEventBadges({
   if (!goals && !yellows && !reds) return null
 
   return (
-    <div className={`flex items-center ${compact ? 'gap-1' : 'gap-1'}`}>
+    <div
+      className={`flex items-center gap-1 ${
+        vertical ? 'flex-col' : 'flex-row'
+      }`}
+    >
       {goals > 0 && (
         <span
           className={`grid place-items-center rounded-full bg-white shadow-md ring-1 ring-black/5 ${
