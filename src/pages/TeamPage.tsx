@@ -209,102 +209,72 @@ export function TeamPage() {
         </div>
       </section>
 
-      <section id="zapasy" className="scroll-mt-28 px-5 py-16 md:px-8 md:py-24">
+      <section id="zapasy" className="scroll-mt-28 bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
-          <SectionHeading eyebrow="Program" title="Zápasy" />
+          <SectionHeading
+            eyebrow="Program"
+            title="Zápasy"
+            aside={
+              <Link
+                to={`/zapasy?team=${team.slug}`}
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 ring-1 ring-brand-500/10 transition hover:bg-brand-100"
+              >
+                Všechna utkání
+                <ArrowRight size={14} />
+              </Link>
+            }
+          />
 
           {matchesQuery.isLoading ? (
-            <LoadingState rows={3} />
+            <LoadingState rows={2} />
           ) : upcoming.length ? (
-            <div className="grid gap-4 lg:grid-cols-[1fr_1fr_.56fr]">
-              <div>
+            <div className="grid items-stretch gap-4 lg:grid-cols-[1.35fr_.85fr]">
+              <div className="flex min-w-0 flex-col">
                 <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
                   Nadcházející zápas
                 </div>
-                <TeamMatchCard
-                  match={upcoming[0]}
-                  returnTo={returnTo}
-                  featured
-                />
-              </div>
-
-              {upcoming[1] ? (
-                <div>
-                  <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                    Další zápas
-                  </div>
+                <div className="flex-1">
                   <TeamMatchCard
-                    match={upcoming[1]}
+                    match={upcoming[0]}
                     returnTo={returnTo}
+                    featured
                   />
                 </div>
-              ) : (
-                <div>
-                  <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                    Další zápas
-                  </div>
-                  <div className="flex min-h-[205px] items-center rounded-[28px] border border-sand-200 bg-white p-6 shadow-[0_12px_32px_rgba(24,53,42,.05)]">
-                    <div>
-                      <div className="text-base font-extrabold text-brand-900">
-                        Zatím není naplánovaný
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-ink-500">
-                        Další termín se zobrazí automaticky po synchronizaci.
-                      </p>
-                    </div>
-                  </div>
+              </div>
+
+              <div className="flex min-w-0 flex-col">
+                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                  Další zápas
                 </div>
-              )}
-
-              <div className="lg:pt-[25px]">
-                <Link
-                  to={`/zapasy?team=${team.slug}`}
-                  className="group flex min-h-[205px] h-full flex-col justify-between rounded-[28px] bg-brand-50 p-6 text-brand-900 ring-1 ring-brand-500/10 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
-                >
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-                      Kompletní program
-                    </div>
-                    <div className="mt-3 text-2xl font-black tracking-[-0.045em]">
-                      Všechny zápasy
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-ink-500">
-                      Celý program a výsledky této kategorie.
-                    </p>
-                  </div>
-
-                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
-                    Zobrazit přehled
-                    <ArrowRight
-                      size={16}
-                      className="transition group-hover:translate-x-1"
+                <div className="flex-1">
+                  {upcoming[1] ? (
+                    <TeamMatchCard
+                      match={upcoming[1]}
+                      returnTo={returnTo}
                     />
-                  </div>
-                </Link>
+                  ) : (
+                    <div className="flex h-full min-h-[220px] items-center rounded-[28px] border border-sand-200 bg-sand-100 p-6">
+                      <div>
+                        <div className="text-base font-extrabold text-brand-900">
+                          Zatím není naplánovaný
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-ink-500">
+                          Další termín se zobrazí automaticky po synchronizaci.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-[1fr_.42fr]">
-              <EmptyState
-                title="Další zápas zatím není naplánovaný"
-                text="Jakmile bude nový termín dostupný, objeví se tady."
-              />
-              <Link
-                to={`/zapasy?team=${team.slug}`}
-                className="group flex min-h-[190px] flex-col justify-between rounded-[28px] bg-brand-50 p-6 text-brand-900 ring-1 ring-brand-500/10 transition hover:bg-white hover:shadow-soft"
-              >
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-                    Archiv
-                  </div>
-                  <div className="mt-3 text-2xl font-black tracking-[-0.045em]">
-                    Všechny zápasy
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
-                  Zobrazit přehled <ArrowRight size={16} />
-                </div>
-              </Link>
+            <div className="rounded-[30px] border border-sand-200 bg-sand-100 p-7">
+              <div className="text-base font-extrabold text-brand-900">
+                Další zápas zatím není naplánovaný.
+              </div>
+              <p className="mt-2 text-sm leading-6 text-ink-500">
+                Jakmile bude nový termín dostupný, objeví se tady.
+              </p>
             </div>
           )}
         </div>
@@ -355,8 +325,7 @@ export function TeamPage() {
         </section>
       )}
 
-      <section id="hraci" className="relative scroll-mt-28 py-16 md:py-24">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[linear-gradient(180deg,rgba(243,239,230,.72),rgba(250,248,243,0))]" />
+      <section id="hraci" className="relative scroll-mt-28 bg-white py-16 md:py-24">
         <div className="relative px-5 md:px-8">
           <div className="mx-auto max-w-[1240px]">
             <SectionHeading
@@ -643,10 +612,10 @@ function TeamMatchCard({
   return (
     <Link
       to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
-      className={`group block overflow-hidden rounded-[28px] border transition duration-300 hover:-translate-y-0.5 hover:shadow-soft ${
+      className={`group flex h-full min-h-[220px] flex-col overflow-hidden rounded-[28px] border transition duration-300 hover:-translate-y-0.5 hover:shadow-soft ${
         featured
           ? 'border-brand-900 bg-brand-900 text-white'
-          : 'border-sand-200 bg-white text-ink-900 shadow-[0_12px_32px_rgba(24,53,42,.05)] hover:border-brand-500/20'
+          : 'border-sand-200 bg-[#f6f3ec] text-ink-900 shadow-[0_12px_32px_rgba(24,53,42,.05)] hover:border-brand-500/20 hover:bg-[#fbfaf6]'
       }`}
     >
       <div className="flex items-center justify-between gap-4 px-5 pt-4">
@@ -665,7 +634,7 @@ function TeamMatchCard({
         />
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-5">
+      <div className="grid flex-1 grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-5">
         <MatchClub
           name={match.home_team_name}
           logo={match.home_team_logo}
