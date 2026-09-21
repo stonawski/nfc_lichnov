@@ -34,7 +34,7 @@ export function Footer() {
             <FooterHeading>Klub</FooterHeading>
             <div className="mt-5 grid gap-2.5">
               <FooterLink to="/klub">O klubu</FooterLink>
-              <FooterLink to="/klub#historie">Historie</FooterLink>
+              <FooterLink to="/klub/historie">Historie</FooterLink>
               <FooterLink to="/aktuality">Aktuality</FooterLink>
             </div>
           </FooterSection>
