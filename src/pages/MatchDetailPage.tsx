@@ -7,6 +7,7 @@ import {
   Trophy,
   UsersRound,
 } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import {
@@ -494,7 +495,7 @@ function SectionTitle({
 }: {
   eyebrow: string
   title: string
-  icon: React.ReactNode
+  icon: ReactNode
 }) {
   return (
     <div className="flex items-start justify-between gap-4">
