@@ -359,7 +359,7 @@ export function HomePage() {
         </div>
       )}
 
-      <section className="px-5 py-8 md:px-8 md:py-16">
+      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-14 md:px-8 md:py-20">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
@@ -397,7 +397,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Od mužů po nejmenší"
@@ -418,7 +418,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-12 md:px-8 md:py-20">
+      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
             <div>
@@ -449,14 +449,14 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 md:px-8 md:py-28">
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="NFC Lichnov"
             title="Klub je víc než sestava."
           />
 
-          <div className="grid border-y border-sand-200 md:grid-cols-4 md:divide-x md:divide-sand-200">
+          <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] md:grid-cols-4 md:divide-x md:divide-sand-200">
             {[
               ["O klubu", "/klub"],
               ["Historie", "/klub#historie"],
@@ -466,7 +466,7 @@ export function HomePage() {
               <Link
                 key={label}
                 to={to}
-                className="group flex items-center justify-between border-b border-sand-200 px-1 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 last:border-b-0 md:border-b-0 md:px-6 md:py-9"
+                className="group flex items-center justify-between border-b border-sand-200 px-5 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 transition hover:bg-white last:border-b-0 md:border-b-0 md:px-6 md:py-9"
               >
                 {label}
                 <ArrowUpRight
