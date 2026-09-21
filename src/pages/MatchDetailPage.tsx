@@ -723,7 +723,7 @@ function resolveClubSide(
 type TimelineEventKind = 'goal' | 'yellow' | 'red' | 'substitution' | 'other'
 
 function eventKind(event: MatchTimelineEvent): TimelineEventKind {
-  const type = event.type
+  const type = `${event.type} ${event.label}`
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase('cs-CZ')
