@@ -110,13 +110,38 @@ export function TeamPage() {
   )
 
   return (
-    <main>
-      <section className="px-5 pb-8 pt-14 md:px-8 md:pb-10 md:pt-20">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="relative overflow-hidden rounded-[42px] bg-brand-900 px-6 py-7 text-white shadow-soft sm:px-9 sm:py-10 lg:px-12 lg:py-12">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(0,146,63,.5),transparent_28%),radial-gradient(circle_at_92%_78%,rgba(255,255,255,.09),transparent_30%)]" />
+    <main className="overflow-hidden bg-sand-50">
+      <section className="relative px-5 pb-10 pt-14 md:px-8 md:pb-14 md:pt-20">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute right-[-6%] top-0 h-[88%] w-[78%] opacity-55">
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-[70%_center]"
+              style={{ filter: 'saturate(.72) contrast(.9) brightness(1.12)' }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.82)_22%,rgba(250,248,243,.28)_58%,rgba(250,248,243,.08)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.12)_55%,#faf8f3_100%)]" />
+          </div>
+          <div className="absolute -left-36 top-20 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1240px]">
+          <div className="relative overflow-hidden rounded-[42px] bg-brand-900 px-6 py-7 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)] sm:px-9 sm:py-10 lg:px-12 lg:py-12">
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-[68%_center] opacity-[0.16]"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(95deg,#18352a_0%,rgba(24,53,42,.96)_45%,rgba(24,53,42,.72)_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(0,146,63,.48),transparent_28%),radial-gradient(circle_at_92%_78%,rgba(255,255,255,.10),transparent_30%)]" />
             <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
             <div className="absolute -right-8 -top-10 h-52 w-52 rounded-full border border-white/[0.06]" />
+            <div className="pointer-events-none absolute -bottom-9 -left-3 select-none text-[120px] font-black leading-none tracking-[-0.08em] text-white/[0.025] sm:text-[180px]">
+              NFC
+            </div>
 
             <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(460px,.92fr)] lg:items-end">
               <div>
@@ -181,7 +206,7 @@ export function TeamPage() {
 
           <nav
             aria-label="Sekce týmu"
-            className="mt-4 flex gap-2 overflow-x-auto rounded-[24px] border border-sand-200 bg-[#fbfaf6] p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="relative z-20 mt-4 flex gap-2 overflow-x-auto rounded-[24px] border border-white/80 bg-white/75 p-2 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl [scrollbar-width:none] md:sticky md:top-24 [&::-webkit-scrollbar]:hidden"
           >
             <SectionLink href="#zapasy">Zápasy</SectionLink>
             {standings.length > 0 && <SectionLink href="#tabulka">Tabulka</SectionLink>}
@@ -191,8 +216,12 @@ export function TeamPage() {
         </div>
       </section>
 
-      <section id="zapasy" className="scroll-mt-28 px-5 py-12 md:px-8 md:py-20">
-        <div className="mx-auto max-w-[1240px]">
+      <section id="zapasy" className="relative scroll-mt-28 px-5 py-16 md:px-8 md:py-24">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-40 top-24 h-96 w-96 rounded-full bg-brand-500/[0.055] blur-3xl" />
+          <div className="absolute left-[5%] top-16 h-px w-[34%] bg-gradient-to-r from-brand-500/0 via-brand-500/20 to-brand-500/0" />
+        </div>
+        <div className="relative mx-auto max-w-[1240px]">
           <SectionHeading
             eyebrow="Program"
             title="Zápasy"
@@ -275,22 +304,62 @@ export function TeamPage() {
       {standings.length > 0 && (
         <section
           id="tabulka"
-          className="scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+          className="relative scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
         >
-          <div className="mx-auto max-w-[1100px]">
-            <SectionHeading
-              eyebrow="Soutěž"
-              title="Tabulka"
-              note={team.season ? `Sezóna ${team.season}` : undefined}
-            />
-            <StandingsTable rows={standings} />
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -left-28 bottom-[-7rem] h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
+          </div>
+
+          <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[42px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 md:p-10">
+            <div className="pointer-events-none absolute right-[-6rem] top-[-6rem] h-64 w-64 rounded-full border border-white/10" />
+            <div className="pointer-events-none absolute right-4 top-4 text-[110px] font-black leading-none tracking-[-0.08em] text-white/[0.025]">
+              {lichnovStanding?.rank ?? 'NFC'}
+            </div>
+
+            <div className="relative grid gap-8 lg:grid-cols-[.58fr_1.42fr] lg:items-start">
+              <div className="lg:sticky lg:top-28">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                  Soutěž
+                </div>
+                <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
+                  Tabulka
+                </h2>
+                <p className="mt-4 max-w-sm text-sm leading-6 text-white/58">
+                  Aktuální pořadí týmu v soutěži. NFC Lichnov je zvýrazněný,
+                  abys jeho pozici našel okamžitě.
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {team.season && (
+                    <span className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/65">
+                      Sezóna {team.season}
+                    </span>
+                  )}
+                  {lichnovStanding?.rank != null && (
+                    <span className="rounded-full bg-brand-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white">
+                      {lichnovStanding.rank}. místo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[30px] bg-[#fbfaf6] p-2 text-ink-900 shadow-[0_18px_55px_rgba(0,0,0,.12)] sm:p-3">
+                <StandingsTable rows={standings} />
+              </div>
+            </div>
           </div>
         </section>
       )}
 
-      <section id="hraci" className="scroll-mt-28 py-14 md:py-20">
-        <div className="px-5 md:px-8">
-          <div className="mx-auto max-w-[1240px]">
+      <section id="hraci" className="relative scroll-mt-28 py-16 md:py-24">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[linear-gradient(180deg,rgba(243,239,230,.72),rgba(250,248,243,0))]" />
+        <div className="pointer-events-none absolute right-[8%] top-10 h-36 w-36 rounded-full border border-brand-900/[0.06]" />
+        <div className="relative px-5 md:px-8">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-32 top-16 h-80 w-80 rounded-full bg-brand-500/[0.065] blur-3xl" />
+          <div className="absolute left-[7%] top-28 h-44 w-44 rounded-full border border-brand-900/[0.045]" />
+        </div>
+        <div className="relative mx-auto max-w-[1240px]">
             <SectionHeading
               eyebrow="Kabina"
               title="Hráči"
@@ -325,7 +394,7 @@ export function TeamPage() {
 
       <section
         id="realizacni-tym"
-        className="scroll-mt-28 px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-12"
+        className="relative scroll-mt-28 bg-sand-100 px-5 pb-20 pt-16 md:px-8 md:pb-28 md:pt-24"
       >
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
@@ -345,7 +414,7 @@ export function TeamPage() {
               {staffQuery.data.map((person) => (
                 <article
                   key={person.id}
-                  className="group overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
+                  className="group overflow-hidden rounded-[30px] border border-white/80 bg-white/82 shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft"
                 >
                   <div className="grid grid-cols-[116px_1fr] sm:block">
                     <div className="relative min-h-[156px] overflow-hidden bg-sand-100 sm:aspect-[4/3] sm:min-h-0">
@@ -441,7 +510,7 @@ function SectionLink({ href, children }: { href: string; children: ReactNode }) 
     <a
       href={href}
       data-no-transition="true"
-      className="shrink-0 rounded-2xl px-4 py-2.5 text-sm font-bold text-ink-500 transition hover:bg-white hover:text-brand-900"
+      className="shrink-0 rounded-2xl px-4 py-2.5 text-sm font-bold text-ink-500 transition hover:bg-brand-50 hover:text-brand-900"
     >
       {children}
     </a>
