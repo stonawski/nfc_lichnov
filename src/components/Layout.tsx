@@ -6,11 +6,11 @@ import { Navigation } from './Navigation'
 import { PageMotion } from './PageMotion'
 
 export function Layout() {
-  const { data: teams = [] } = useQuery({ queryKey: ['teams'], queryFn: fetchTeams, retry: false })
-  const primaryLogo =
-    teams.find((team) => team.slug === 'muzi')?.logo_url ??
-    teams[0]?.logo_url ??
-    null
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    retry: false,
+  })
 
   return (
     <div className="flex min-h-screen flex-col bg-sand-50 text-ink-900">
@@ -20,7 +20,7 @@ export function Layout() {
           <Outlet />
         </PageMotion>
       </div>
-      <Footer logoUrl={primaryLogo} />
+      <Footer />
     </div>
   )
 }
