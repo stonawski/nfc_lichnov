@@ -60,13 +60,27 @@ export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
   return (data ?? []) as TeamSeason[]
 }
 
+function withClubLogoFallback(match: Match, team?: Team): Match {
+  if (!team?.logo_url) return match
+
+  const homeIsLichnov = /lichnov/i.test(match.home_team_name)
+  const awayIsLichnov = /lichnov/i.test(match.away_team_name)
+
+  return {
+    ...match,
+    home_team_logo: match.home_team_logo || (homeIsLichnov ? team.logo_url : null),
+    away_team_logo: match.away_team_logo || (awayIsLichnov ? team.logo_url : null),
+  }
+}
+
 export async function fetchCurrentMatches(): Promise<Match[]> {
   ensureConfigured()
-  const seasons = await fetchActiveSeasons()
+  const [seasons, teams] = await Promise.all([fetchActiveSeasons(), fetchTeams()])
   if (!seasons.length) return []
 
   const teamIds = seasons.map((item) => item.team_id)
   const seasonByTeam = new Map(seasons.map((item) => [item.team_id, item.season]))
+  const teamById = new Map(teams.map((team) => [team.id, team]))
 
   const { data, error } = await supabase
     .from('matches')
@@ -76,10 +90,12 @@ export async function fetchCurrentMatches(): Promise<Match[]> {
 
   if (error) throw error
 
-  return ((data ?? []) as Match[]).filter((match) => {
-    const expected = seasonByTeam.get(match.team_id)
-    return !expected || !match.season || match.season === expected
-  })
+  return ((data ?? []) as Match[])
+    .filter((match) => {
+      const expected = seasonByTeam.get(match.team_id)
+      return !expected || !match.season || match.season === expected
+    })
+    .map((match) => withClubLogoFallback(match, teamById.get(match.team_id)))
 }
 
 export async function fetchHomepageMatchSummaries(): Promise<TeamMatchSummary[]> {
@@ -150,8 +166,9 @@ export async function fetchUpcomingMatches(): Promise<Array<Match & { team?: Tea
 }
 
 export async function fetchMatchesByTeam(teamId: string): Promise<Match[]> {
-  const seasons = await fetchActiveSeasons()
+  const [seasons, teams] = await Promise.all([fetchActiveSeasons(), fetchTeams()])
   const season = seasons.find((item) => item.team_id === teamId)?.season
+  const team = teams.find((item) => item.id === teamId)
 
   let query = supabase
     .from('matches')
@@ -162,7 +179,7 @@ export async function fetchMatchesByTeam(teamId: string): Promise<Match[]> {
   if (season) query = query.eq('season', season)
   const { data, error } = await query
   if (error) throw error
-  return (data ?? []) as Match[]
+  return ((data ?? []) as Match[]).map((match) => withClubLogoFallback(match, team))
 }
 
 export async function fetchStandingsByTeam(teamId: string): Promise<Standing[]> {
