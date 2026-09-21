@@ -46,6 +46,31 @@ export type Match = {
   pitch_name: string | null
 }
 
+export type MatchParticipant = {
+  id: string
+  player_id: string | null
+  name: string
+  photo_url: string | null
+  number: number | null
+  position: string | null
+  side: 'home' | 'away' | null
+  starter: boolean | null
+  captain: boolean | null
+  role: string | null
+}
+
+export type MatchTimelineEvent = {
+  id: string
+  minute: number | null
+  type: string
+  label: string
+  player_name: string | null
+  secondary_player_name: string | null
+  side: 'home' | 'away' | null
+  score_home: number | null
+  score_away: number | null
+}
+
 export type Standing = {
   id: string
   team_id: string

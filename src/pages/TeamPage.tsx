@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { CalendarClock, CalendarDays } from 'lucide-react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
@@ -122,7 +122,11 @@ export function TeamPage() {
                 )
 
                 return (
-                  <div key={match.id} className="rounded-4xl border border-sand-200 bg-white p-5">
+                  <Link
+                    key={match.id}
+                    to={`/zapasy/${match.id}`}
+                    className="block rounded-4xl border border-sand-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-soft"
+                  >
                     <div className="flex items-center justify-between gap-4 text-xs text-ink-500">
                       <span>{upcoming ? 'Nadcházející utkání' : formatMatchDate(match.playing_at)}</span>
                       <span>{match.round || match.competition_name || ''}</span>
@@ -147,7 +151,7 @@ export function TeamPage() {
 
                       <span>{match.away_team_name}</span>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>

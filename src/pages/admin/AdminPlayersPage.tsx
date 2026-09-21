@@ -11,6 +11,10 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createPlayer, fetchAdminPlayers } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
+import {
+  TACTICAL_POSITION_OPTIONS,
+  tacticalPositionLabel,
+} from '../../lib/playerPosition'
 import type { Player, Team } from '../../lib/types'
 
 function playerName(player: Player) {
@@ -218,7 +222,7 @@ export function AdminPlayersPage() {
 
                       {player.position && (
                         <span className="rounded-full bg-sand-100 px-2.5 py-1 text-[10px] font-bold text-ink-500">
-                          {player.position}
+                          {tacticalPositionLabel(player.position) || player.position}
                         </span>
                       )}
 
@@ -288,6 +292,7 @@ function CreatePlayerDialog({
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [number, setNumber] = useState('')
+  const [position, setPosition] = useState('')
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -296,6 +301,7 @@ function CreatePlayerDialog({
         first_name: firstName,
         last_name: lastName,
         number: number.trim() ? Number(number) : null,
+        position: position || null,
       }),
     onSuccess: (player) => onCreated(player.id),
   })
@@ -374,20 +380,40 @@ function CreatePlayerDialog({
             </label>
           </div>
 
-          <label className="block">
-            <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
-              Číslo dresu
-            </span>
-            <input
-              type="number"
-              min="0"
-              max="999"
-              value={number}
-              onChange={(event) => setNumber(event.target.value)}
-              className="admin-input mt-2"
-              placeholder="Volitelné"
-            />
-          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+                Číslo dresu
+              </span>
+              <input
+                type="number"
+                min="0"
+                max="999"
+                value={number}
+                onChange={(event) => setNumber(event.target.value)}
+                className="admin-input mt-2"
+                placeholder="Volitelné"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+                Pozice
+              </span>
+              <select
+                value={position}
+                onChange={(event) => setPosition(event.target.value)}
+                className="admin-input mt-2"
+              >
+                <option value="">Bez pozice</option>
+                {TACTICAL_POSITION_OPTIONS.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           {createMutation.isError && (
             <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">

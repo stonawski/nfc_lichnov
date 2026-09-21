@@ -3,6 +3,7 @@ import { AdminGuard } from './admin/AdminGuard'
 import { AdminLayout } from './admin/AdminLayout'
 import { Layout } from './components/Layout'
 import { HomePage } from './pages/HomePage'
+import { MatchDetailPage } from './pages/MatchDetailPage'
 import { MatchesPage } from './pages/MatchesPage'
 import { NewsDetailPage } from './pages/NewsDetailPage'
 import { NewsPage } from './pages/NewsPage'
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/tymy" element={<TeamsPage />} />
         <Route path="/tymy/:slug" element={<TeamPage />} />
         <Route path="/zapasy" element={<MatchesPage />} />
+        <Route path="/zapasy/:id" element={<MatchDetailPage />} />
         <Route path="/aktuality" element={<NewsPage />} />
         <Route path="/aktuality/:slug" element={<NewsDetailPage />} />
         <Route path="/galerie" element={<GalleryPage />} />
