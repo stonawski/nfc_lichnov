@@ -6,8 +6,8 @@ export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#0b281f] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,#0d3025_0%,#0b281f_48%,#071d17_100%)]" />
-      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[360px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/35 blur-[95px] sm:h-[440px] sm:w-[720px] lg:h-[520px] lg:w-[860px]" />
-      <div className="pointer-events-none absolute left-[30%] top-[70%] h-[180px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#78d69a]/20 blur-[70px]" />
+      <div className="pointer-events-none absolute left-[30%] top-[68%] h-[390px] w-[650px] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] rounded-[58%_42%_63%_37%/42%_57%_43%_58%] bg-brand-500/[0.28] blur-[105px] sm:h-[470px] sm:w-[780px] lg:h-[540px] lg:w-[920px]" />
+      <div className="pointer-events-none absolute left-[29%] top-[66%] h-[190px] w-[360px] -translate-x-1/2 -translate-y-1/2 rotate-[9deg] rounded-[43%_57%_39%_61%/59%_38%_62%_41%] bg-[#9af0b8]/[0.34] blur-[72px] sm:h-[230px] sm:w-[430px] lg:h-[270px] lg:w-[500px]" />
 
       <div className="relative mx-auto max-w-[1460px] px-5 pb-5 pt-14 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-0">
@@ -48,7 +48,7 @@ export function Footer() {
           </FooterSection>
         </div>
 
-        <div className="mt-24 grid items-end gap-8 sm:mt-28 lg:mt-36 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-10">
+        <div className="mt-24 grid items-end gap-8 sm:mt-28 lg:mt-36 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-10">
           <div className="flex h-[138px] w-[138px] items-center justify-center sm:h-[164px] sm:w-[164px] lg:h-[206px] lg:w-[206px]">
             <img
               src="/nfc-footer-logo.webp"
@@ -57,16 +57,15 @@ export function Footer() {
             />
           </div>
 
-          <div className="min-w-0 pb-1">
-            <div className="whitespace-nowrap text-[clamp(3rem,10.7vw,11rem)] font-black leading-[.74] tracking-[-0.075em] text-white">
+          <div className="min-w-0 pb-1 lg:pl-10 xl:pl-16">
+            <div className="whitespace-nowrap text-[clamp(3.4rem,11.8vw,12.4rem)] font-black leading-[.72] tracking-[-0.078em] text-white">
               NFC Lichnov
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 pb-4 text-[11px] font-medium text-white/[0.48] sm:flex-row sm:items-center sm:justify-between lg:mt-14">
-          <div>Web vytvořil Stonawski</div>
-          <div>© {new Date().getFullYear()} NFC Lichnov</div>
+        <div className="mt-12 pb-4 text-[11px] font-medium text-white/[0.48] lg:mt-14">
+          Vytvořil Daniel Stonawski | Všechna práva vyhrazena
         </div>
       </div>
     </footer>
