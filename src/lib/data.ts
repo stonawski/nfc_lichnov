@@ -3,6 +3,8 @@ import type {
   Gallery,
   GalleryImage,
   Match,
+  MatchParticipant,
+  MatchTimelineEvent,
   NewsArticle,
   Player,
   Staff,
@@ -312,4 +314,165 @@ export async function fetchGalleryImages(galleryId?: string): Promise<GalleryIma
 
 export function galleryImageUrl(image: GalleryImage): string {
   return image.image_url
+}
+
+
+export async function fetchMatchById(id: string): Promise<Match | null> {
+  ensureConfigured()
+
+  const { data, error } = await supabase
+    .from('matches')
+    .select('id,team_id,facr_match_id,home_team_facr_id,home_team_name,home_team_logo,away_team_facr_id,away_team_name,away_team_logo,playing_at,season,facr_competition_id,competition_name,round,round_position,state,final_score,score_home,score_away,penalty_score_home,penalty_score_away,manual_override,manual_score_home,manual_score_away,pitch_name')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Match | null
+}
+
+type UnknownRow = Record<string, unknown>
+
+function textValue(row: UnknownRow, keys: string[]): string | null {
+  for (const key of keys) {
+    const value = row[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+    if (typeof value === 'number') return String(value)
+  }
+  return null
+}
+
+function numberValue(row: UnknownRow, keys: string[]): number | null {
+  for (const key of keys) {
+    const value = row[key]
+    if (typeof value === 'number' && Number.isFinite(value)) return value
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) {
+      return Number(value)
+    }
+  }
+  return null
+}
+
+function booleanValue(row: UnknownRow, keys: string[]): boolean | null {
+  for (const key of keys) {
+    const value = row[key]
+    if (typeof value === 'boolean') return value
+    if (value === 1 || value === '1' || value === 'true') return true
+    if (value === 0 || value === '0' || value === 'false') return false
+  }
+  return null
+}
+
+function sideValue(row: UnknownRow): 'home' | 'away' | null {
+  const side = textValue(row, ['side', 'team_side', 'home_away'])?.toLowerCase()
+  if (side === 'home' || side === 'domaci' || side === 'domácí') return 'home'
+  if (side === 'away' || side === 'hoste' || side === 'hosté') return 'away'
+
+  const isHome = booleanValue(row, ['is_home', 'home'])
+  if (isHome === true) return 'home'
+  if (isHome === false) return 'away'
+
+  return null
+}
+
+async function fetchOptionalMatchRows(
+  tableNames: string[],
+  match: Match,
+): Promise<UnknownRow[]> {
+  for (const table of tableNames) {
+    const byId = await supabase.from(table).select('*').eq('match_id', match.id)
+    if (!byId.error) {
+      if ((byId.data ?? []).length) return (byId.data ?? []) as UnknownRow[]
+      continue
+    }
+
+    if (match.facr_match_id != null) {
+      const byFacrId = await supabase
+        .from(table)
+        .select('*')
+        .eq('facr_match_id', match.facr_match_id)
+
+      if (!byFacrId.error && (byFacrId.data ?? []).length) {
+        return (byFacrId.data ?? []) as UnknownRow[]
+      }
+    }
+  }
+
+  return []
+}
+
+export async function fetchMatchParticipants(match: Match): Promise<MatchParticipant[]> {
+  ensureConfigured()
+
+  const rows = await fetchOptionalMatchRows(
+    ['match_players', 'match_lineups', 'match_squad', 'match_participants'],
+    match,
+  )
+
+  return rows
+    .map((row, index): MatchParticipant | null => {
+      const firstName = textValue(row, ['first_name', 'firstname'])
+      const lastName = textValue(row, ['last_name', 'lastname'])
+      const name =
+        textValue(row, ['player_name', 'name', 'full_name']) ||
+        [firstName, lastName].filter(Boolean).join(' ').trim()
+
+      if (!name) return null
+
+      return {
+        id:
+          textValue(row, ['id', 'player_id', 'facr_player_id']) ||
+          `${match.id}-participant-${index}`,
+        name,
+        number: numberValue(row, ['number', 'shirt_number', 'jersey_number']),
+        position: textValue(row, ['position', 'player_position']),
+        side: sideValue(row),
+        starter: booleanValue(row, ['starter', 'is_starter', 'starting', 'started']),
+        captain: booleanValue(row, ['captain', 'is_captain']),
+        role: textValue(row, ['role', 'lineup_role', 'status']),
+      }
+    })
+    .filter((item): item is MatchParticipant => item != null)
+}
+
+export async function fetchMatchTimeline(match: Match): Promise<MatchTimelineEvent[]> {
+  ensureConfigured()
+
+  const rows = await fetchOptionalMatchRows(
+    ['match_events', 'match_timeline', 'match_incidents'],
+    match,
+  )
+
+  return rows
+    .map((row, index): MatchTimelineEvent | null => {
+      const type =
+        textValue(row, ['event_type', 'type', 'kind', 'event']) ||
+        'event'
+      const playerName = textValue(row, ['player_name', 'name', 'primary_player_name'])
+      const secondaryPlayerName = textValue(row, [
+        'secondary_player_name',
+        'second_player_name',
+        'assist_player_name',
+        'player_out_name',
+      ])
+      const label =
+        textValue(row, ['label', 'description', 'detail', 'event_label']) ||
+        playerName ||
+        type
+
+      if (!label) return null
+
+      return {
+        id: textValue(row, ['id', 'event_id']) || `${match.id}-event-${index}`,
+        minute: numberValue(row, ['minute', 'event_minute', 'match_minute']),
+        type,
+        label,
+        player_name: playerName,
+        secondary_player_name: secondaryPlayerName,
+        side: sideValue(row),
+        score_home: numberValue(row, ['score_home', 'home_score']),
+        score_away: numberValue(row, ['score_away', 'away_score']),
+      }
+    })
+    .filter((item): item is MatchTimelineEvent => item != null)
+    .sort((a, b) => (a.minute ?? Number.MAX_SAFE_INTEGER) - (b.minute ?? Number.MAX_SAFE_INTEGER))
 }
