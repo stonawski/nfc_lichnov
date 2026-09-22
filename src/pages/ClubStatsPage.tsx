@@ -226,7 +226,11 @@ export function ClubStatsPage() {
                           {milestone.afterSeason}
                         </div>
                       </div>
-                      <Trophy size={19} className="text-brand-500" />
+                      {promotion ? (
+                        <Trophy size={19} className="text-brand-500" />
+                      ) : (
+                        <ArrowDown size={20} className="text-brand-900" />
+                      )}
                     </div>
 
                     <div className="mt-5 text-sm font-bold text-brand-900">
