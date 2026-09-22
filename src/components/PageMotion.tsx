@@ -9,6 +9,7 @@ import {
   fetchGalleryBySlug,
   fetchGalleryImages,
   fetchHomepageMatchSummaries,
+  fetchNewsBySlug,
   fetchMatchById,
   fetchMatchParticipants,
   fetchMatchTimeline,
@@ -185,7 +186,7 @@ export function PageMotion({ children }: { children: ReactNode }) {
       if (parts[0] === 'aktuality' && parts[1]) {
         await queryClient.prefetchQuery({
           queryKey: ['news', parts[1]],
-          queryFn: () => import('../lib/data').then(({ fetchNewsBySlug }) => fetchNewsBySlug(parts[1])),
+          queryFn: () => fetchNewsBySlug(parts[1]),
         })
         return
       }
