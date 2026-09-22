@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { Seo } from '../components/Seo'
 
 const navItems = [
   { to: '/admin', label: 'Přehled', icon: LayoutDashboard, end: true },
@@ -35,6 +36,24 @@ export function AdminLayout() {
   }, [location.pathname])
 
   useEffect(() => {
+    if (!mobileOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [mobileOpen])
+
+  useEffect(() => {
     let active = true
 
     void supabase.auth.getUser().then(({ data }) => {
@@ -53,6 +72,7 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-[#f5f2ea] text-ink-900">
+      <Seo title="Administrace" description="Administrace obsahu NFC Lichnov." noindex />
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
         <aside className="sticky top-0 hidden h-screen w-[270px] shrink-0 border-r border-sand-200/80 bg-[#fbfaf6] p-5 lg:flex lg:flex-col">
           <AdminBrand />
@@ -116,6 +136,9 @@ export function AdminLayout() {
       {mobileOpen && (
         <div className="fixed inset-0 z-[70] bg-brand-900/25 p-3 backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)}>
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigace administrace"
             className="ml-auto flex h-full w-full max-w-sm flex-col rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft"
             onClick={(event) => event.stopPropagation()}
           >

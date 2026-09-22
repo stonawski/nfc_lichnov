@@ -10,8 +10,9 @@ import {
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
+import { Seo } from '../components/Seo'
 import {
   fetchMatchById,
   fetchMatchParticipants,
@@ -68,11 +69,24 @@ export function MatchDetailPage() {
     retry: false,
   })
 
-  if (matchQuery.isLoading) {
+  const matchDataLoading =
+    matchQuery.isLoading ||
+    teamsQuery.isLoading ||
+    (Boolean(match) && (participantsQuery.isLoading || timelineQuery.isLoading))
+
+  if (matchDataLoading) {
+    return <PublicDataPageLoading sections={1} />
+  }
+
+  if (matchQuery.isError) {
     return (
       <main className="px-5 py-20 md:px-8">
-        <div className="mx-auto max-w-[1180px]">
-          <LoadingState rows={6} />
+        <div className="mx-auto max-w-[1000px]">
+          <ErrorState
+            title="Zápas se nepodařilo načíst"
+            text="Zkus načtení zopakovat."
+            onRetry={() => void matchQuery.refetch()}
+          />
         </div>
       </main>
     )
@@ -114,7 +128,12 @@ export function MatchDetailPage() {
 
   return (
     <main className="data-fade-in">
-      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+      <Seo
+        title={`${match.home_team_name} – ${match.away_team_name}`}
+        description={`Detail zápasu ${match.home_team_name} – ${match.away_team_name}: termín, výsledek, sestava a průběh utkání.`}
+        canonicalPath={`/zapasy/${match.id}`}
+      />
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col justify-center">

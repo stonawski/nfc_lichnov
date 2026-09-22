@@ -12,5 +12,24 @@ export function safeReturnPath(
   fallback: string,
 ): string {
   const from = searchParams.get('from')
-  return from && from.startsWith('/') ? from : fallback
+
+  if (
+    !from ||
+    !from.startsWith('/') ||
+    from.startsWith('//') ||
+    from.includes('\\')
+  ) {
+    return fallback
+  }
+
+  try {
+    const base = new URL('https://nfc.local')
+    const parsed = new URL(from, base)
+
+    if (parsed.origin !== base.origin) return fallback
+
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`
+  } catch {
+    return fallback
+  }
 }

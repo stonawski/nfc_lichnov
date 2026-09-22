@@ -57,8 +57,8 @@ export function AdminDashboardPage() {
           Administrace obsahu
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-500">
-          Tady budeme postupně spravovat všechen ručně editovaný obsah webu.
-          Sportovní data z automatických importů zůstávají oddělená.
+          Tady spravuješ ručně editovaný obsah webu. Sportovní data z automatických
+          importů zůstávají oddělená od klubových článků, médií a historie.
         </p>
       </div>
 
@@ -107,11 +107,11 @@ export function AdminDashboardPage() {
         <div className="mt-3 grid gap-6 lg:grid-cols-[1fr_.65fr] lg:items-end">
           <div>
             <h2 className="text-3xl font-black tracking-[-0.05em]">
-              Cloudflare R2 bude společné úložiště médií.
+              Cloudflare R2 je společné úložiště médií.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
-              Galerie, fotografie hráčů, trenérů i titulní obrázky aktualit budou
-              používat jeden bezpečný upload systém a jednotnou správu souborů.
+              Galerie, fotografie hráčů, trenérů i titulní obrázky aktualit
+              používají jeden bezpečný upload systém a jednotnou správu souborů.
             </p>
           </div>
 

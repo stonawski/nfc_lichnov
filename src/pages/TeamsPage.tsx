@@ -3,12 +3,12 @@ import { ArrowUpRight, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
 import { fetchTeams } from '../lib/data'
 
 export function TeamsPage() {
-  const { data: teams = [], isLoading } = useQuery({
+  const { data: teams = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['teams'],
     queryFn: fetchTeams,
     retry: false,
@@ -37,6 +37,12 @@ export function TeamsPage() {
         <div className="mx-auto max-w-[1240px]">
           {isLoading ? (
             <LoadingState rows={4} />
+          ) : isError ? (
+            <ErrorState
+              title="Týmy se nepodařilo načíst"
+              text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení se sportovními daty."
+              onRetry={() => void refetch()}
+            />
           ) : teams.length ? (
             <DataFade className="stagger-children grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {teams.map((team, index) => (

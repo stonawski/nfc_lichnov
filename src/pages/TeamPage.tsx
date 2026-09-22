@@ -12,9 +12,10 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
+import { Seo } from '../components/Seo'
 import { StandingsTable } from '../components/StandingsTable'
 import {
   fetchDisplayPlayersByTeam,
@@ -71,10 +72,25 @@ export function TeamPage() {
     retry: false,
   })
 
-  if (teamQuery.isLoading) {
+  const teamDataLoading =
+    Boolean(team?.id) &&
+    (matchesQuery.isLoading ||
+      standingsQuery.isLoading ||
+      playersQuery.isLoading ||
+      staffQuery.isLoading)
+
+  if (teamQuery.isLoading || teamDataLoading) {
+    return <PublicDataPageLoading sections={4} />
+  }
+
+  if (teamQuery.isError) {
     return (
       <PageWrap>
-        <LoadingState rows={4} />
+        <ErrorState
+          title="Tým se nepodařilo načíst"
+          text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení se sportovními daty."
+          onRetry={() => void teamQuery.refetch()}
+        />
       </PageWrap>
     )
   }
@@ -108,7 +124,13 @@ export function TeamPage() {
   )
 
   return (
-    <main className="data-fade-in bg-sand-50">
+    <main className="data-fade-in">
+      <Seo
+        title={team.name}
+        description={`${team.name} NFC Lichnov — zápasy, hráči, tabulka a realizační tým.`}
+        image={team.logo_url}
+        canonicalPath={`/tymy/${team.slug}`}
+      />
       <section className="site-hero-frame relative -mt-[84px] flex flex-col px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <HeroFieldBackdrop />
 

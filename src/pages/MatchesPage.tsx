@@ -10,7 +10,7 @@ import {
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
 import {
@@ -86,8 +86,12 @@ export function MatchesPage() {
     setShowAllResults(false)
   }, [selectedTeamSlug])
 
+  if (matchesQuery.isLoading || teamsQuery.isLoading) {
+    return <PublicDataPageLoading sections={2} />
+  }
+
   return (
-    <main>
+    <main className="data-fade-in">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
         <HeroFieldBackdrop />
 
@@ -110,7 +114,7 @@ export function MatchesPage() {
 
           {teamsQuery.isLoading ? (
             <div className="h-[68px] rounded-[24px] border border-white/80 bg-white/55 backdrop-blur-xl" />
-          ) : (
+          ) : teamsQuery.isError ? null : (
             <DataFade className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
               <div className="flex flex-wrap gap-2">
                 <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
@@ -149,6 +153,19 @@ export function MatchesPage() {
         <section className="bg-white px-5 py-16 md:px-8 md:py-20">
           <div className="mx-auto max-w-[1240px]">
             <LoadingState rows={6} />
+          </div>
+        </section>
+      ) : matchesQuery.isError || teamsQuery.isError ? (
+        <section className="bg-white px-5 py-16 md:px-8 md:py-20">
+          <div className="mx-auto max-w-[1240px]">
+            <ErrorState
+              title="Zápasy se nepodařilo načíst"
+              text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení se sportovními daty."
+              onRetry={() => {
+                void teamsQuery.refetch()
+                void matchesQuery.refetch()
+              }}
+            />
           </div>
         </section>
       ) : matches.length ? (

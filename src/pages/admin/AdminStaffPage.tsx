@@ -144,6 +144,7 @@ export function AdminStaffPage() {
               onChange={(event) => setListParam('q', event.target.value)}
               className="admin-input !pl-11"
               placeholder="Hledat trenéra nebo roli…"
+              aria-label="Hledat člena realizačního týmu"
             />
           </label>
         </div>

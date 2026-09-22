@@ -36,8 +36,9 @@ export function ClubStatsPage() {
     staleTime: 60_000,
   })
 
-  const players = statsQuery.data.players
-  const seasons = statsQuery.data.seasons
+  const stats = statsQuery.data ?? getBundledClubStats()
+  const players = stats.players
+  const seasons = stats.seasons
 
   const appearanceRanking = useMemo(
     () =>
@@ -157,6 +158,7 @@ export function ClubStatsPage() {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Hledat hráče…"
+                    aria-label="Hledat hráče v historických statistikách"
                     className="h-11 w-full rounded-[15px] border border-sand-200 bg-[#fbfaf6] pl-11 pr-4 text-sm font-semibold text-brand-900 outline-none transition placeholder:text-ink-500/60 focus:border-brand-500"
                   />
                 </label>
@@ -313,6 +315,7 @@ export function ClubStatsPage() {
               className="component-swap-enter overflow-x-auto"
             >
               <table className="w-full min-w-[900px] border-collapse text-left">
+                <caption className="sr-only">Historie sezon NFC Lichnov</caption>
                 <thead>
                   <tr className="border-b border-white/10 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">
                     <th className="px-5 py-4">Sezona</th>

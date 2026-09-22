@@ -154,6 +154,7 @@ export function AdminPlayersPage() {
               onChange={(event) => setListParam('q', event.target.value)}
               className="admin-input !pl-11"
               placeholder="Hledat hráče…"
+              aria-label="Hledat hráče v administraci"
             />
           </label>
         </div>

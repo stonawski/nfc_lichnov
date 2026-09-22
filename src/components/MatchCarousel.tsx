@@ -82,7 +82,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
             type="button"
             aria-label="Předchozí tým"
             onClick={() => move(-1)}
-            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
+            className="grid h-11 w-11 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
           >
             <ChevronLeft size={17} />
           </button>
@@ -90,7 +90,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
             type="button"
             aria-label="Další tým"
             onClick={() => move(1)}
-            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
+            className="grid h-11 w-11 place-items-center rounded-full text-ink-500 ring-1 ring-sand-200 transition hover:bg-sand-100 hover:text-brand-900"
           >
             <ChevronRight size={17} />
           </button>
@@ -100,6 +100,7 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
       <div
         key={`${active.team.id}-${active.kind}-${active.match?.id ?? 'empty'}`}
         className="carousel-content-enter"
+        aria-live="polite"
       >
         {active.match ? (
           <>
@@ -146,8 +147,15 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
             onClick={() => setIndex(itemIndex)}
             aria-label={`Zobrazit ${item.team.name}`}
             aria-current={itemIndex === index ? 'true' : undefined}
-            className={`h-1.5 rounded-full transition-all ${itemIndex === index ? 'w-6 bg-brand-500' : 'w-1.5 bg-sand-200 hover:bg-brand-500/40'}`}
-          />
+            className="grid h-9 w-9 place-items-center rounded-full"
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 rounded-full transition-all ${
+                itemIndex === index ? 'w-6 bg-brand-500' : 'w-1.5 bg-sand-200'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

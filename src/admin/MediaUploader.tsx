@@ -176,7 +176,7 @@ export function MediaUploader({
       </div>
 
       {items.length > 0 && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2" aria-live="polite" aria-label="Stav nahrávání">
           {items.map((item) => (
             <div
               key={item.id}

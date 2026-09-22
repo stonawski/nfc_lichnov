@@ -14,6 +14,7 @@ import { DataFade } from '../components/DataFade'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
+import { Seo } from '../components/Seo'
 import {
   fetchGalleries,
   fetchGalleryBySlug,
@@ -217,6 +218,12 @@ export function GalleryDetailPage() {
 
   return (
     <main className="data-fade-in">
+      <Seo
+        title={gallery.title || 'Fotogalerie'}
+        description={gallery.description || 'Fotogalerie NFC Lichnov ze zápasů, turnajů a života klubu.'}
+        image={gallery.cover_image}
+        canonicalPath={`/galerie/${gallery.slug || gallery.id}`}
+      />
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop tone="dark" />
 
@@ -408,6 +415,7 @@ function Lightbox({
 }) {
   const [closing, setClosing] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const url = galleryImageUrl(image)
 
   const requestClose = useCallback(() => {
@@ -415,6 +423,10 @@ function Lightbox({
     setClosing(true)
     closeTimerRef.current = window.setTimeout(onClose, 320)
   }, [closing, onClose])
+
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -447,6 +459,7 @@ function Lightbox({
       onClick={requestClose}
     >
       <button
+        ref={closeButtonRef}
         type="button"
         onClick={requestClose}
         aria-label="Zavřít fotografii"

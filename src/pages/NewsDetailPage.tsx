@@ -3,7 +3,8 @@ import { ArrowLeft, CalendarDays } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { Seo } from '../components/Seo'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { fetchNewsBySlug } from '../lib/data'
 import { formatDate } from '../lib/format'
 
@@ -23,6 +24,18 @@ export function NewsDetailPage() {
     )
   }
 
+  if (query.isError) {
+    return (
+      <Wrap>
+        <ErrorState
+          title="Článek se nepodařilo načíst"
+          text="Zkus načtení zopakovat."
+          onRetry={() => void query.refetch()}
+        />
+      </Wrap>
+    )
+  }
+
   if (!query.data) {
     return (
       <Wrap>
@@ -38,6 +51,13 @@ export function NewsDetailPage() {
 
   return (
     <main className="data-fade-in">
+      <Seo
+        title={article.title}
+        description={article.excerpt || 'Aktualita z fotbalového klubu NFC Lichnov.'}
+        image={article.cover_image}
+        canonicalPath={`/aktuality/${article.slug}`}
+        type="article"
+      />
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop tone="dark" />
 

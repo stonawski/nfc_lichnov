@@ -1,6 +1,6 @@
-# NFC Lichnov frontend
+# NFC Lichnov
 
-První moderní React/Vite frontend pro NFC Lichnov. Projekt je připravený pro existující Supabase backend a **neobsahuje žádné migrace ani zásahy do databázového schématu**.
+Moderní veřejný web a administrace fotbalového klubu NFC Lichnov.
 
 ## Stack
 
@@ -9,64 +9,104 @@ První moderní React/Vite frontend pro NFC Lichnov. Projekt je připravený pro
 - Tailwind CSS
 - React Router
 - TanStack Query
-- Supabase JS
+- Supabase
+- Cloudflare R2 pro média
 
-## Spuštění
-
-1. Rozbal projekt a otevři složku v terminálu.
-2. Nainstaluj závislosti:
+## Lokální spuštění
 
 ```bash
-npm install
-```
-
-3. Zkopíruj `.env.example` na `.env`:
-
-```bash
+npm ci
 cp .env.example .env
+npm run dev
 ```
 
-Na Windows můžeš soubor jednoduše duplikovat a přejmenovat.
-
-4. Do `.env` vlož veřejné údaje ze Supabase projektu:
+Do `.env` doplň veřejné hodnoty:
 
 ```env
 VITE_SUPABASE_URL=https://TVUJ_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=TVUJ_ANON_NEBO_PUBLISHABLE_KEY
+VITE_SITE_URL=https://TVA-PRODUKCNI-DOMENA.cz
 ```
 
-**Nikdy sem nevkládej service role key ani FACR token.**
+`VITE_SITE_URL` může při lokálním vývoji zůstat prázdné. V produkci nastav finální HTTPS origin bez lomítka na konci. Používá se pro canonical URL, Open Graph metadata a generování sitemap.
 
-5. Spusť frontend:
+**Do browser env nikdy nevkládej service-role key, Cloudflare secret ani jiné privátní přístupové údaje.**
+
+## Build
 
 ```bash
-npm run dev
+npm run build
+npm run preview
 ```
 
-Vite vypíše lokální adresu, typicky `http://localhost:5173`.
+Build nejdřív spustí TypeScript kontrolu, potom Vite a nakonec vygeneruje produkční `robots.txt` a při nastaveném `VITE_SITE_URL` také `sitemap.xml`.
 
-## Co už je napojené
+GitHub Actions spouští stejný build při pull requestech a po pushi do `main`.
 
-- `teams`
-- `team_seasons`
-- `matches`
-- `standings`
-- `players`
-- `staff`
-- `news`
+## Veřejný web
 
-Homepage obsahuje dynamický carousel týmů, aktuality, nejbližší zápasy, náhled tabulky a týmy. Týmová stránka načítá zápasy, tabulku, hráče a realizační tým.
+Aktuálně obsahuje:
 
-## Co je zatím záměrně placeholder
+- homepage
+- týmy a detail týmu
+- zápasy a detail zápasu
+- aktuality a detail článku
+- galerie a detail galerie
+- klub, historii, historické statistiky a sportovní areál
+- kontakt
+- vlastní 404 a globální error/offline stavy
 
-- `galleries` / `gallery_images` — strukturu jejich přesných sloupců ještě ověříme před napojením.
-- obsah stránek Klub / Kontakt
-- admin UI
-- oficiální fotografie hřiště/klubu
+Sportovní data se načítají ze Supabase. Ručně spravovaný obsah používá administraci pod `/admin`.
+
+## Administrace
+
+Dostupné moduly:
+
+- Galerie
+- Aktuality
+- Hráči
+- Realizační tým
+- Historické statistiky
+
+Přístup je chráněný Supabase Auth a serverovou kontrolou `can_edit_content()`. Média se nahrávají přes Edge Functions do Cloudflare R2.
+
+## Databáze
+
+Repo obsahuje databázové migrace potřebné pro funkce, které vznikly spolu s frontendem. Před produkčním nasazením zkontroluj a aplikuj všechny migrace ve složce `supabase/migrations`.
+
+Historické klubové statistiky používají migraci:
+
+```text
+supabase/migrations/20260922083000_club_stats.sql
+```
+
+## Dokumentace
+
+Kompletní technický handover a finální popis architektury projektu:
+
+```text
+docs/PROJECT_FINALIZATION.md
+```
+
+Produkční checklist:
+
+```text
+docs/LAUNCH_CHECKLIST.md
+```
+
+## Produkční spuštění
+
+Kompletní kontrolní seznam je v:
+
+```text
+docs/LAUNCH_CHECKLIST.md
+```
+
+Obsahuje build, env, Supabase/RLS, R2, SEO, responsive QA, accessibility, doménu, SPA fallback i kontrolu po spuštění.
 
 ## Design
 
-Paleta:
+Základní paleta:
 
 - primary green `#00923F`
 - dark green `#14532D`
@@ -74,4 +114,4 @@ Paleta:
 - beige `#F3EFE6`
 - warm off-white `#FAF8F3`
 
-Navigace a vizuální rytmus jsou stavěné jako moderní produktový web, nikoliv klasická fotbalová šablona.
+Veřejná část používá jednotný hero systém, persistentní navigaci/footer a datové bloky s loading/fade-in stavy.

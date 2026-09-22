@@ -65,14 +65,21 @@ export function getBundledClubStats(): ClubStatsBundle {
   }
 }
 
-const milestoneBySeason = new Map(
-  competitionMilestones.map((milestone) => [
-    milestone.afterSeason,
-    {
-      outcome: milestone.type as Exclude<CompetitionOutcome, null>,
-      nextCompetition: milestone.to,
-    },
-  ]),
+type MilestoneLookupValue = {
+  outcome: Exclude<CompetitionOutcome, null>
+  nextCompetition: string
+}
+
+const milestoneBySeason = new Map<string, MilestoneLookupValue>(
+  competitionMilestones.map(
+    (milestone): [string, MilestoneLookupValue] => [
+      milestone.afterSeason,
+      {
+        outcome: milestone.type as Exclude<CompetitionOutcome, null>,
+        nextCompetition: milestone.to,
+      },
+    ],
+  ),
 )
 
 function fallbackPlayers(): ClubPlayerStat[] {
