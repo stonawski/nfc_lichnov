@@ -12,7 +12,7 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { Seo } from '../components/Seo'
@@ -72,12 +72,15 @@ export function TeamPage() {
     retry: false,
   })
 
-  if (teamQuery.isLoading) {
-    return (
-      <PageWrap>
-        <LoadingState rows={4} />
-      </PageWrap>
-    )
+  const teamDataLoading =
+    Boolean(team?.id) &&
+    (matchesQuery.isLoading ||
+      standingsQuery.isLoading ||
+      playersQuery.isLoading ||
+      staffQuery.isLoading)
+
+  if (teamQuery.isLoading || teamDataLoading) {
+    return <PublicDataPageLoading sections={4} />
   }
 
   if (teamQuery.isError) {
