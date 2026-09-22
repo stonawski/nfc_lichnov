@@ -400,7 +400,7 @@ html.route-changing {
 
   ::view-transition-old(root),
   ::view-transition-new(root) {
-  ::view-transition-new(root) {
+    mix-blend-mode: normal;
     animation-duration: 680ms;
     animation-timing-function: var(--motion-ease);
   }
