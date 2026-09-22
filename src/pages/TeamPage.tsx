@@ -108,7 +108,7 @@ export function TeamPage() {
   )
 
   return (
-    <main className="bg-sand-50">
+    <main className="data-fade-in bg-sand-50">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <HeroFieldBackdrop />
 
