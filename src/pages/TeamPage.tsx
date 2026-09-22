@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
@@ -154,35 +155,54 @@ export function TeamPage() {
                 </h1>
 
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <HeroStat
-                    label="Hráči"
-                    value={playersQuery.isLoading ? '—' : String(playersQuery.data?.length ?? 0)}
-                  />
-                  <HeroStat
-                    label="Tabulka"
-                    value={lichnovStanding?.rank != null ? `${lichnovStanding.rank}. místo` : '—'}
-                  />
-                  <HeroStat
-                    label="Zápasy"
-                    value={matchesQuery.isLoading ? '—' : String(matches.length)}
-                  />
+                  {!playersQuery.isLoading && (
+                    <DataFade>
+                      <HeroStat
+                        label="Hráči"
+                        value={String(playersQuery.data?.length ?? 0)}
+                      />
+                    </DataFade>
+                  )}
+                  {!standingsQuery.isLoading && (
+                    <DataFade>
+                      <HeroStat
+                        label="Tabulka"
+                        value={lichnovStanding?.rank != null ? `${lichnovStanding.rank}. místo` : '—'}
+                      />
+                    </DataFade>
+                  )}
+                  {!matchesQuery.isLoading && (
+                    <DataFade>
+                      <HeroStat
+                        label="Zápasy"
+                        value={String(matches.length)}
+                      />
+                    </DataFade>
+                  )}
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <HeroMatch
-                  label="Poslední výsledek"
-                  match={latest}
-                  kind="result"
-                  returnTo={returnTo}
-                />
-                <HeroMatch
-                  label="Další zápas"
-                  match={next}
-                  kind="upcoming"
-                  returnTo={returnTo}
-                />
-              </div>
+              {matchesQuery.isLoading ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="min-h-[190px] rounded-[28px] border border-white/10 bg-white/[0.05]" />
+                  <div className="min-h-[190px] rounded-[28px] border border-white/10 bg-white/[0.05]" />
+                </div>
+              ) : (
+                <DataFade className="grid gap-3 sm:grid-cols-2">
+                  <HeroMatch
+                    label="Poslední výsledek"
+                    match={latest}
+                    kind="result"
+                    returnTo={returnTo}
+                  />
+                  <HeroMatch
+                    label="Další zápas"
+                    match={next}
+                    kind="upcoming"
+                    returnTo={returnTo}
+                  />
+                </DataFade>
+              )}
             </div>
           </div>
 
@@ -217,7 +237,7 @@ export function TeamPage() {
           {matchesQuery.isLoading ? (
             <LoadingState rows={2} />
           ) : upcoming.length ? (
-            <div className="grid items-stretch gap-4 lg:grid-cols-[1.35fr_.85fr]">
+            <DataFade className="grid items-stretch gap-4 lg:grid-cols-[1.35fr_.85fr]">
               <div className="flex min-w-0 flex-col">
                 <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
                   Nadcházející zápas
@@ -255,16 +275,16 @@ export function TeamPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </DataFade>
           ) : (
-            <div className="rounded-[30px] border border-sand-200 bg-sand-100 p-7">
+            <DataFade className="rounded-[30px] border border-sand-200 bg-sand-100 p-7">
               <div className="text-base font-extrabold text-brand-900">
                 Další zápas zatím není naplánovaný.
               </div>
               <p className="mt-2 text-sm leading-6 text-ink-500">
                 Jakmile bude nový termín dostupný, objeví se tady.
               </p>
-            </div>
+            </DataFade>
           )}
         </div>
       </section>
@@ -272,7 +292,7 @@ export function TeamPage() {
       {standings.length > 0 && (
         <section
           id="tabulka"
-          className="relative scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+          className="data-fade-in relative scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
         >
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[42px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 md:p-10">
             <div className="pointer-events-none absolute right-4 top-4 text-[110px] font-black leading-none tracking-[-0.08em] text-white/[0.025]">
@@ -336,16 +356,18 @@ export function TeamPage() {
             </div>
           </div>
         ) : playersQuery.data?.length ? (
-          <PlayerStripCarousel team={team} players={playersQuery.data} />
+          <DataFade>
+            <PlayerStripCarousel team={team} players={playersQuery.data} />
+          </DataFade>
         ) : (
-          <div className="px-5 md:px-8">
+          <DataFade className="px-5 md:px-8">
             <div className="mx-auto max-w-[1240px]">
               <EmptyState
                 title="Soupiska zatím není k dispozici"
                 text="Hráči se zobrazí po synchronizaci nebo ručním doplnění."
               />
             </div>
-          </div>
+          </DataFade>
         )}
       </section>
 
@@ -367,7 +389,7 @@ export function TeamPage() {
           {staffQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : staffQuery.data?.length ? (
-            <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <DataFade className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {staffQuery.data.map((person) => (
                 <article
                   key={person.id}
@@ -405,12 +427,14 @@ export function TeamPage() {
                   </div>
                 </article>
               ))}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Realizační tým zatím není doplněn"
               text="Trenéři a vedení se zobrazí po doplnění v administraci."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
