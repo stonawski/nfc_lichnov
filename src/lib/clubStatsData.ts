@@ -31,14 +31,17 @@ export type ClubSeasonStat = {
   updatedAt: string | null
 }
 
-export type ClubStatsAuditEntry = {
-  id: number
+export type ClubStatsLastEdit = {
   entityType: 'player' | 'season'
   entityKey: string
-  action: 'insert' | 'update' | 'delete'
   changedAt: string
   changedBy: string | null
   changedByEmail: string | null
+}
+
+export type ClubStatsAuditEntry = ClubStatsLastEdit & {
+  id: number
+  action: 'insert' | 'update' | 'delete'
   beforeData: Record<string, unknown> | null
   afterData: Record<string, unknown> | null
 }
@@ -132,6 +135,16 @@ function mapSeasonRow(row: Record<string, unknown>): ClubSeasonStat {
   }
 }
 
+function mapLastEditRow(row: Record<string, unknown>): ClubStatsLastEdit {
+  return {
+    entityType: row.entity_type === 'season' ? 'season' : 'player',
+    entityKey: String(row.entity_key ?? ''),
+    changedAt: String(row.changed_at ?? ''),
+    changedBy: (row.changed_by as string | null) ?? null,
+    changedByEmail: (row.changed_by_email as string | null) ?? null,
+  }
+}
+
 function mapAuditRow(row: Record<string, unknown>): ClubStatsAuditEntry {
   return {
     id: Number(row.id),
@@ -189,7 +202,7 @@ export async function fetchPublicClubStats(): Promise<ClubStatsBundle> {
 }
 
 export async function fetchAdminClubStats() {
-  const [playersResult, seasonsResult, auditResult] = await Promise.all([
+  const [playersResult, seasonsResult, lastEditResult, auditResult] = await Promise.all([
     supabase
       .from('club_player_stats')
       .select('id,name,goals,matches,source_order,updated_at')
@@ -201,6 +214,9 @@ export async function fetchAdminClubStats() {
       )
       .order('ordinal', { ascending: true }),
     supabase
+      .from('club_stats_last_edit')
+      .select('entity_type,entity_key,changed_at,changed_by,changed_by_email'),
+    supabase
       .from('club_stats_audit')
       .select(
         'id,entity_type,entity_key,action,changed_at,changed_by,changed_by_email,before_data,after_data',
@@ -211,11 +227,13 @@ export async function fetchAdminClubStats() {
 
   if (playersResult.error) throw playersResult.error
   if (seasonsResult.error) throw seasonsResult.error
+  if (lastEditResult.error) throw lastEditResult.error
   if (auditResult.error) throw auditResult.error
 
   return {
     players: (playersResult.data ?? []).map((row) => mapPlayerRow(row)),
     seasons: (seasonsResult.data ?? []).map((row) => mapSeasonRow(row)),
+    lastEdits: (lastEditResult.data ?? []).map((row) => mapLastEditRow(row)),
     audit: (auditResult.data ?? []).map((row) => mapAuditRow(row)),
   }
 }
