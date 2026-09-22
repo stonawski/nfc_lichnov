@@ -31,6 +31,13 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif']
+      },
+      transitionDuration: {
+        DEFAULT: '380ms'
+      },
+      transitionTimingFunction: {
+        DEFAULT: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        smooth: 'cubic-bezier(0.22, 1, 0.36, 1)'
       }
     }
   },
