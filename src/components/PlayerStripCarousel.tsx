@@ -106,6 +106,18 @@ export function PlayerStripCarousel({
         onPointerMove={handlePointerMove}
         onPointerUp={stopDragging}
         onPointerCancel={stopDragging}
+        onKeyDown={(event) => {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+          event.preventDefault()
+          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          event.currentTarget.scrollBy({
+            left: event.key === 'ArrowRight' ? 300 : -300,
+            behavior: reducedMotion ? 'auto' : 'smooth',
+          })
+        }}
+        role="region"
+        aria-label={`Hráči týmu ${team.name}`}
+        tabIndex={0}
         className="relative z-10 flex cursor-grab overflow-x-auto overscroll-x-contain select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
         {loopPlayers.map((player, index) => {
