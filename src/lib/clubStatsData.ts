@@ -65,7 +65,13 @@ export function getBundledClubStats(): ClubStatsBundle {
   }
 }
 
-const milestoneBySeason = new Map(
+const milestoneBySeason = new Map<
+  string,
+  {
+    outcome: Exclude<CompetitionOutcome, null>
+    nextCompetition: string
+  }
+>(
   competitionMilestones.map((milestone) => [
     milestone.afterSeason,
     {
