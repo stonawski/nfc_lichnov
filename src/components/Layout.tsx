@@ -15,7 +15,7 @@ export function Layout() {
   return (
     <div className="flex min-h-screen flex-col bg-sand-50 text-ink-900">
       <Navigation teams={teams} />
-      <div className="flex-1">
+      <div>
         <PageMotion>
           <Outlet />
         </PageMotion>
