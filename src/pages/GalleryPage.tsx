@@ -8,7 +8,7 @@ import {
   Images,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
@@ -415,11 +415,11 @@ function Lightbox({
   const closeTimerRef = useRef<number | null>(null)
   const url = galleryImageUrl(image)
 
-  const requestClose = () => {
+  const requestClose = useCallback(() => {
     if (closing) return
     setClosing(true)
     closeTimerRef.current = window.setTimeout(onClose, 320)
-  }
+  }, [closing, onClose])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -429,13 +429,17 @@ function Lightbox({
     }
 
     document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onNext, onPrevious, requestClose])
+
+  useEffect(
+    () => () => {
       if (closeTimerRef.current != null) {
         window.clearTimeout(closeTimerRef.current)
       }
-    }
-  }, [closing, onClose, onNext, onPrevious])
+    },
+    [],
+  )
 
   if (!url) return null
 
