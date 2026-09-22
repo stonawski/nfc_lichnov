@@ -6,6 +6,7 @@ import {
   Menu,
   Newspaper,
   ShieldCheck,
+  Trophy,
   UserRound,
   UsersRound,
   X,
@@ -20,6 +21,7 @@ const navItems = [
   { to: '/admin/aktuality', label: 'Aktuality', icon: Newspaper },
   { to: '/admin/hraci', label: 'Hráči', icon: UserRound },
   { to: '/admin/realizacni-tym', label: 'Realizační tým', icon: UsersRound },
+  { to: '/admin/statistiky', label: 'Statistiky', icon: Trophy },
 ]
 
 export function AdminLayout() {
