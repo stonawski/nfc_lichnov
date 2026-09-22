@@ -576,7 +576,10 @@ declare
 begin
   -- Ignore migration/seed writes executed without an authenticated editor.
   if auth.uid() is null then
-    return coalesce(new, old);
+    if tg_op = 'DELETE' then
+      return old;
+    end if;
+    return new;
   end if;
 
   if tg_table_name = 'club_player_stats' then
@@ -606,9 +609,13 @@ begin
     case when tg_op in ('INSERT', 'UPDATE') then to_jsonb(new) else null end
   );
 
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+
+  return new;
 end;
-$$;
+$;
 
 drop trigger if exists stamp_club_player_stats_update on public.club_player_stats;
 create trigger stamp_club_player_stats_update
