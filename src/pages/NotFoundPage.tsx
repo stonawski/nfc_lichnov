@@ -34,7 +34,7 @@ export function NotFoundPage() {
           </Link>
           <button
             type="button"
-            onClick={() => history.back()}
+            onClick={() => window.history.back()}
             className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100"
           >
             <ArrowLeft size={16} />
