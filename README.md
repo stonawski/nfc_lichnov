@@ -80,6 +80,20 @@ Historické klubové statistiky používají migraci:
 supabase/migrations/20260922083000_club_stats.sql
 ```
 
+## Dokumentace
+
+Kompletní technický handover a finální popis architektury projektu:
+
+```text
+docs/PROJECT_FINALIZATION.md
+```
+
+Produkční checklist:
+
+```text
+docs/LAUNCH_CHECKLIST.md
+```
+
 ## Produkční spuštění
 
 Kompletní kontrolní seznam je v:
