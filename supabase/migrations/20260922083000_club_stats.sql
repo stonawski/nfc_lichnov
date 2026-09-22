@@ -637,11 +637,10 @@ matches_to_link as (
       lower(trim(concat_ws(' ', q.first_name, q.last_name))),
       lower(trim(concat_ws(' ', q.last_name, q.first_name)))
     )
-  where q.facr_player_id is not null
 )
 update public.club_player_stats h
 set
-  facr_player_id = link.facr_player_id,
+  facr_player_id = coalesce(h.facr_player_id, link.facr_player_id),
   active = true
 from matches_to_link link
 where link.match_rank = 1
@@ -746,13 +745,61 @@ returns integer
 language plpgsql
 security definer
 set search_path = public, auth
-as $
+as $$
 declare
   v_inserted integer := 0;
 begin
-  if not public.can_edit_content() then
+  if public.can_edit_content() is distinct from true then
     raise exception 'Not allowed';
   end if;
+
+  -- Deactivate previously linked players who are no longer current.
+  -- No historical totals are changed.
+  with men_team as (
+    select id from public.teams where slug = 'muzi' limit 1
+  ),
+  qualifying_facr_ids as (
+    select distinct p.facr_player_id
+    from public.players p
+    join public.teams t on t.id = p.team_id
+    where p.active = true
+      and p.facr_player_id is not null
+      and (
+        t.slug = 'muzi'
+        or exists (
+          select 1
+          from public.players pm
+          join men_team mt on mt.id = pm.team_id
+          where pm.active = true
+            and pm.facr_player_id = p.facr_player_id
+        )
+        or (
+          t.slug = 'dorost'
+          and exists (
+            select 1
+            from public.match_players mp
+            join public.matches m on m.id = mp.match_id
+            join men_team mt on mt.id = m.team_id
+            where mp.player_id = p.id
+              and (
+                coalesce(mp.lineup_type, '') ilike '%start%'
+                or coalesce(mp.lineup_type, '') ilike '%basic%'
+                or coalesce(mp.lineup_type, '') ilike '%základ%'
+                or coalesce(mp.lineup_type, '') ilike '%zaklad%'
+              )
+          )
+        )
+      )
+  )
+  update public.club_player_stats h
+  set active = false
+  where h.active = true
+    and h.facr_player_id is not null
+    and not exists (
+      select 1
+      from qualifying_facr_ids q
+      where q.facr_player_id = h.facr_player_id
+    );
 
   with men_team as (
     select id from public.teams where slug = 'muzi' limit 1
@@ -918,7 +965,7 @@ begin
   get diagnostics v_inserted = row_count;
   return v_inserted;
 end;
-$;
+$$;
 
 revoke all on function public.sync_club_player_stats_current() from public;
 grant execute on function public.sync_club_player_stats_current() to authenticated;
