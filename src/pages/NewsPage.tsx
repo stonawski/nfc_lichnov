@@ -156,7 +156,7 @@ export function NewsPage() {
                     <h2 className="mt-3 max-w-xl text-4xl font-black leading-[.98] tracking-[-0.055em] sm:text-5xl">
                       První zprávy připravujeme.
                     </h2>
-                    <p className="mt-5 max-w-lg text-sm leading-7 text-white/68 sm:text-base">
+                    <p className="mt-5 max-w-lg text-sm leading-7 text-white/70 sm:text-base">
                       Jakmile zveřejníme první článek, objeví se tady. Do té doby
                       můžeš sledovat aktuální program, výsledky a jednotlivé týmy.
                     </p>
