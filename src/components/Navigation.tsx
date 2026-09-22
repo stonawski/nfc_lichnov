@@ -1,5 +1,5 @@
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import type { Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
@@ -63,6 +63,17 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
+  }, [mobileMounted])
+
+  useEffect(() => {
+    if (!mobileMounted) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
   }, [mobileMounted])
 
   useEffect(() => () => clearMobileTimer(), [])
@@ -164,6 +175,9 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
           onClick={closeMobile}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Hlavní navigace"
             className={`ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft transition-[transform,opacity] duration-[560ms] ease-smooth ${
               mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-5 opacity-0'
             }`}
@@ -320,10 +334,14 @@ function MobileGroup({
   onToggle: () => void
   children: ReactNode
 }) {
+  const panelId = useId()
+
   return (
     <div>
       <button
         type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
         onClick={onToggle}
         className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-xl font-semibold tracking-tight text-ink-900 transition hover:bg-white"
       >
@@ -334,6 +352,7 @@ function MobileGroup({
         />
       </button>
       <div
+        id={panelId}
         className={`grid transition-[grid-template-rows,opacity] duration-[520ms] ease-smooth ${
           open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
