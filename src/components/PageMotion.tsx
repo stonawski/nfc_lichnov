@@ -21,7 +21,7 @@ import {
   fetchTeams,
   fetchUpcomingMatches,
 } from '../lib/data'
-import type { Match, Team } from '../lib/types'
+import type { Gallery, GalleryImage, Match, NewsArticle, Team, TeamMatchSummary } from '../lib/types'
 
 const ROUTE_EXIT_MS = 150
 
@@ -162,16 +162,34 @@ export function PageMotion({ children }: { children: ReactNode }) {
       }
 
       if (parts[0] === 'zapasy' && parts[1]) {
-        const match = await queryClient.fetchQuery({
-          queryKey: ['match', parts[1]],
-          queryFn: () => fetchMatchById(parts[1]),
-        })
+        const matchId = parts[1]
+        const currentMatches = queryClient.getQueryData<Match[]>(['matches', 'current']) ?? []
+        const upcomingMatches =
+          queryClient.getQueryData<Array<Match & { team?: Team }>>(['matches', 'upcoming']) ?? []
+        const homeSummaries =
+          queryClient.getQueryData<TeamMatchSummary[]>(['home-match-summaries']) ?? []
+        const cachedMatch =
+          currentMatches.find((match) => match.id === matchId) ??
+          upcomingMatches.find((match) => match.id === matchId) ??
+          homeSummaries.find((summary) => summary.match?.id === matchId)?.match ??
+          null
+
+        if (cachedMatch) {
+          queryClient.setQueryData(['match', matchId], cachedMatch)
+          prefetchMatchDetails(cachedMatch)
+        } else {
+          const match = await queryClient.fetchQuery({
+            queryKey: ['match', matchId],
+            queryFn: () => fetchMatchById(matchId),
+          })
+
+          if (match) prefetchMatchDetails(match)
+        }
 
         void queryClient.prefetchQuery({
           queryKey: ['teams'],
           queryFn: fetchTeams,
         })
-        if (match) prefetchMatchDetails(match)
         return
       }
 
@@ -184,10 +202,21 @@ export function PageMotion({ children }: { children: ReactNode }) {
       }
 
       if (parts[0] === 'aktuality' && parts[1]) {
-        await queryClient.prefetchQuery({
-          queryKey: ['news', parts[1]],
-          queryFn: () => fetchNewsBySlug(parts[1]),
-        })
+        const slug = parts[1]
+        const publishedNews = queryClient.getQueryData<NewsArticle[]>(['news']) ?? []
+        const homeNews = queryClient.getQueryData<NewsArticle[]>(['news', 'home']) ?? []
+        const cachedArticle =
+          publishedNews.find((article) => article.slug === slug) ??
+          homeNews.find((article) => article.slug === slug)
+
+        if (cachedArticle) {
+          queryClient.setQueryData(['news', slug], cachedArticle)
+        } else {
+          await queryClient.prefetchQuery({
+            queryKey: ['news', slug],
+            queryFn: () => fetchNewsBySlug(slug),
+          })
+        }
         return
       }
 
@@ -206,16 +235,35 @@ export function PageMotion({ children }: { children: ReactNode }) {
       }
 
       if (parts[0] === 'galerie' && parts[1]) {
-        const gallery = await queryClient.fetchQuery({
-          queryKey: ['gallery', parts[1]],
-          queryFn: () => fetchGalleryBySlug(parts[1]),
-        })
+        const slug = parts[1]
+        const galleries = queryClient.getQueryData<Gallery[]>(['galleries']) ?? []
+        const homeGalleries = queryClient.getQueryData<Gallery[]>(['galleries', 'home']) ?? []
+        const cachedGallery =
+          galleries.find((gallery) => gallery.slug === slug || gallery.id === slug) ??
+          homeGalleries.find((gallery) => gallery.slug === slug || gallery.id === slug)
+
+        const gallery =
+          cachedGallery ??
+          (await queryClient.fetchQuery({
+            queryKey: ['gallery', slug],
+            queryFn: () => fetchGalleryBySlug(slug),
+          }))
 
         if (gallery) {
-          void queryClient.prefetchQuery({
-            queryKey: ['gallery-images', gallery.id],
-            queryFn: () => fetchGalleryImages(gallery.id),
-          })
+          queryClient.setQueryData(['gallery', slug], gallery)
+
+          const allImages =
+            queryClient.getQueryData<GalleryImage[]>(['gallery-images']) ?? []
+          const galleryImages = allImages.filter((image) => image.gallery_id === gallery.id)
+
+          if (galleryImages.length) {
+            queryClient.setQueryData(['gallery-images', gallery.id], galleryImages)
+          } else {
+            void queryClient.prefetchQuery({
+              queryKey: ['gallery-images', gallery.id],
+              queryFn: () => fetchGalleryImages(gallery.id),
+            })
+          }
         }
         return
       }
