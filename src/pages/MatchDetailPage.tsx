@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import {
@@ -112,7 +113,7 @@ export function MatchDetailPage() {
         : team?.name || 'NFC Lichnov'
 
   return (
-    <main>
+    <main className="data-fade-in">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
         <HeroFieldBackdrop />
 
@@ -144,18 +145,20 @@ export function MatchDetailPage() {
                 <LoadingState rows={5} />
               </div>
             ) : clubParticipants.length ? (
-              <FormationPitch
-                teamName={clubName}
-                participants={clubParticipants}
-                events={timeline}
-              />
+              <DataFade>
+                <FormationPitch
+                  teamName={clubName}
+                  participants={clubParticipants}
+                  events={timeline}
+                />
+              </DataFade>
             ) : (
-              <div className="mt-6">
+              <DataFade className="mt-6">
                 <EmptyState
                   title="Sestava není k dispozici"
                   text="Pro tento zápas zatím backend nevrací údaje o hráčích."
                 />
-              </div>
+              </DataFade>
             )}
           </div>
 
@@ -167,14 +170,16 @@ export function MatchDetailPage() {
                 <LoadingState rows={5} />
               </div>
             ) : timeline.length ? (
-              <Timeline events={timeline} />
+              <DataFade>
+                <Timeline events={timeline} />
+              </DataFade>
             ) : (
-              <div className="mt-6">
+              <DataFade className="mt-6">
                 <EmptyState
                   title="Průběh není k dispozici"
                   text="Pro tento zápas zatím backend nevrací události zápasu."
                 />
-              </div>
+              </DataFade>
             )}
           </div>
         </div>
