@@ -223,7 +223,27 @@ img {
 
 
 .page-motion-shell {
+  position: relative;
+  z-index: 1;
   background: transparent;
+}
+
+.persistent-hero-layer {
+  position: absolute;
+  z-index: 0;
+  top: -84px;
+  right: 0;
+  left: 0;
+  height: min(840px, 100svh);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .persistent-hero-layer {
+    top: -88px;
+    height: min(900px, 100svh);
+  }
 }
 
 
