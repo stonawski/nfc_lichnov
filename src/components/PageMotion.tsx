@@ -82,26 +82,31 @@ export function PageMotion({ children }: { children: ReactNode }) {
       document.documentElement.classList.add('route-changing')
 
       if (!reducedMotion && transitionDocument.startViewTransition) {
-        document.documentElement.classList.add('native-route-transition')
+        try {
+          document.documentElement.classList.add('native-route-transition')
 
-        const transition = transitionDocument.startViewTransition(() => {
-          flushSync(() => {
-            navigateRef.current(targetPath)
+          const transition = transitionDocument.startViewTransition(() => {
+            flushSync(() => {
+              navigateRef.current(targetPath)
+            })
           })
-        })
 
-        const finishTransition = () => {
-          document.documentElement.classList.remove(
-            'route-changing',
-            'native-route-transition',
-          )
+          const finishTransition = () => {
+            document.documentElement.classList.remove(
+              'route-changing',
+              'native-route-transition',
+            )
+          }
+
+          transition.finished.then(finishTransition, finishTransition)
+          return
+        } catch {
+          document.documentElement.classList.remove('native-route-transition')
         }
-
-        transition.finished.then(finishTransition, finishTransition)
-        return
       }
 
-      // Smooth fallback for browsers without View Transition API.
+      // Smooth fallback for browsers without View Transition API, or if the
+      // native transition could not be started.
       root.classList.add('is-leaving')
       navigateTimerRef.current = window.setTimeout(() => {
         navigateTimerRef.current = null
