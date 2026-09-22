@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, LockKeyhole } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { Seo } from '../../components/Seo'
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -70,6 +71,7 @@ export function AdminLoginPage() {
 
   return (
     <main className="relative grid min-h-screen overflow-hidden bg-[#f5f2ea] px-5 py-10 sm:px-8">
+      <Seo title="Přihlášení do administrace" description="Přihlášení editorů NFC Lichnov." noindex />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_15%,rgba(0,146,63,.11),transparent_30%),radial-gradient(circle_at_82%_82%,rgba(222,207,172,.34),transparent_32%)]" />
 
       <div className="relative mx-auto grid w-full max-w-[1120px] gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
@@ -152,7 +154,7 @@ export function AdminLoginPage() {
             </label>
 
             {error && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                 {error}
               </div>
             )}
