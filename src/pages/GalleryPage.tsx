@@ -415,6 +415,7 @@ function Lightbox({
 }) {
   const [closing, setClosing] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const url = galleryImageUrl(image)
 
   const requestClose = useCallback(() => {
@@ -422,6 +423,10 @@ function Lightbox({
     setClosing(true)
     closeTimerRef.current = window.setTimeout(onClose, 320)
   }, [closing, onClose])
+
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -454,6 +459,7 @@ function Lightbox({
       onClick={requestClose}
     >
       <button
+        ref={closeButtonRef}
         type="button"
         onClick={requestClose}
         aria-label="Zavřít fotografii"
