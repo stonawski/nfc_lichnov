@@ -9,6 +9,7 @@ import { SectionHeading } from "../components/SectionHeading";
 import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
+  fetchGalleries,
   fetchHomepageMatchSummaries,
   fetchPublishedNews,
   fetchStandingsByTeam,
@@ -39,6 +40,11 @@ export function HomePage() {
     queryFn: fetchUpcomingMatches,
     retry: false,
   });
+  const galleriesQuery = useQuery({
+    queryKey: ["galleries", "home"],
+    queryFn: fetchGalleries,
+    retry: false,
+  });
 
   const men = teamsQuery.data?.find((team) => team.slug === "muzi");
   const standingsQuery = useQuery({
@@ -55,6 +61,8 @@ export function HomePage() {
   });
 
   const news = newsQuery.data ?? [];
+  const galleries = galleriesQuery.data ?? [];
+  const galleryPreview = galleries.slice(0, 2);
   const upcomingMatches = upcomingQuery.data ?? [];
   const featuredUpcoming =
     upcomingMatches.find((match) => match.team?.slug === "muzi") ??
@@ -108,7 +116,6 @@ export function HomePage() {
             />
           </div>
           <div className="hero-glow absolute inset-0 opacity-45" />
-          <div className="absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-[1240px]">
@@ -422,7 +429,7 @@ export function HomePage() {
 
       <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
             <div>
               <div className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">
                 Život klubu
@@ -431,23 +438,61 @@ export function HomePage() {
                 Fotbal nejsou jen výsledky.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-                Galerie bude patřit zápasům, tréninkům, mládeži, fanouškům i
-                tomu, co se děje mimo devadesát minut na hřišti.
+                Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Poslední
+                galerie ukazují klub tak, jak skutečně žije.
               </p>
+
+              <Link
+                to="/galerie"
+                className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900 transition hover:-translate-y-0.5"
+              >
+                Všechny galerie <ArrowRight size={16} />
+              </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="aspect-[4/3] rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_30%_25%,rgba(0,146,63,.55),transparent_35%),linear-gradient(145deg,#244938,#18352A)]" />
-              <div className="mt-8 aspect-[4/3] rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_70%_30%,rgba(243,239,230,.2),transparent_35%),linear-gradient(145deg,#1d412f,#0d281d)]" />
-            </div>
+            {galleriesQuery.isLoading ? (
+              <div className="rounded-[30px] bg-white/[0.06] p-3">
+                <LoadingState rows={2} />
+              </div>
+            ) : galleryPreview.length ? (
+              <div className="grid grid-cols-2 gap-3">
+                {galleryPreview.map((gallery, index) => (
+                  <Link
+                    key={gallery.id}
+                    to={`/galerie/${gallery.slug || gallery.id}`}
+                    className={`group relative aspect-[4/3] overflow-hidden rounded-[28px] border border-white/10 bg-[#10291f] ${
+                      index === 1 ? "mt-8" : ""
+                    }`}
+                  >
+                    <img
+                      src={gallery.cover_image || "/hero-lichnov-field.webp"}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/18 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                      <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/50">
+                        {formatDate(gallery.event_date || gallery.created_at)}
+                      </div>
+                      <div className="mt-1 line-clamp-2 text-sm font-extrabold leading-tight text-white sm:text-base">
+                        {gallery.title}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-[30px] border border-white/10">
+                <img
+                  src="/hero-lichnov-field.webp"
+                  alt=""
+                  aria-hidden="true"
+                  className="aspect-[16/8] h-full w-full object-cover opacity-70"
+                />
+              </div>
+            )}
           </div>
-
-          <Link
-            to="/galerie"
-            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900"
-          >
-            Galerie <ArrowRight size={16} />
-          </Link>
         </div>
       </section>
 
@@ -508,9 +553,14 @@ function UpcomingMatchTile({
           : "border-sand-200 bg-white text-ink-900"
       } ${className}`}
     >
-      <div
-        className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? "bg-brand-500/20" : "bg-brand-500/[0.06]"}`}
-      />
+      {featured && (
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.08]"
+        />
+      )}
 
       <div
         className={`relative flex h-full flex-col ${featured ? "p-7 sm:p-8" : large ? "p-6 sm:p-7" : "p-5"}`}
