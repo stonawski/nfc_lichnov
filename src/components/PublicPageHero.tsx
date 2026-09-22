@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { HeroFieldBackdrop } from './HeroFieldBackdrop'
 
 export function PublicPageHero({
   eyebrow,
@@ -15,17 +16,7 @@ export function PublicPageHero({
 }) {
   return (
     <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
-      <div className="pointer-events-none absolute inset-0 bg-sand-50">
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.09)' }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.95)_30%,rgba(250,248,243,.60)_60%,rgba(250,248,243,.14)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.08)_50%,rgba(250,248,243,.70)_80%,#faf8f3_100%)]" />
-      </div>
+      <HeroFieldBackdrop />
 
       <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 items-center py-7 md:py-11">
         <div className="grid w-full gap-8 lg:grid-cols-[minmax(0,1fr)_.46fr] lg:items-end">
