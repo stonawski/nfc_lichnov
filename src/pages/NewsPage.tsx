@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
 import { fetchPublishedNews } from '../lib/data'
@@ -36,7 +37,7 @@ export function NewsPage() {
               text="Zkontroluj přístup k publikovaným článkům v Supabase."
             />
           ) : featured ? (
-            <>
+            <DataFade>
               <Link
                 to={`/aktuality/${featured.slug}`}
                 className="group relative block min-h-[430px] overflow-hidden rounded-[38px] bg-brand-900 text-white shadow-soft sm:min-h-[500px]"
@@ -136,9 +137,9 @@ export function NewsPage() {
                   ))}
                 </div>
               )}
-            </>
+            </DataFade>
           ) : (
-            <div className="overflow-hidden rounded-[38px] bg-brand-900 text-white shadow-soft">
+            <DataFade className="overflow-hidden rounded-[38px] bg-brand-900 text-white shadow-soft">
               <div className="grid lg:grid-cols-[1.08fr_.92fr]">
                 <div className="relative min-h-[360px] overflow-hidden p-7 sm:min-h-[420px] sm:p-10 lg:p-12">
                   <img
@@ -195,7 +196,7 @@ export function NewsPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </DataFade>
           )}
         </div>
       </section>
