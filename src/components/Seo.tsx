@@ -88,6 +88,9 @@ export function Seo({
     if (imageUrl) {
       upsertMeta('meta[property="og:image"]', { property: 'og:image', content: imageUrl })
       upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: imageUrl })
+    } else {
+      document.head.querySelector('meta[property="og:image"]')?.remove()
+      document.head.querySelector('meta[name="twitter:image"]')?.remove()
     }
   }, [canonicalPath, description, image, noindex, title, type])
 
