@@ -29,7 +29,7 @@ export function ClubStatsPage() {
   const statsQuery = useQuery({
     queryKey: ['club-stats'],
     queryFn: fetchPublicClubStats,
-    initialData: getBundledClubStats,
+    placeholderData: getBundledClubStats,
     staleTime: 60_000,
   })
 
