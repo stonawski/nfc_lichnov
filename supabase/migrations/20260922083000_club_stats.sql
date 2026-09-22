@@ -7,6 +7,9 @@ create table if not exists public.club_player_stats (
   goals integer not null default 0 check (goals >= 0),
   matches integer not null default 0 check (matches >= 0),
   source_order integer not null unique,
+  facr_player_id bigint,
+  active boolean not null default false,
+  needs_review boolean not null default false,
   updated_at timestamptz
 );
 
@@ -45,6 +48,13 @@ create table if not exists public.club_stats_last_edit (
   changed_by_email text,
   primary key (entity_type, entity_key)
 );
+
+create index if not exists club_player_stats_facr_idx
+  on public.club_player_stats (facr_player_id)
+  where facr_player_id is not null;
+
+create index if not exists club_player_stats_active_idx
+  on public.club_player_stats (active, matches desc, goals desc);
 
 create index if not exists club_stats_audit_entity_idx
   on public.club_stats_audit (entity_type, entity_key, changed_at desc);
@@ -557,6 +567,361 @@ values
 (58, '2021/22', 26, '6–1–2–17', '42:70', 22, 'Okresní přebor', 14, false, 'relegation', '3. třída'),
 (59, '2022/23', 13, '9–2–0–2', '51:25', 31, '3. třída', 2, false, 'promotion', 'Okresní přebor')
 on conflict (ordinal) do nothing;
+
+
+-- Link imported history to current players and add current A-team players missing
+-- from the historical source. This NEVER imports matches_count/goals_count from players.
+-- Newly inserted rows intentionally start at 0/0 and require manual review.
+with men_team as (
+  select id
+  from public.teams
+  where slug = 'muzi'
+  limit 1
+),
+qualifying_players as (
+  select distinct on (coalesce(p.facr_player_id::text, p.id::text))
+    p.id,
+    p.facr_player_id,
+    p.first_name,
+    p.last_name,
+    p.team_id
+  from public.players p
+  join public.teams t on t.id = p.team_id
+  where p.active = true
+    and (
+      t.slug = 'muzi'
+      or (
+        p.facr_player_id is not null
+        and exists (
+          select 1
+          from public.players pm
+          join men_team mt on mt.id = pm.team_id
+          where pm.active = true
+            and pm.facr_player_id = p.facr_player_id
+        )
+      )
+      or (
+        t.slug = 'dorost'
+        and exists (
+          select 1
+          from public.match_players mp
+          join public.matches m on m.id = mp.match_id
+          join men_team mt on mt.id = m.team_id
+          where mp.player_id = p.id
+            and (
+              coalesce(mp.lineup_type, '') ilike '%start%'
+              or coalesce(mp.lineup_type, '') ilike '%basic%'
+              or coalesce(mp.lineup_type, '') ilike '%základ%'
+              or coalesce(mp.lineup_type, '') ilike '%zaklad%'
+            )
+        )
+      )
+    )
+  order by
+    coalesce(p.facr_player_id::text, p.id::text),
+    case when t.slug = 'muzi' then 0 else 1 end,
+    p.id
+),
+matches_to_link as (
+  select
+    q.id as current_player_id,
+    q.facr_player_id,
+    h.id as historical_id,
+    row_number() over (
+      partition by q.id
+      order by h.matches desc, h.goals desc, h.id
+    ) as match_rank
+  from qualifying_players q
+  join public.club_player_stats h
+    on lower(trim(h.name)) in (
+      lower(trim(concat_ws(' ', q.first_name, q.last_name))),
+      lower(trim(concat_ws(' ', q.last_name, q.first_name)))
+    )
+  where q.facr_player_id is not null
+)
+update public.club_player_stats h
+set
+  facr_player_id = link.facr_player_id,
+  active = true
+from matches_to_link link
+where link.match_rank = 1
+  and h.id = link.historical_id
+  and h.facr_player_id is null;
+
+with men_team as (
+  select id
+  from public.teams
+  where slug = 'muzi'
+  limit 1
+),
+qualifying_players as (
+  select distinct on (coalesce(p.facr_player_id::text, p.id::text))
+    p.id,
+    p.facr_player_id,
+    p.first_name,
+    p.last_name,
+    p.team_id,
+    t.slug
+  from public.players p
+  join public.teams t on t.id = p.team_id
+  where p.active = true
+    and (
+      t.slug = 'muzi'
+      or (
+        p.facr_player_id is not null
+        and exists (
+          select 1
+          from public.players pm
+          join men_team mt on mt.id = pm.team_id
+          where pm.active = true
+            and pm.facr_player_id = p.facr_player_id
+        )
+      )
+      or (
+        t.slug = 'dorost'
+        and exists (
+          select 1
+          from public.match_players mp
+          join public.matches m on m.id = mp.match_id
+          join men_team mt on mt.id = m.team_id
+          where mp.player_id = p.id
+            and (
+              coalesce(mp.lineup_type, '') ilike '%start%'
+              or coalesce(mp.lineup_type, '') ilike '%basic%'
+              or coalesce(mp.lineup_type, '') ilike '%základ%'
+              or coalesce(mp.lineup_type, '') ilike '%zaklad%'
+            )
+        )
+      )
+    )
+  order by
+    coalesce(p.facr_player_id::text, p.id::text),
+    case when t.slug = 'muzi' then 0 else 1 end,
+    p.id
+),
+missing as (
+  select q.*
+  from qualifying_players q
+  where not exists (
+    select 1
+    from public.club_player_stats h
+    where
+      (q.facr_player_id is not null and h.facr_player_id = q.facr_player_id)
+      or lower(trim(h.name)) in (
+        lower(trim(concat_ws(' ', q.first_name, q.last_name))),
+        lower(trim(concat_ws(' ', q.last_name, q.first_name)))
+      )
+  )
+),
+numbered as (
+  select
+    missing.*,
+    coalesce((select max(source_order) from public.club_player_stats), 0)
+      + row_number() over (order by last_name nulls last, first_name nulls last, id) as new_order
+  from missing
+)
+insert into public.club_player_stats (
+  name,
+  goals,
+  matches,
+  source_order,
+  facr_player_id,
+  active,
+  needs_review
+)
+select
+  trim(concat_ws(' ', last_name, first_name)),
+  0,
+  0,
+  new_order,
+  facr_player_id,
+  true,
+  true
+from numbered;
+
+-- Future controlled synchronization from the admin. It only links/activates current
+-- players and inserts missing rows at 0/0; historical totals are never calculated.
+create or replace function public.sync_club_player_stats_current()
+returns integer
+language plpgsql
+security definer
+set search_path = public, auth
+as $
+declare
+  v_inserted integer := 0;
+begin
+  if not public.can_edit_content() then
+    raise exception 'Not allowed';
+  end if;
+
+  with men_team as (
+    select id from public.teams where slug = 'muzi' limit 1
+  ),
+  qualifying_players as (
+    select distinct on (coalesce(p.facr_player_id::text, p.id::text))
+      p.id,
+      p.facr_player_id,
+      p.first_name,
+      p.last_name,
+      t.slug
+    from public.players p
+    join public.teams t on t.id = p.team_id
+    where p.active = true
+      and (
+        t.slug = 'muzi'
+        or (
+          p.facr_player_id is not null
+          and exists (
+            select 1
+            from public.players pm
+            join men_team mt on mt.id = pm.team_id
+            where pm.active = true
+              and pm.facr_player_id = p.facr_player_id
+          )
+        )
+        or (
+          t.slug = 'dorost'
+          and exists (
+            select 1
+            from public.match_players mp
+            join public.matches m on m.id = mp.match_id
+            join men_team mt on mt.id = m.team_id
+            where mp.player_id = p.id
+              and (
+                coalesce(mp.lineup_type, '') ilike '%start%'
+                or coalesce(mp.lineup_type, '') ilike '%basic%'
+                or coalesce(mp.lineup_type, '') ilike '%základ%'
+                or coalesce(mp.lineup_type, '') ilike '%zaklad%'
+              )
+          )
+        )
+      )
+    order by
+      coalesce(p.facr_player_id::text, p.id::text),
+      case when t.slug = 'muzi' then 0 else 1 end,
+      p.id
+  ),
+  best_links as (
+    select distinct on (q.id)
+      q.id as current_player_id,
+      q.facr_player_id,
+      h.id as historical_id
+    from qualifying_players q
+    join public.club_player_stats h
+      on (
+        (q.facr_player_id is not null and h.facr_player_id = q.facr_player_id)
+        or lower(trim(h.name)) in (
+          lower(trim(concat_ws(' ', q.first_name, q.last_name))),
+          lower(trim(concat_ws(' ', q.last_name, q.first_name)))
+        )
+      )
+    order by q.id, h.matches desc, h.goals desc, h.id
+  )
+  update public.club_player_stats h
+  set
+    facr_player_id = coalesce(h.facr_player_id, link.facr_player_id),
+    active = true
+  from best_links link
+  where h.id = link.historical_id
+    and (
+      h.active is distinct from true
+      or (h.facr_player_id is null and link.facr_player_id is not null)
+    );
+
+  with men_team as (
+    select id from public.teams where slug = 'muzi' limit 1
+  ),
+  qualifying_players as (
+    select distinct on (coalesce(p.facr_player_id::text, p.id::text))
+      p.id,
+      p.facr_player_id,
+      p.first_name,
+      p.last_name,
+      t.slug
+    from public.players p
+    join public.teams t on t.id = p.team_id
+    where p.active = true
+      and (
+        t.slug = 'muzi'
+        or (
+          p.facr_player_id is not null
+          and exists (
+            select 1
+            from public.players pm
+            join men_team mt on mt.id = pm.team_id
+            where pm.active = true
+              and pm.facr_player_id = p.facr_player_id
+          )
+        )
+        or (
+          t.slug = 'dorost'
+          and exists (
+            select 1
+            from public.match_players mp
+            join public.matches m on m.id = mp.match_id
+            join men_team mt on mt.id = m.team_id
+            where mp.player_id = p.id
+              and (
+                coalesce(mp.lineup_type, '') ilike '%start%'
+                or coalesce(mp.lineup_type, '') ilike '%basic%'
+                or coalesce(mp.lineup_type, '') ilike '%základ%'
+                or coalesce(mp.lineup_type, '') ilike '%zaklad%'
+              )
+          )
+        )
+      )
+    order by
+      coalesce(p.facr_player_id::text, p.id::text),
+      case when t.slug = 'muzi' then 0 else 1 end,
+      p.id
+  ),
+  missing as (
+    select q.*
+    from qualifying_players q
+    where not exists (
+      select 1
+      from public.club_player_stats h
+      where
+        (q.facr_player_id is not null and h.facr_player_id = q.facr_player_id)
+        or lower(trim(h.name)) in (
+          lower(trim(concat_ws(' ', q.first_name, q.last_name))),
+          lower(trim(concat_ws(' ', q.last_name, q.first_name)))
+        )
+    )
+  ),
+  numbered as (
+    select
+      missing.*,
+      coalesce((select max(source_order) from public.club_player_stats), 0)
+        + row_number() over (order by last_name nulls last, first_name nulls last, id) as new_order
+    from missing
+  )
+  insert into public.club_player_stats (
+    name,
+    goals,
+    matches,
+    source_order,
+    facr_player_id,
+    active,
+    needs_review
+  )
+  select
+    trim(concat_ws(' ', last_name, first_name)),
+    0,
+    0,
+    new_order,
+    facr_player_id,
+    true,
+    true
+  from numbered;
+
+  get diagnostics v_inserted = row_count;
+  return v_inserted;
+end;
+$;
+
+revoke all on function public.sync_club_player_stats_current() from public;
+grant execute on function public.sync_club_player_stats_current() to authenticated;
 
 create or replace function public.stamp_club_stats_update()
 returns trigger
