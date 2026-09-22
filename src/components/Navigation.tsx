@@ -93,8 +93,7 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
                 Kategorie NFC Lichnov
               </div>
               <DataFade className="grid grid-cols-2 gap-1">
-                <DataFade>
-                  {teams.map((team) => (
+                {teams.map((team) => (
                   <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
@@ -198,15 +197,16 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
                 open={mobileTeamsOpen}
                 onToggle={() => setMobileTeamsOpen((value) => !value)}
               >
-                {teams.map((team) => (
-                  <Link
+                <DataFade>
+                  {teams.map((team) => (
+                    <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
                     onClick={closeMobile}
                     className="block rounded-xl px-3 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-white"
                   >
                     {team.name}
-                  </Link>
+                    </Link>
                   ))}
                 </DataFade>
               </MobileGroup>
