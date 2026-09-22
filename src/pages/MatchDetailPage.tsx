@@ -10,8 +10,9 @@ import {
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
+import { Seo } from '../components/Seo'
 import {
   fetchMatchById,
   fetchMatchParticipants,
@@ -73,6 +74,20 @@ export function MatchDetailPage() {
       <main className="px-5 py-20 md:px-8">
         <div className="mx-auto max-w-[1180px]">
           <LoadingState rows={6} />
+        </div>
+      </main>
+    )
+  }
+
+  if (matchQuery.isError) {
+    return (
+      <main className="px-5 py-20 md:px-8">
+        <div className="mx-auto max-w-[1000px]">
+          <ErrorState
+            title="Zápas se nepodařilo načíst"
+            text="Zkus načtení zopakovat."
+            onRetry={() => void matchQuery.refetch()}
+          />
         </div>
       </main>
     )
