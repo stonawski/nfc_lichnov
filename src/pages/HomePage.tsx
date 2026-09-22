@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
+import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
 import { MatchCarousel } from "../components/MatchCarousel";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
@@ -90,33 +91,8 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden bg-sand-50">
-          <div className="absolute right-0 top-0 h-[70%] w-full sm:h-[76%] lg:h-[55%] lg:w-[72%]">
-            <img
-              src="/hero-lichnov-field.webp"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
-              style={{ filter: "saturate(.82) contrast(.92) brightness(1.08)" }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)",
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)",
-              }}
-            />
-          </div>
-          <div className="hero-glow absolute inset-0 opacity-45" />
-        </div>
+      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
+        <HeroFieldBackdrop />
 
         <div className="relative mx-auto max-w-[1240px]">
           <div className="grid gap-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12">
