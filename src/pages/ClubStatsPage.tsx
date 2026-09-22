@@ -36,8 +36,9 @@ export function ClubStatsPage() {
     staleTime: 60_000,
   })
 
-  const players = statsQuery.data.players
-  const seasons = statsQuery.data.seasons
+  const stats = statsQuery.data ?? getBundledClubStats()
+  const players = stats.players
+  const seasons = stats.seasons
 
   const appearanceRanking = useMemo(
     () =>
