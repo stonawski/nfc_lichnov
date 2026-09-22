@@ -8,7 +8,7 @@ import {
   Images,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
@@ -184,28 +184,11 @@ export function GalleryDetailPage() {
   useEffect(() => {
     if (activeIndex == null) return
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveIndex(null)
-      if (event.key === 'ArrowLeft') {
-        setActiveIndex((current) =>
-          current == null ? null : (current - 1 + images.length) % images.length,
-        )
-      }
-      if (event.key === 'ArrowRight') {
-        setActiveIndex((current) =>
-          current == null ? null : (current + 1) % images.length,
-        )
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown)
     document.body.style.overflow = 'hidden'
-
     return () => {
-      document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
     }
-  }, [activeIndex, images.length])
+  }, [activeIndex])
 
   if (galleryQuery.isLoading) {
     return (
@@ -428,20 +411,45 @@ function Lightbox({
   onPrevious: () => void
   onNext: () => void
 }) {
+  const [closing, setClosing] = useState(false)
+  const closeTimerRef = useRef<number | null>(null)
   const url = galleryImageUrl(image)
+
+  const requestClose = () => {
+    if (closing) return
+    setClosing(true)
+    closeTimerRef.current = window.setTimeout(onClose, 320)
+  }
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') requestClose()
+      if (event.key === 'ArrowLeft') onPrevious()
+      if (event.key === 'ArrowRight') onNext()
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      if (closeTimerRef.current != null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    }
+  }, [closing, onClose, onNext, onPrevious])
+
   if (!url) return null
 
   return (
     <div
-      className="fixed inset-0 z-[80] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6"
+      className={`${closing ? 'lightbox-exit' : 'lightbox-enter'} fixed inset-0 z-[80] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6`}
       role="dialog"
       aria-modal="true"
       aria-label="Náhled fotografie"
-      onClick={onClose}
+      onClick={requestClose}
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={requestClose}
         aria-label="Zavřít fotografii"
         className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-6 sm:top-6"
       >
@@ -477,7 +485,8 @@ function Lightbox({
       )}
 
       <div
-        className="flex max-h-[92vh] max-w-[92vw] flex-col items-center"
+        key={image.id}
+        className="lightbox-media-enter flex max-h-[92vh] max-w-[92vw] flex-col items-center"
         onClick={(event) => event.stopPropagation()}
       >
         <img
