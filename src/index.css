@@ -184,34 +184,8 @@ img {
 }
 
 .route-content-enter {
-  animation: route-content-enter var(--motion-slow) var(--motion-ease) both;
+  animation: route-content-enter 480ms var(--motion-ease) both;
   will-change: opacity;
-}
-
-html.native-route-transition .route-content-enter {
-  animation: none;
-}
-
-.page-motion-shell.is-leaving .route-content-enter {
-  animation: none;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 280ms var(--motion-ease);
-}
-
-html.route-changing {
-  scroll-behavior: auto !important;
-}
-
-.reveal-block {
-  opacity: 0;
-  transition: opacity 820ms var(--motion-ease-soft);
-  transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity;
-}
-
-.reveal-block.is-visible {
-  opacity: 1;
 }
 
 .content-enter {
@@ -284,7 +258,7 @@ html.route-changing {
 
 @keyframes route-content-enter {
   from {
-    opacity: 0.18;
+    opacity: 0.68;
   }
 
   to {
@@ -387,42 +361,6 @@ html.route-changing {
   }
 }
 
-
-@supports (view-transition-name: root) {
-  .nav-shell {
-    view-transition-name: site-navigation;
-  }
-
-  ::view-transition-old(site-navigation),
-  ::view-transition-new(site-navigation) {
-    animation: none;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    mix-blend-mode: normal;
-    animation-duration: 680ms;
-    animation-timing-function: var(--motion-ease);
-  }
-
-  ::view-transition-old(root) {
-    animation-name: route-view-old;
-  }
-
-  ::view-transition-new(root) {
-    animation-name: route-view-new;
-  }
-}
-
-@keyframes route-view-old {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes route-view-new {
-  from { opacity: 0.12; }
-  to { opacity: 1; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   *,
