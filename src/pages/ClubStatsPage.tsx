@@ -392,7 +392,7 @@ function StatsHero({
   lastSeason: string
 }) {
   return (
-    <section className="relative -mt-[84px] overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+    <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
       <div className="pointer-events-none absolute inset-0 bg-sand-50">
         <img
           src="/hero-lichnov-field.webp"
@@ -405,7 +405,7 @@ function StatsHero({
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.08)_48%,rgba(250,248,243,.72)_78%,#faf8f3_100%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1240px] py-8 md:py-12">
+      <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-8 md:py-12">
         <div className="max-w-[820px]">
           <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
             Klubové statistiky
