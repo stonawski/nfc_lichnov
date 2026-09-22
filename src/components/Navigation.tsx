@@ -1,5 +1,5 @@
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import type { Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
@@ -14,15 +14,39 @@ const clubLinks = [
 
 export function Navigation({ teams }: { teams: Team[] }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileMounted, setMobileMounted] = useState(false)
   const [mobileTeamsOpen, setMobileTeamsOpen] = useState(false)
   const [mobileClubOpen, setMobileClubOpen] = useState(false)
   const location = useLocation()
+  const mobileTimerRef = useRef<number | null>(null)
   const primaryLogo = teams.find((team) => team.slug === 'muzi')?.logo_url ?? teams[0]?.logo_url
   const teamsActive = location.pathname.startsWith('/tymy')
   const clubActive = location.pathname.startsWith('/klub') || location.pathname === '/kontakt'
 
-  useEffect(() => {
+
+  function clearMobileTimer() {
+    if (mobileTimerRef.current == null) return
+    window.clearTimeout(mobileTimerRef.current)
+    mobileTimerRef.current = null
+  }
+
+  function openMobile() {
+    clearMobileTimer()
+    setMobileMounted(true)
+    requestAnimationFrame(() => setMobileOpen(true))
+  }
+
+  function closeMobile() {
     setMobileOpen(false)
+    clearMobileTimer()
+    mobileTimerRef.current = window.setTimeout(() => {
+      mobileTimerRef.current = null
+      setMobileMounted(false)
+    }, 520)
+  }
+
+  useEffect(() => {
+    closeMobile()
 
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
@@ -30,17 +54,17 @@ export function Navigation({ teams }: { teams: Team[] }) {
   }, [location.pathname, location.hash])
 
   useEffect(() => {
-    if (!mobileOpen) return
+    if (!mobileMounted) return
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileOpen(false)
+      if (event.key === 'Escape') closeMobile()
     }
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [mobileOpen])
+  }, [mobileMounted])
 
-  const closeMobile = () => setMobileOpen(false)
+  useEffect(() => () => clearMobileTimer(), [])
 
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
@@ -118,20 +142,24 @@ export function Navigation({ teams }: { teams: Team[] }) {
           type="button"
           aria-label="Otevřít menu"
           aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen(true)}
+          onClick={openMobile}
           className="grid h-10 w-10 place-items-center rounded-[14px] bg-white text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100 lg:hidden"
         >
           <Menu size={19} />
         </button>
       </nav>
 
-      {mobileOpen && (
+      {mobileMounted && (
         <div
-          className="fixed inset-0 z-[60] bg-brand-900/25 p-3 backdrop-blur-md lg:hidden"
+          className={`fixed inset-0 z-[60] bg-brand-900/25 p-3 backdrop-blur-md transition-[opacity,backdrop-filter] duration-[520ms] ease-smooth lg:hidden ${
+            mobileOpen ? 'opacity-100' : 'opacity-0'
+          }`}
           onClick={closeMobile}
         >
           <div
-            className="mobile-menu-enter ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft"
+            className={`ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft transition-[transform,opacity] duration-[560ms] ease-smooth ${
+              mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-5 opacity-0'
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
