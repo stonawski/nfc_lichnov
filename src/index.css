@@ -16,6 +16,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 7rem;
   background: #FAF8F3;
 }
 
@@ -233,6 +234,10 @@ html.route-changing {
   animation: lightbox-media-enter 520ms var(--motion-ease) both;
 }
 
+.lightbox-exit {
+  animation: lightbox-exit 320ms var(--motion-ease) both;
+}
+
 .stagger-children > * {
   animation: content-enter 760ms var(--motion-ease) both;
 }
@@ -334,6 +339,11 @@ html.route-changing {
   }
 }
 
+@keyframes lightbox-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 @keyframes content-enter {
   from {
     opacity: 0;
@@ -371,7 +381,17 @@ html.route-changing {
 
 
 @supports (view-transition-name: root) {
+  .nav-shell {
+    view-transition-name: site-navigation;
+  }
+
+  ::view-transition-old(site-navigation),
+  ::view-transition-new(site-navigation) {
+    animation: none;
+  }
+
   ::view-transition-old(root),
+  ::view-transition-new(root) {
   ::view-transition-new(root) {
     animation-duration: 680ms;
     animation-timing-function: var(--motion-ease);
