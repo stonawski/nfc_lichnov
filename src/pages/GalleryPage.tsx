@@ -219,7 +219,7 @@ export function GalleryDetailPage() {
             </div>
 
             {gallery.description && (
-              <p className="max-w-lg text-sm leading-7 text-white/68 sm:text-base lg:justify-self-end">
+              <p className="max-w-lg text-sm leading-7 text-white/70 sm:text-base lg:justify-self-end">
                 {gallery.description}
               </p>
             )}
