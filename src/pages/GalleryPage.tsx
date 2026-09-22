@@ -316,7 +316,12 @@ function GalleryCard({
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
         />
       ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_20%,rgba(0,146,63,.52),transparent_34%),linear-gradient(145deg,#244938,#18352A)]" />
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-65"
+        />
       )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/28 to-transparent" />
