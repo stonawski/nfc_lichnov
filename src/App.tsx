@@ -125,10 +125,26 @@ function AdminLoading() {
 
 function RouteLoading() {
   return (
-    <main className="min-h-[65svh] bg-sand-50 px-5 py-20 md:px-8">
-      <div className="mx-auto max-w-[1240px]">
-        <LoadingState rows={5} />
-      </div>
+    <main aria-busy="true" aria-label="Načítání stránky">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 items-center py-8 md:py-12">
+          <div className="w-full max-w-[760px]">
+            <div className="h-3 w-28 rounded-full bg-white/55 backdrop-blur" />
+            <div className="mt-5 space-y-3">
+              <div className="h-14 w-[78%] rounded-[20px] bg-white/55 backdrop-blur sm:h-20" />
+              <div className="h-14 w-[56%] rounded-[20px] bg-white/45 backdrop-blur sm:h-20" />
+            </div>
+            <div className="mt-7 h-4 w-[68%] rounded-full bg-white/45 backdrop-blur" />
+            <div className="mt-3 h-4 w-[48%] rounded-full bg-white/35 backdrop-blur" />
+          </div>
+        </div>
+      </section>
+
+      <section className="min-h-[420px] bg-white px-5 py-16 md:px-8 md:py-20">
+        <div className="mx-auto max-w-[1240px]">
+          <LoadingState rows={4} />
+        </div>
+      </section>
     </main>
   )
 }
