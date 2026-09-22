@@ -242,10 +242,10 @@ function Dropdown({
         className={`nav-link flex items-center gap-1 px-3.5 py-2 text-[13px] font-semibold ${active ? 'nav-link-active' : ''}`}
       >
         {label}
-        <ChevronDown size={14} className="transition duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+        <ChevronDown size={14} className="transition duration-[420ms] ease-smooth group-hover:rotate-180 group-focus-within:rotate-180" />
       </button>
 
-      <div className="pointer-events-none absolute left-1/2 top-full z-30 -translate-x-1/2 translate-y-1 pt-3 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
+      <div className="pointer-events-none absolute left-1/2 top-full z-30 -translate-x-1/2 translate-y-2 pt-3 opacity-0 transition duration-[460ms] ease-smooth group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
         <div className="rounded-[24px] border border-white/85 bg-[#fbfaf6]/95 shadow-soft ring-1 ring-sand-200/60 backdrop-blur-2xl">
           {children}
         </div>
@@ -285,9 +285,20 @@ function MobileGroup({
         className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-xl font-semibold tracking-tight text-ink-900 transition hover:bg-white"
       >
         {label}
-        <ChevronDown size={18} className={`transition ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          size={18}
+          className={`transition duration-[420ms] ease-smooth ${open ? 'rotate-180' : ''}`}
+        />
       </button>
-      {open && <div className="ml-2 mt-1 border-l border-sand-200 pl-3">{children}</div>}
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-[520ms] ease-smooth ${
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="ml-2 mt-1 border-l border-sand-200 pl-3">{children}</div>
+        </div>
+      </div>
     </div>
   )
 }
