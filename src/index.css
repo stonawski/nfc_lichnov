@@ -23,6 +23,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   background: #FAF8F3;
   color: #202621;
   font-family: Inter, "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -42,6 +43,48 @@ a,
 button {
   -webkit-tap-highlight-color: transparent;
 }
+
+
+.skip-link {
+  opacity: 0;
+  transform: translateY(-160%);
+  pointer-events: none;
+  transition:
+    opacity var(--motion-fast) var(--motion-ease),
+    transform var(--motion-fast) var(--motion-ease);
+}
+
+.skip-link:focus {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 
 a:focus-visible,
 button:focus-visible {
