@@ -24,6 +24,7 @@ import {
   type ClubSeasonInput,
   type ClubSeasonStat,
   type ClubStatsAuditEntry,
+  type ClubStatsLastEdit,
   type CompetitionOutcome,
 } from '../../lib/clubStatsData'
 
@@ -53,18 +54,18 @@ export function AdminClubStatsPage() {
 
   const players = statsQuery.data?.players ?? []
   const seasons = statsQuery.data?.seasons ?? []
+  const lastEdits = statsQuery.data?.lastEdits ?? []
   const audit = statsQuery.data?.audit ?? []
 
-  const latestAudit = useMemo(() => {
-    const map = new Map<string, ClubStatsAuditEntry>()
+  const latestEdit = useMemo(() => {
+    const map = new Map<string, ClubStatsLastEdit>()
 
-    for (const entry of audit) {
-      const key = `${entry.entityType}:${entry.entityKey}`
-      if (!map.has(key)) map.set(key, entry)
+    for (const entry of lastEdits) {
+      map.set(`${entry.entityType}:${entry.entityKey}`, entry)
     }
 
     return map
-  }, [audit])
+  }, [lastEdits])
 
   const normalizedQuery = normalizeSearch(query)
   const filteredPlayers = players.filter((player) =>
@@ -194,7 +195,7 @@ export function AdminClubStatsPage() {
                   <PlayerEditorRow
                     key={String(player.id)}
                     player={player}
-                    audit={latestAudit.get(`player:${String(player.id)}`)}
+                    audit={latestEdit.get(`player:${String(player.id)}`)}
                     onSaved={refresh}
                   />
                 ))}
@@ -262,7 +263,7 @@ export function AdminClubStatsPage() {
               <SeasonEditorCard
                 key={season.ordinal}
                 season={season}
-                audit={latestAudit.get(`season:${season.ordinal}`)}
+                audit={latestEdit.get(`season:${season.ordinal}`)}
                 onSaved={refresh}
               />
             ))}
@@ -295,7 +296,7 @@ function PlayerEditorRow({
   onSaved,
 }: {
   player: ClubPlayerStat
-  audit?: ClubStatsAuditEntry
+  audit?: ClubStatsLastEdit
   onSaved: () => Promise<void>
 }) {
   const [name, setName] = useState(player.name)
@@ -480,7 +481,7 @@ function SeasonEditorCard({
   onSaved,
 }: {
   season: ClubSeasonStat
-  audit?: ClubStatsAuditEntry
+  audit?: ClubStatsLastEdit
   onSaved: () => Promise<void>
 }) {
   const [draft, setDraft] = useState(() => seasonToDraft(season))
@@ -797,7 +798,7 @@ function LastEdited({
   updatedAt,
   className = '',
 }: {
-  audit?: ClubStatsAuditEntry
+  audit?: ClubStatsLastEdit
   updatedAt: string | null
   className?: string
 }) {
