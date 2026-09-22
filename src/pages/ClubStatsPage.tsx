@@ -17,6 +17,7 @@ import {
   PLAYER_STATS_SOURCE_UPDATED_AT,
   type ClubPlayerStat,
 } from '../lib/clubStatsData'
+import { DataFade } from '../components/DataFade'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 
 type RankingMode = 'matches' | 'goals'
@@ -99,7 +100,7 @@ export function ClubStatsPage() {
         lastSeason={lastSeason}
       />
 
-      <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+      <section className="data-fade-in bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionIntro
             eyebrow="Historické pořadí"
@@ -208,7 +209,7 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+      <section className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <SectionIntro
@@ -268,7 +269,7 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
+      <section className="data-fade-in bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-7 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
             <div>
@@ -410,7 +411,7 @@ function StatsHero({
           </p>
         </div>
 
-        <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
+        <DataFade className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
           <RecordCard
             icon={<Users size={20} />}
             eyebrow="Nejvíce zápasů"
@@ -432,7 +433,7 @@ function StatsHero({
             label="historických sezon"
             detail={`od ${firstSeason} do ${lastSeason}`}
           />
-        </div>
+        </DataFade>
 
         <div className="mt-5 grid gap-3 rounded-[24px] border border-white/70 bg-white/80 px-5 py-4 text-sm leading-6 text-ink-500 shadow-sm backdrop-blur-xl md:grid-cols-[1fr_auto] md:items-center">
           <p>
