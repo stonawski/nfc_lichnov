@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import type { Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
+import { DataFade } from './DataFade'
 
 const clubLinks = [
   { label: 'O klubu', to: '/klub', description: 'Kdo jsme a jak klub funguje' },
@@ -12,7 +13,7 @@ const clubLinks = [
   { label: 'Kontakt', to: '/kontakt', description: 'Spojení na klub' },
 ]
 
-export function Navigation({ teams }: { teams: Team[] }) {
+export function Navigation({ teams, loading = false }: { teams: Team[]; loading?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileMounted, setMobileMounted] = useState(false)
   const [mobileTeamsOpen, setMobileTeamsOpen] = useState(false)
@@ -73,7 +74,13 @@ export function Navigation({ teams }: { teams: Team[] }) {
           to="/"
           className="flex shrink-0 items-center gap-2.5 rounded-2xl px-1 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
-          <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+          {loading ? (
+            <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
+          ) : (
+            <DataFade>
+              <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+            </DataFade>
+          )}
           <div className="hidden sm:block">
             <div className="text-[15px] font-extrabold tracking-[-0.035em] text-brand-900">NFC Lichnov</div>
           </div>
@@ -85,8 +92,9 @@ export function Navigation({ teams }: { teams: Team[] }) {
               <div className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-ink-500">
                 Kategorie NFC Lichnov
               </div>
-              <div className="grid grid-cols-2 gap-1">
-                {teams.map((team) => (
+              <DataFade className="grid grid-cols-2 gap-1">
+                <DataFade>
+                  {teams.map((team) => (
                   <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
@@ -100,7 +108,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                     <div className="mt-1 pl-4 text-[11px] text-ink-500">Zápasy · hráči · statistiky</div>
                   </Link>
                 ))}
-              </div>
+              </DataFade>
             </div>
           </Dropdown>
 
@@ -164,7 +172,13 @@ export function Navigation({ teams }: { teams: Team[] }) {
           >
             <div className="flex items-center justify-between">
               <Link to="/" onClick={closeMobile} className="flex items-center gap-3">
-                <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                {loading ? (
+                  <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
+                ) : (
+                  <DataFade>
+                    <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                  </DataFade>
+                )}
                 <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
               </Link>
 
@@ -193,7 +207,8 @@ export function Navigation({ teams }: { teams: Team[] }) {
                   >
                     {team.name}
                   </Link>
-                ))}
+                  ))}
+                </DataFade>
               </MobileGroup>
 
               <MobileLink to="/zapasy" close={closeMobile}>Zápasy</MobileLink>
