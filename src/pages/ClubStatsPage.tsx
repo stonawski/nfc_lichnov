@@ -25,6 +25,7 @@ export function ClubStatsPage() {
   const [query, setQuery] = useState('')
   const [showAllPlayers, setShowAllPlayers] = useState(false)
   const [showAllSeasons, setShowAllSeasons] = useState(false)
+  const [activeOnly, setActiveOnly] = useState(false)
 
   const statsQuery = useQuery({
     queryKey: ['club-stats'],
@@ -60,12 +61,13 @@ export function ClubStatsPage() {
 
   const filteredRanking = useMemo(() => {
     const normalizedQuery = normalizeSearch(query)
-    if (!normalizedQuery) return rankedPlayers
 
-    return rankedPlayers.filter(({ player }) =>
-      normalizeSearch(player.name).includes(normalizedQuery),
-    )
-  }, [rankedPlayers, query])
+    return rankedPlayers.filter(({ player }) => {
+      if (activeOnly && !player.active) return false
+      if (!normalizedQuery) return true
+      return normalizeSearch(player.name).includes(normalizedQuery)
+    })
+  }, [activeOnly, rankedPlayers, query])
 
   const visiblePlayers =
     showAllPlayers || query.trim() ? filteredRanking : filteredRanking.slice(0, 30)
@@ -107,7 +109,8 @@ export function ClubStatsPage() {
           <div className="mt-9 overflow-hidden rounded-[32px] border border-sand-200 bg-white">
             <div className="border-b border-sand-200 p-4 sm:p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="inline-flex w-fit rounded-[16px] bg-sand-100 p-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex w-fit rounded-[16px] bg-sand-100 p-1">
                   <RankingTab
                     active={rankingMode === 'matches'}
                     onClick={() => {
@@ -126,6 +129,21 @@ export function ClubStatsPage() {
                   >
                     Střelci
                   </RankingTab>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveOnly((value) => !value)
+                      setShowAllPlayers(false)
+                    }}
+                    className={`rounded-[14px] px-4 py-2.5 text-sm font-bold transition ${
+                      activeOnly
+                        ? 'bg-brand-900 text-white'
+                        : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
+                    }`}
+                  >
+                    Pouze aktivní
+                  </button>
                 </div>
 
                 <label className="relative block w-full lg:max-w-[340px]">
@@ -472,8 +490,17 @@ function PlayerTable({
             >
               {String(rank).padStart(2, '0')}
             </div>
-            <div className="min-w-0 truncate text-sm font-bold text-brand-900 sm:text-base">
-              {player.name}
+            <div className="min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
+                <div className="truncate text-sm font-bold text-brand-900 sm:text-base">
+                  {player.name}
+                </div>
+                {player.active && (
+                  <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] text-brand-700">
+                    Aktivní
+                  </span>
+                )}
+              </div>
             </div>
             <div className="text-right">
               <div className="text-base font-black text-brand-900 sm:text-lg">
