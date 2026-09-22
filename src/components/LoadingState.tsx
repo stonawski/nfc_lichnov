@@ -6,7 +6,7 @@ export function LoadingState({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, index) => (
         <div
           key={index}
-          className="loading-row-enter h-20 rounded-3xl bg-white/70 ring-1 ring-sand-200"
+          className="loading-row-enter h-20 rounded-[24px] border border-sand-200/70 bg-white/70"
           style={{ '--loading-delay': `${index * 70}ms` } as CSSProperties}
         />
       ))}
@@ -16,8 +16,11 @@ export function LoadingState({ rows = 3 }: { rows?: number }) {
 
 export function EmptyState({ title, text }: { title: string; text: string }) {
   return (
-    <div className="content-enter rounded-4xl border border-dashed border-sand-200 bg-white/55 px-6 py-10 text-center">
-      <h3 className="text-lg font-semibold text-ink-900">{title}</h3>
+    <div className="content-enter rounded-[30px] border border-sand-200 bg-[#fbfaf6] px-6 py-11 text-center shadow-[0_10px_30px_rgba(24,53,42,.035)] sm:px-8 sm:py-12">
+      <div className="mx-auto h-1 w-10 rounded-full bg-brand-500" />
+      <h3 className="mt-5 text-xl font-extrabold tracking-[-0.035em] text-brand-900">
+        {title}
+      </h3>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-ink-500">{text}</p>
     </div>
   )
