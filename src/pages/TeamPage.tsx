@@ -15,6 +15,7 @@ import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
+import { Seo } from '../components/Seo'
 import { StandingsTable } from '../components/StandingsTable'
 import {
   fetchDisplayPlayersByTeam,
@@ -109,6 +110,12 @@ export function TeamPage() {
 
   return (
     <main className="data-fade-in bg-sand-50">
+      <Seo
+        title={team.name}
+        description={`${team.name} NFC Lichnov — zápasy, hráči, tabulka a realizační tým.`}
+        image={team.logo_url}
+        canonicalPath={`/tymy/${team.slug}`}
+      />
       <section className="site-hero-frame relative -mt-[84px] flex flex-col px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <HeroFieldBackdrop />
 
