@@ -16,7 +16,6 @@ import {
   getBundledClubStats,
   PLAYER_STATS_SOURCE_UPDATED_AT,
   type ClubPlayerStat,
-  type ClubSeasonStat,
 } from '../lib/clubStatsData'
 
 type RankingMode = 'matches' | 'goals'
@@ -84,7 +83,7 @@ export function ClubStatsPage() {
   const appearanceLeader = appearanceRanking[0]
   const scoringLeader = scoringRanking[0]
   const firstSeason = seasons[0]?.season ?? '1964/65'
-  const lastSeason = seasons.at(-1)?.season ?? '2022/23'
+  const lastSeason = seasons[seasons.length - 1]?.season ?? '2022/23'
   const latestPlayerUpdate = latestUpdate(players.map((player) => player.updatedAt))
 
   return (
