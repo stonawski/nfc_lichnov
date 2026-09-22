@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { NetworkStatus } from './components/NetworkStatus'
 import { ClubStatsPage } from './pages/ClubStatsPage'
 import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
 import { HomePage } from './pages/HomePage'
@@ -90,8 +91,10 @@ function AdminLoading() {
 
 export default function App() {
   return (
-    <Suspense fallback={<AdminLoading />}>
-      <Routes>
+    <>
+      <NetworkStatus />
+      <Suspense fallback={<AdminLoading />}>
+        <Routes>
         <Route path="/admin/prihlaseni" element={<AdminLoginPage />} />
 
         <Route path="/admin" element={<AdminGuard />}>
@@ -126,7 +129,8 @@ export default function App() {
           <Route path="/kontakt" element={<ContactPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+    </>
   )
 }
