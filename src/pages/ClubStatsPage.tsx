@@ -180,7 +180,11 @@ export function ClubStatsPage() {
               </div>
             </div>
 
-            <PlayerTable rows={visiblePlayers} mode={rankingMode} />
+            <PlayerTable
+              key={`${rankingMode}-${activeOnly ? 'active' : 'all'}-${showAllPlayers ? 'expanded' : 'compact'}`}
+              rows={visiblePlayers}
+              mode={rankingMode}
+            />
 
             {!query.trim() && filteredRanking.length > 30 && (
               <div className="border-t border-sand-200 p-4 text-center sm:p-5">
@@ -302,7 +306,10 @@ export function ClubStatsPage() {
           </div>
 
           <div className="mt-10 overflow-hidden rounded-[30px] border border-white/10 bg-[#143126]">
-            <div className="overflow-x-auto">
+            <div
+              key={showAllSeasons ? 'all-seasons' : 'recent-seasons'}
+              className="component-swap-enter overflow-x-auto"
+            >
               <table className="w-full min-w-[900px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-white/10 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">
@@ -463,7 +470,7 @@ function PlayerTable({
   mode: RankingMode
 }) {
   return (
-    <div>
+    <div className="component-swap-enter">
       <div className="grid grid-cols-[46px_minmax(0,1fr)_78px_72px] gap-2 border-b border-sand-200 bg-[#fbfaf6] px-4 py-3 text-[8px] font-black uppercase tracking-[0.12em] text-ink-500 sm:grid-cols-[60px_minmax(0,1fr)_110px_100px] sm:px-6 sm:text-[9px]">
         <div>Poř.</div>
         <div>Hráč</div>
