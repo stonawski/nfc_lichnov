@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
@@ -107,35 +108,39 @@ export function MatchesPage() {
             </p>
           </div>
 
-          <div className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
-            <div className="flex flex-wrap gap-2">
-              <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
-                Všechny týmy
-              </Filter>
-
-              {teams.map((team) => (
-                <Filter
-                  key={team.id}
-                  active={selectedTeamSlug === team.slug}
-                  onClick={() => setTeamFilter(team.slug)}
-                >
-                  {team.name}
+          {teamsQuery.isLoading ? (
+            <div className="h-[68px] rounded-[24px] border border-white/80 bg-white/55 backdrop-blur-xl" />
+          ) : (
+            <DataFade className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
+              <div className="flex flex-wrap gap-2">
+                <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
+                  Všechny týmy
                 </Filter>
-              ))}
-            </div>
-          </div>
+
+                {teams.map((team) => (
+                  <Filter
+                    key={team.id}
+                    active={selectedTeamSlug === team.slug}
+                    onClick={() => setTeamFilter(team.slug)}
+                  >
+                    {team.name}
+                  </Filter>
+                ))}
+              </div>
+            </DataFade>
+          )}
 
           {!matchesQuery.isLoading && !teamsQuery.isLoading && featuredMatch && (
-            <div
+            <DataFade
               key={`featured-${selectedTeamSlug}-${featuredMatch.id}`}
-              className="component-swap-enter mt-10 md:mt-12"
+              className="mt-10 md:mt-12"
             >
               <FeaturedMatch
                 match={featuredMatch}
                 team={teamMap.get(featuredMatch.team_id)}
                 returnTo={returnTo}
               />
-            </div>
+            </DataFade>
           )}
         </div>
       </section>
@@ -150,7 +155,7 @@ export function MatchesPage() {
         <>
           <section
             key={`upcoming-${selectedTeamSlug}`}
-            className="component-swap-enter bg-white px-5 py-16 md:px-8 md:py-24"
+            className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24"
           >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
@@ -191,7 +196,7 @@ export function MatchesPage() {
 
           <section
             key={`results-${selectedTeamSlug}`}
-            className="component-swap-enter bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+            className="data-fade-in bg-sand-100 px-5 py-16 md:px-8 md:py-24"
           >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
@@ -233,7 +238,7 @@ export function MatchesPage() {
       ) : (
         <section
           key={`empty-${selectedTeamSlug}`}
-          className="component-swap-enter bg-white px-5 py-16 md:px-8 md:py-24"
+          className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24"
         >
           <div className="mx-auto max-w-[1240px]">
             <EmptyState
