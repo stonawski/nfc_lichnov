@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
@@ -68,7 +69,7 @@ export function GalleryPage() {
               text="Zkontroluj přístup k tabulkám galleries a gallery_images v Supabase."
             />
           ) : galleries.length ? (
-            <div className="stagger-children grid gap-5 md:grid-cols-2 lg:grid-cols-12">
+            <DataFade className="stagger-children grid gap-5 md:grid-cols-2 lg:grid-cols-12">
               {galleries.map((gallery, index) => {
                 const images = imagesByGallery.get(gallery.id) ?? []
                 const firstImage = images.find((image) => galleryImageUrl(image))
@@ -93,9 +94,9 @@ export function GalleryPage() {
                   />
                 )
               })}
-            </div>
+            </DataFade>
           ) : (
-            <div className="overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_55px_rgba(24,53,42,.06)]">
+            <DataFade className="overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_55px_rgba(24,53,42,.06)]">
               <div className="grid lg:grid-cols-[1.12fr_.88fr]">
                 <div className="relative min-h-[380px] overflow-hidden p-7 text-white sm:min-h-[440px] sm:p-10 lg:p-12">
                   <img
@@ -153,7 +154,7 @@ export function GalleryPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </DataFade>
           )}
         </div>
       </section>
@@ -215,7 +216,7 @@ export function GalleryDetailPage() {
   }
 
   return (
-    <main>
+    <main className="data-fade-in">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop tone="dark" />
 
@@ -262,7 +263,7 @@ export function GalleryDetailPage() {
               text="Zkontroluj veřejná oprávnění tabulky gallery_images."
             />
           ) : images.length ? (
-            <div className="stagger-children columns-1 gap-4 sm:columns-2 lg:columns-3">
+            <DataFade className="stagger-children columns-1 gap-4 sm:columns-2 lg:columns-3">
               {images.map((image, index) => {
                 const url = galleryImageUrl(image)
                 if (!url) return null
@@ -289,12 +290,14 @@ export function GalleryDetailPage() {
                   </button>
                 )
               })}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="V této galerii zatím nejsou fotografie"
               text="Fotky se zde objeví po prvním uploadu do galerie."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
