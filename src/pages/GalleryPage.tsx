@@ -182,34 +182,44 @@ export function GalleryDetailPage() {
 
   return (
     <main>
-      <section className="px-5 py-14 md:px-8 md:py-20">
-        <div className="mx-auto max-w-[1240px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+        <div className="pointer-events-none absolute inset-0 bg-brand-900">
+          <img
+            src={gallery.cover_image || '/hero-lichnov-field.webp'}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.98)_0%,rgba(24,53,42,.88)_42%,rgba(24,53,42,.46)_74%,rgba(24,53,42,.24)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,.08)_0%,rgba(24,53,42,.18)_58%,#18352a_100%)]" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1240px] py-6 text-white md:py-10">
           <Link
             to="/galerie"
-            className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 transition hover:text-brand-500"
+            className="inline-flex items-center gap-2 text-sm font-bold text-white/65 transition hover:text-white"
           >
             <ArrowLeft size={16} />
             Zpět na galerie
           </Link>
 
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_.55fr] lg:items-end">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.48fr] lg:items-end">
+            <div className="max-w-4xl">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55 sm:text-xs">
                 Fotogalerie
               </div>
-              <h1 className="mt-4 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-brand-900 sm:text-6xl">
+              <h1 className="mt-4 text-[clamp(3rem,7vw,6.2rem)] font-black leading-[.91] tracking-[-0.068em]">
                 {gallery.title || 'NFC Lichnov'}
               </h1>
-
               {(gallery.event_date || gallery.created_at) && (
-                <div className="mt-5 text-sm font-semibold text-ink-500">
+                <div className="mt-5 text-sm font-semibold text-white/60">
                   {formatDate(gallery.event_date || gallery.created_at)}
                 </div>
               )}
             </div>
 
             {gallery.description && (
-              <p className="max-w-lg text-sm leading-7 text-ink-500 lg:justify-self-end">
+              <p className="max-w-lg text-sm leading-7 text-white/68 sm:text-base lg:justify-self-end">
                 {gallery.description}
               </p>
             )}
@@ -217,7 +227,7 @@ export function GalleryDetailPage() {
         </div>
       </section>
 
-      <section className="px-5 pb-20 md:px-8 md:pb-28">
+      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           {imagesQuery.isLoading ? (
             <LoadingState rows={6} />
