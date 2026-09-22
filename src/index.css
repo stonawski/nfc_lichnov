@@ -186,19 +186,19 @@ img {
 
 
 .hero-field-image-frame {
-  height: 70%;
+  height: min(70svh, 588px);
   width: 100%;
 }
 
 @media (min-width: 640px) {
   .hero-field-image-frame {
-    height: 76%;
+    height: min(76svh, 638px);
   }
 }
 
 @media (min-width: 1024px) {
   .hero-field-image-frame {
-    height: 55%;
+    height: min(55svh, 495px);
     width: 72%;
   }
 }
