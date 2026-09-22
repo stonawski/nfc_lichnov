@@ -10,7 +10,7 @@ import {
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { Seo } from '../components/Seo'
 import {
@@ -69,14 +69,13 @@ export function MatchDetailPage() {
     retry: false,
   })
 
-  if (matchQuery.isLoading) {
-    return (
-      <main className="px-5 py-20 md:px-8">
-        <div className="mx-auto max-w-[1180px]">
-          <LoadingState rows={6} />
-        </div>
-      </main>
-    )
+  const matchDataLoading =
+    matchQuery.isLoading ||
+    teamsQuery.isLoading ||
+    (Boolean(match) && (participantsQuery.isLoading || timelineQuery.isLoading))
+
+  if (matchDataLoading) {
+    return <PublicDataPageLoading sections={1} />
   }
 
   if (matchQuery.isError) {
