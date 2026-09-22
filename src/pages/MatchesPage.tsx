@@ -137,7 +137,10 @@ export function MatchesPage() {
           </div>
 
           {!matchesQuery.isLoading && !teamsQuery.isLoading && featuredMatch && (
-            <div className="mt-10 md:mt-12">
+            <div
+              key={`featured-${selectedTeamSlug}-${featuredMatch.id}`}
+              className="component-swap-enter mt-10 md:mt-12"
+            >
               <FeaturedMatch
                 match={featuredMatch}
                 team={teamMap.get(featuredMatch.team_id)}
@@ -156,7 +159,10 @@ export function MatchesPage() {
         </section>
       ) : matches.length ? (
         <>
-          <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+          <section
+            key={`upcoming-${selectedTeamSlug}`}
+            className="component-swap-enter bg-white px-5 py-16 md:px-8 md:py-24"
+          >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Program"
@@ -194,7 +200,10 @@ export function MatchesPage() {
             </div>
           </section>
 
-          <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+          <section
+            key={`results-${selectedTeamSlug}`}
+            className="component-swap-enter bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+          >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Odehráno"
@@ -233,7 +242,10 @@ export function MatchesPage() {
           </section>
         </>
       ) : (
-        <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+        <section
+          key={`empty-${selectedTeamSlug}`}
+          className="component-swap-enter bg-white px-5 py-16 md:px-8 md:py-24"
+        >
           <div className="mx-auto max-w-[1240px]">
             <EmptyState
               title="Žádné zápasy"
@@ -481,7 +493,7 @@ function ExpandButton({
         {expanded ? 'Zobrazit méně' : `Zobrazit další (${hiddenCount})`}
         <ChevronDown
           size={15}
-          className={`transition duration-200 ${expanded ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
+          className={`transition duration-[420ms] ease-smooth ${expanded ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
         />
       </button>
     </div>
