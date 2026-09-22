@@ -33,3 +33,12 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_SITE_URL: https://example.invalid
+
+      - name: Verify generated SEO files
+        run: |
+          test -f dist/robots.txt
+          test -f dist/sitemap.xml
+          grep -q "https://example.invalid/" dist/sitemap.xml
+          grep -q "Disallow: /admin" dist/robots.txt
