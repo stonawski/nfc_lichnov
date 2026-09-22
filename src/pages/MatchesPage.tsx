@@ -10,7 +10,7 @@ import {
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState, PublicDataPageLoading } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
 import {
@@ -86,8 +86,12 @@ export function MatchesPage() {
     setShowAllResults(false)
   }, [selectedTeamSlug])
 
+  if (matchesQuery.isLoading || teamsQuery.isLoading) {
+    return <PublicDataPageLoading sections={2} />
+  }
+
   return (
-    <main>
+    <main className="data-fade-in">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
         <HeroFieldBackdrop />
 
