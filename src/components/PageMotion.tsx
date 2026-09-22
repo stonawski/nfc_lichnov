@@ -85,12 +85,14 @@ export function PageMotion({ children }: { children: ReactNode }) {
           })
         })
 
-        transition.finished.finally(() => {
+        const finishTransition = () => {
           document.documentElement.classList.remove(
             'route-changing',
             'native-route-transition',
           )
-        })
+        }
+
+        transition.finished.then(finishTransition, finishTransition)
         return
       }
 
@@ -142,7 +144,11 @@ export function PageMotion({ children }: { children: ReactNode }) {
     // The first viewport must already be visible when the browser captures
     // the destination snapshot for a native cross-fade.
     if (nativeTransition) {
-      blocks[0]?.classList.add('is-visible')
+      blocks.forEach((block) => {
+        if (block.getBoundingClientRect().top < window.innerHeight * 1.08) {
+          block.classList.add('is-visible')
+        }
+      })
     }
 
     if (reducedMotion || typeof IntersectionObserver === 'undefined') {
