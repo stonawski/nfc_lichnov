@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import {
   ArrowDown,
   ArrowUp,
@@ -11,29 +12,46 @@ import {
 } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
 import {
-  competitionMilestones,
-  historicalPlayerStats,
-  historicalSeasons,
-  type HistoricalPlayerStat,
-} from '../data/clubHistory'
+  fetchPublicClubStats,
+  getBundledClubStats,
+  PLAYER_STATS_SOURCE_UPDATED_AT,
+  type ClubPlayerStat,
+  type ClubSeasonStat,
+} from '../lib/clubStatsData'
 
 type RankingMode = 'matches' | 'goals'
-
-const appearanceRanking = [...historicalPlayerStats].sort(
-  (a, b) => b.matches - a.matches || b.goals - a.goals || a.sourceOrder - b.sourceOrder,
-)
-
-const scoringRanking = [...historicalPlayerStats].sort(
-  (a, b) => b.goals - a.goals || b.matches - a.matches || a.sourceOrder - b.sourceOrder,
-)
-
-const seasonByName = new Map(historicalSeasons.map((season) => [season.season, season]))
 
 export function ClubStatsPage() {
   const [rankingMode, setRankingMode] = useState<RankingMode>('matches')
   const [query, setQuery] = useState('')
   const [showAllPlayers, setShowAllPlayers] = useState(false)
   const [showAllSeasons, setShowAllSeasons] = useState(false)
+
+  const statsQuery = useQuery({
+    queryKey: ['club-stats'],
+    queryFn: fetchPublicClubStats,
+    initialData: getBundledClubStats,
+    staleTime: 60_000,
+  })
+
+  const players = statsQuery.data.players
+  const seasons = statsQuery.data.seasons
+
+  const appearanceRanking = useMemo(
+    () =>
+      [...players].sort(
+        (a, b) => b.matches - a.matches || b.goals - a.goals || a.sourceOrder - b.sourceOrder,
+      ),
+    [players],
+  )
+
+  const scoringRanking = useMemo(
+    () =>
+      [...players].sort(
+        (a, b) => b.goals - a.goals || b.matches - a.matches || a.sourceOrder - b.sourceOrder,
+      ),
+    [players],
+  )
 
   const activeRanking = rankingMode === 'matches' ? appearanceRanking : scoringRanking
   const rankedPlayers = useMemo(
@@ -44,6 +62,7 @@ export function ClubStatsPage() {
   const filteredRanking = useMemo(() => {
     const normalizedQuery = normalizeSearch(query)
     if (!normalizedQuery) return rankedPlayers
+
     return rankedPlayers.filter(({ player }) =>
       normalizeSearch(player.name).includes(normalizedQuery),
     )
@@ -53,65 +72,37 @@ export function ClubStatsPage() {
     showAllPlayers || query.trim() ? filteredRanking : filteredRanking.slice(0, 30)
 
   const visibleSeasons = showAllSeasons
-    ? historicalSeasons
-    : historicalSeasons.slice(-12).reverse()
+    ? [...seasons].reverse()
+    : [...seasons].reverse().slice(0, 12)
+
+  const milestones = seasons.filter(
+    (season) => season.outcome && season.nextCompetition,
+  )
+  const promotionCount = milestones.filter((season) => season.outcome === 'promotion').length
+  const relegationCount = milestones.filter((season) => season.outcome === 'relegation').length
 
   const appearanceLeader = appearanceRanking[0]
   const scoringLeader = scoringRanking[0]
+  const firstSeason = seasons[0]?.season ?? '1964/65'
+  const lastSeason = seasons.at(-1)?.season ?? '2022/23'
+  const latestPlayerUpdate = latestUpdate(players.map((player) => player.updatedAt))
 
   return (
     <main>
-      <StatsHero />
-
-      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="grid gap-4 md:grid-cols-3">
-            <RecordCard
-              icon={<Users size={20} />}
-              eyebrow="Nejvíce zápasů"
-              value={String(appearanceLeader.matches)}
-              label={appearanceLeader.name}
-              detail={`${appearanceLeader.goals} vstřelených branek`}
-            />
-            <RecordCard
-              icon={<Goal size={20} />}
-              eyebrow="Nejlepší střelec"
-              value={String(scoringLeader.goals)}
-              label={scoringLeader.name}
-              detail={`${scoringLeader.matches} odehraných zápasů`}
-            />
-            <RecordCard
-              icon={<CalendarDays size={20} />}
-              eyebrow="Minuty pravdy"
-              value={String(historicalSeasons.length)}
-              label="historických sezon"
-              detail="od 1964/65 do 2022/23"
-            />
-          </div>
-
-          <div className="mt-7 grid gap-3 rounded-[24px] border border-sand-200 bg-[#fbfaf6] px-5 py-4 text-sm leading-6 text-ink-500 md:grid-cols-[1fr_auto] md:items-center">
-            <p>
-              Historické statistiky hráčů vycházejí z klubových podkladů a dat IS FAČR.
-              Původní tabulky byly aktualizovány 28. 2. 2025.
-            </p>
-            <a
-              href="https://nfclichnov.wbs.cz/Od-zapasy-hracu.html"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex w-fit items-center gap-1.5 font-bold text-brand-700 transition hover:text-brand-500"
-            >
-              Původní zdroj <ArrowUpRight size={14} />
-            </a>
-          </div>
-        </div>
-      </section>
+      <StatsHero
+        appearanceLeader={appearanceLeader}
+        scoringLeader={scoringLeader}
+        seasonCount={seasons.length}
+        firstSeason={firstSeason}
+        lastSeason={lastSeason}
+      />
 
       <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionIntro
             eyebrow="Historické pořadí"
             title="Kompletní klubová statistika."
-            text="Obě pořadí vznikají z jedné společné databáze 430 hráčských záznamů. Při další aktualizaci stačí změnit zápasy nebo góly hráče na jednom místě a oba žebříčky se přepočítají."
+            text={`Obě pořadí vznikají z jedné společné databáze ${players.length} hráčských záznamů. Při další aktualizaci stačí změnit zápasy nebo góly hráče na jednom místě a oba žebříčky se přepočítají.`}
           />
 
           <div className="mt-9 overflow-hidden rounded-[32px] border border-sand-200 bg-white">
@@ -155,14 +146,19 @@ export function ClubStatsPage() {
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-xl font-extrabold tracking-[-0.035em] text-brand-900">
-                    {rankingMode === 'matches' ? 'Odehrané zápasy' : 'Historická tabulka střelců'}
+                    {rankingMode === 'matches'
+                      ? 'Odehrané zápasy'
+                      : 'Historická tabulka střelců'}
                   </div>
                   <div className="mt-1 text-xs text-ink-500">
-                    {filteredRanking.length} {filteredRanking.length === 1 ? 'záznam' : 'záznamů'}
+                    {filteredRanking.length}{' '}
+                    {filteredRanking.length === 1 ? 'záznam' : 'záznamů'}
                   </div>
                 </div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Aktualizováno 28. 2. 2025
+                <div className="text-right text-[10px] font-bold uppercase tracking-[0.14em] text-ink-500">
+                  {latestPlayerUpdate
+                    ? `Naposledy upraveno ${formatPublicDate(latestPlayerUpdate)}`
+                    : 'Zdroj aktualizován 28. 2. 2025'}
                 </div>
               </div>
             </div>
@@ -196,18 +192,16 @@ export function ClubStatsPage() {
             <SectionIntro
               eyebrow="Minuty pravdy"
               title="Postupy, sestupy a zlomové sezony."
-              text="Soutěžní změny jsou odvozené z přechodu mezi soutěžemi v následujícím ročníku. U každého milníku zůstává vidět výsledek sezony, který změně předcházel."
+              text="U každé historické sezony lze v administraci označit postup nebo sestup a následující soutěž. Tato časová osa se z těchto údajů skládá automaticky."
             />
 
             <div className="grid gap-3 sm:grid-cols-2">
-              {competitionMilestones.map((milestone) => {
-                const season = seasonByName.get(milestone.afterSeason)
-                if (!season) return null
-                const promotion = milestone.type === 'promotion'
+              {milestones.map((season) => {
+                const promotion = season.outcome === 'promotion'
 
                 return (
                   <article
-                    key={milestone.afterSeason}
+                    key={season.ordinal}
                     className="rounded-[26px] border border-sand-200 bg-[#fbfaf6] p-5"
                   >
                     <div className="flex items-start justify-between gap-5">
@@ -223,7 +217,7 @@ export function ClubStatsPage() {
                           {promotion ? 'Postup' : 'Sestup'}
                         </div>
                         <div className="mt-4 text-2xl font-black tracking-[-0.045em] text-brand-900">
-                          {milestone.afterSeason}
+                          {season.season}
                         </div>
                       </div>
                       {promotion ? (
@@ -234,9 +228,9 @@ export function ClubStatsPage() {
                     </div>
 
                     <div className="mt-5 text-sm font-bold text-brand-900">
-                      {milestone.from}
+                      {season.competition}
                       <span className="mx-2 text-ink-500">→</span>
-                      {milestone.to}
+                      {season.nextCompetition}
                     </div>
 
                     <div className="mt-4 grid grid-cols-3 gap-2 border-t border-sand-200 pt-4">
@@ -257,15 +251,15 @@ export function ClubStatsPage() {
           <div className="grid gap-7 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45 sm:text-xs">
-                1964/65 — 2022/23
+                {firstSeason} — {lastSeason}
               </div>
               <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] md:text-5xl">
                 Celá soutěžní historie v jedné tabulce.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-7 text-white/60 sm:text-base">
                 Zápasy, bilance, skóre, body, soutěž a konečné umístění podle
-                historického přehledu „Minuty pravdy“. Ročníky 2019/20 a 2020/21
-                nebyly dokončeny kvůli pandemii covid-19.
+                historického přehledu „Minuty pravdy“. Nedokončené ročníky zůstávají
+                označené přímo v tabulce.
               </p>
               <a
                 href="https://nfclichnov.wbs.cz/Minuty-pravdy.html"
@@ -279,14 +273,13 @@ export function ClubStatsPage() {
 
             <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-5">
               <div className="grid grid-cols-3 gap-4">
-                <DarkStat value="59" label="sezon" />
-                <DarkStat value="8" label="postupů" />
-                <DarkStat value="6" label="sestupů" />
+                <DarkStat value={String(seasons.length)} label="sezon" />
+                <DarkStat value={String(promotionCount)} label="postupů" />
+                <DarkStat value={String(relegationCount)} label="sestupů" />
               </div>
               <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-6 text-white/45">
-                Počty postupů a sestupů vycházejí ze změny úrovně soutěže mezi
-                navazujícími ročníky; přejmenování Župního přeboru na Krajský přebor
-                po sezoně 2001/02 není počítáno jako postup.
+                Postupy a sestupy jsou vedené přímo u jednotlivých sezon a lze je
+                upravovat v administraci společně s cílovou soutěží.
               </p>
             </div>
           </div>
@@ -345,7 +338,9 @@ export function ClubStatsPage() {
                 onClick={() => setShowAllSeasons((value) => !value)}
                 className="inline-flex items-center gap-2 rounded-[14px] bg-white px-5 py-3 text-sm font-bold text-brand-900 transition hover:-translate-y-0.5"
               >
-                {showAllSeasons ? 'Zobrazit posledních 12 sezon' : 'Zobrazit všech 59 sezon'}
+                {showAllSeasons
+                  ? 'Zobrazit posledních 12 sezon'
+                  : `Zobrazit všech ${seasons.length} sezon`}
                 <ChevronDown
                   size={15}
                   className={`transition ${showAllSeasons ? 'rotate-180' : ''}`}
@@ -359,19 +354,31 @@ export function ClubStatsPage() {
   )
 }
 
-function StatsHero() {
+function StatsHero({
+  appearanceLeader,
+  scoringLeader,
+  seasonCount,
+  firstSeason,
+  lastSeason,
+}: {
+  appearanceLeader: ClubPlayerStat
+  scoringLeader: ClubPlayerStat
+  seasonCount: number
+  firstSeason: string
+  lastSeason: string
+}) {
   return (
-    <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+    <section className="relative -mt-[84px] overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
       <div className="pointer-events-none absolute inset-0 bg-sand-50">
         <img
           src="/hero-lichnov-field.webp"
           alt=""
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.1)' }}
+          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.08)' }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.95)_30%,rgba(250,248,243,.64)_60%,rgba(250,248,243,.18)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.1)_55%,#faf8f3_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.94)_28%,rgba(250,248,243,.58)_60%,rgba(250,248,243,.16)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.08)_48%,rgba(250,248,243,.72)_78%,#faf8f3_100%)]" />
       </div>
 
       <div className="relative mx-auto max-w-[1240px] py-8 md:py-12">
@@ -387,6 +394,45 @@ function StatsHero() {
             napříč desítkami sezon.
           </p>
         </div>
+
+        <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
+          <RecordCard
+            icon={<Users size={20} />}
+            eyebrow="Nejvíce zápasů"
+            value={String(appearanceLeader.matches)}
+            label={appearanceLeader.name}
+            detail={`${appearanceLeader.goals} vstřelených branek`}
+          />
+          <RecordCard
+            icon={<Goal size={20} />}
+            eyebrow="Nejlepší střelec"
+            value={String(scoringLeader.goals)}
+            label={scoringLeader.name}
+            detail={`${scoringLeader.matches} odehraných zápasů`}
+          />
+          <RecordCard
+            icon={<CalendarDays size={20} />}
+            eyebrow="Minuty pravdy"
+            value={String(seasonCount)}
+            label="historických sezon"
+            detail={`od ${firstSeason} do ${lastSeason}`}
+          />
+        </div>
+
+        <div className="mt-5 grid gap-3 rounded-[24px] border border-white/70 bg-white/80 px-5 py-4 text-sm leading-6 text-ink-500 shadow-sm backdrop-blur-xl md:grid-cols-[1fr_auto] md:items-center">
+          <p>
+            Historické statistiky hráčů vycházejí z klubových podkladů a dat IS FAČR.
+            Původní tabulky byly aktualizovány {formatSourceDate(PLAYER_STATS_SOURCE_UPDATED_AT)}.
+          </p>
+          <a
+            href="https://nfclichnov.wbs.cz/Od-zapasy-hracu.html"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-fit items-center gap-1.5 font-bold text-brand-700 transition hover:text-brand-500"
+          >
+            Původní zdroj <ArrowUpRight size={14} />
+          </a>
+        </div>
       </div>
     </section>
   )
@@ -396,7 +442,7 @@ function PlayerTable({
   rows,
   mode,
 }: {
-  rows: Array<{ player: HistoricalPlayerStat; rank: number }>
+  rows: Array<{ player: ClubPlayerStat; rank: number }>
   mode: RankingMode
 }) {
   return (
@@ -415,7 +461,7 @@ function PlayerTable({
       ) : (
         rows.map(({ player, rank }) => (
           <div
-            key={`${player.sourceOrder}-${player.name}-${player.matches}`}
+            key={String(player.id)}
             className={`grid grid-cols-[46px_minmax(0,1fr)_78px_72px] items-center gap-2 border-b border-sand-200 px-4 py-3.5 last:border-b-0 sm:grid-cols-[60px_minmax(0,1fr)_110px_100px] sm:px-6 ${
               rank <= 3 ? 'bg-[#fbfaf6]' : ''
             }`}
@@ -444,7 +490,6 @@ function PlayerTable({
     </div>
   )
 }
-
 
 function RankingTab({
   active,
@@ -482,7 +527,7 @@ function RecordCard({
   detail: string
 }) {
   return (
-    <article className="rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-6 sm:p-7">
+    <article className="rounded-[32px] border border-white/70 bg-white/88 p-6 shadow-[0_18px_60px_rgba(18,48,36,.08)] backdrop-blur-xl sm:p-7">
       <div className="flex items-center justify-between gap-4">
         <div className="text-[10px] font-bold uppercase tracking-[0.17em] text-ink-500">
           {eyebrow}
@@ -548,4 +593,19 @@ function normalizeSearch(value: string) {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim()
+}
+
+function latestUpdate(values: Array<string | null>) {
+  return values
+    .filter((value): value is string => Boolean(value))
+    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0] ?? null
+}
+
+function formatPublicDate(value: string) {
+  return new Intl.DateTimeFormat('cs-CZ', { dateStyle: 'medium' }).format(new Date(value))
+}
+
+function formatSourceDate(value: string) {
+  const [year, month, day] = value.split('-')
+  return `${Number(day)}. ${Number(month)}. ${year}`
 }
