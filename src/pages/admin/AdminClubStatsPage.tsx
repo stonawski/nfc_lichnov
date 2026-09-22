@@ -14,7 +14,7 @@ import {
   UserRound,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   createClubPlayerStat,
   createClubSeasonStat,
@@ -206,7 +206,7 @@ export function AdminClubStatsPage() {
               </div>
             )}
 
-            {!normalizedQuery && filteredPlayers.length > 40 && (
+              </div>\n            </div>\n\n            {!normalizedQuery && filteredPlayers.length > 40 && (
               <div className="border-t border-sand-200 p-4 text-center">
                 <button
                   type="button"
@@ -328,7 +328,7 @@ function PlayerEditorRow({
     toNonNegativeInt(goals) !== player.goals
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_90px_90px_120px] items-center gap-3 border-b border-sand-200 px-5 py-4 last:border-b-0 sm:grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] sm:px-6">
+    <div className="grid grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] items-center gap-3 border-b border-sand-200 px-6 py-4 last:border-b-0">
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
@@ -348,7 +348,7 @@ function PlayerEditorRow({
         onChange={(event) => setGoals(event.target.value)}
         className="admin-input"
       />
-      <LastEdited audit={audit} updatedAt={player.updatedAt} className="hidden sm:block" />
+      <LastEdited audit={audit} updatedAt={player.updatedAt} />
       <div className="flex justify-end gap-2">
         <button
           type="button"
