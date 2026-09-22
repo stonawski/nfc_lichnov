@@ -184,6 +184,25 @@ img {
 }
 
 
+
+.hero-field-image-frame {
+  height: 70%;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .hero-field-image-frame {
+    height: 76%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-field-image-frame {
+    height: 55%;
+    width: 72%;
+  }
+}
+
 .site-hero-frame {
   min-height: min(900px, 100svh);
 }
