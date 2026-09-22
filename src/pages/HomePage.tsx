@@ -335,23 +335,21 @@ export function HomePage() {
         </div>
       </section>
 
-      {men && (
-        menPlayersQuery.isLoading ? (
-          <section className="bg-white px-5 py-10 md:px-8">
-            <div className="mx-auto max-w-[1240px]">
-              <LoadingState rows={3} />
-            </div>
-          </section>
-        ) : menPlayersQuery.data?.length ? (
-          <DataFade>
-            <PlayerStripCarousel
-              team={men}
-              players={menPlayersQuery.data}
-              flush
-            />
-          </DataFade>
-        ) : null
-      )}
+      {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
+        <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <LoadingState rows={3} />
+          </div>
+        </section>
+      ) : men && menPlayersQuery.data?.length ? (
+        <DataFade>
+          <PlayerStripCarousel
+            team={men}
+            players={menPlayersQuery.data}
+            flush
+          />
+        </DataFade>
+      ) : null}
 
       <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
