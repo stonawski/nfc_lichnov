@@ -42,6 +42,11 @@ export function PageMotion({ children }: { children: ReactNode }) {
         return
       }
 
+      if (document.documentElement.classList.contains('route-changing')) {
+        event.preventDefault()
+        return
+      }
+
       const target = event.target
       if (!(target instanceof Element)) return
 
