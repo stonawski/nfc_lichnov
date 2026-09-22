@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-const FALLBACK_EXIT_MS = 280
+const FALLBACK_EXIT_MS = 180
 const ENTER_MS = 760
 
 type ViewTransition = {
