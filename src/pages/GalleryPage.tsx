@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
@@ -54,12 +55,6 @@ export function GalleryPage() {
         title="Život klubu"
         accent="v obrazech."
         text="Zápasy, turnaje, tréninky i chvíle mimo hřiště. Fotografie z jednotlivých akcí najdeš přehledně na jednom místě."
-        aside={
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-700 shadow-sm backdrop-blur-xl">
-            <Images size={13} />
-            {galleries.length || '—'} galerií
-          </div>
-        }
       />
 
       <section className="bg-white px-5 py-16 md:px-8 md:py-24">
@@ -99,10 +94,65 @@ export function GalleryPage() {
               })}
             </div>
           ) : (
-            <EmptyState
-              title="Galerie je zatím prázdná"
-              text="Jakmile nahrajeme první fotografie, objeví se automaticky tady."
-            />
+            <div className="overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_55px_rgba(24,53,42,.06)]">
+              <div className="grid lg:grid-cols-[1.12fr_.88fr]">
+                <div className="relative min-h-[380px] overflow-hidden p-7 text-white sm:min-h-[440px] sm:p-10 lg:p-12">
+                  <img
+                    src="/hero-lichnov-field.webp"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover object-[65%_center]"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.94)_0%,rgba(24,53,42,.70)_60%,rgba(24,53,42,.32)_100%)]" />
+
+                  <div className="relative flex h-full min-h-[326px] flex-col justify-end sm:min-h-[360px]">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+                      Fotogalerie NFC
+                    </div>
+                    <h2 className="mt-3 max-w-xl text-4xl font-black leading-[.98] tracking-[-0.055em] sm:text-5xl">
+                      První galerie teprve přibydou.
+                    </h2>
+                    <p className="mt-5 max-w-lg text-sm leading-7 text-white/70 sm:text-base">
+                      Chceme tady uchovávat zápasy, turnaje, mládež i běžný život
+                      klubu. Jakmile budou první fotografie publikované, galerie se
+                      poskládá automaticky.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid bg-sand-100 sm:grid-cols-2 lg:grid-cols-1">
+                  <Link
+                    to="/zapasy"
+                    className="group flex min-h-[190px] items-end justify-between gap-5 border-b border-sand-200 p-7 transition hover:bg-white sm:border-b-0 sm:border-r lg:border-b lg:border-r-0"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                        Než přibudou fotky
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-brand-900">
+                        Podívat se na zápasy
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500" />
+                  </Link>
+
+                  <Link
+                    to="/klub/historie"
+                    className="group flex min-h-[190px] items-end justify-between gap-5 p-7 transition hover:bg-white"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                        Od roku 1963
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-brand-900">
+                        Poznat historii klubu
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500" />
+                  </Link>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>
