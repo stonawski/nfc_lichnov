@@ -223,6 +223,11 @@ img {
   animation: content-fade-enter 720ms var(--motion-ease) both;
 }
 
+.data-fade-in {
+  animation: data-fade-in 640ms var(--motion-ease-soft) both;
+  will-change: opacity;
+}
+
 .component-swap-enter {
   animation: component-swap-enter 560ms var(--motion-ease) both;
 }
@@ -348,6 +353,16 @@ img {
 }
 
 @keyframes content-fade-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes data-fade-in {
   from {
     opacity: 0;
   }
