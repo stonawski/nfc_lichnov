@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const FALLBACK_EXIT_MS = 280
@@ -79,7 +80,9 @@ export function PageMotion({ children }: { children: ReactNode }) {
         document.documentElement.classList.add('native-route-transition')
 
         const transition = transitionDocument.startViewTransition(() => {
-          navigateRef.current(targetPath)
+          flushSync(() => {
+            navigateRef.current(targetPath)
+          })
         })
 
         transition.finished.finally(() => {
