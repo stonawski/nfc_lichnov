@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
+import { DataFade } from "../components/DataFade";
 import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
 import { MatchCarousel } from "../components/MatchCarousel";
@@ -134,20 +135,18 @@ export function HomePage() {
                 </Link>
               </div>
 
-              <div className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
-                <HeroStat
-                  value={
-                    teamsQuery.data?.length
-                      ? String(teamsQuery.data.length)
-                      : "—"
-                  }
-                  label="aktivních týmů"
-                />
-                <HeroStat
-                  value={men?.season || "2026/27"}
-                  label="aktuální sezóna"
-                />
-              </div>
+              {!teamsQuery.isLoading && (
+                <DataFade className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
+                  <HeroStat
+                    value={String(teamsQuery.data?.length ?? 0)}
+                    label="aktivních týmů"
+                  />
+                  <HeroStat
+                    value={men?.season || "—"}
+                    label="aktuální sezóna"
+                  />
+                </DataFade>
+              )}
             </div>
 
             <div className="relative lg:pl-4">
@@ -175,13 +174,17 @@ export function HomePage() {
                   text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
                 />
               ) : (
-                <MatchCarousel items={matchesQuery.data ?? []} />
+                <DataFade>
+                  <MatchCarousel items={matchesQuery.data ?? []} />
+                </DataFade>
               )}
             </div>
           </div>
 
           {(teamsQuery.data?.length ?? 0) > 0 && (
-            <TeamRail teams={teamsQuery.data ?? []} />
+            <DataFade>
+              <TeamRail teams={teamsQuery.data ?? []} />
+            </DataFade>
           )}
         </div>
       </section>
@@ -197,7 +200,7 @@ export function HomePage() {
           {newsQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : news.length ? (
-            <div className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
+            <DataFade className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
               <Link
                 to={`/aktuality/${news[0].slug}`}
                 className="group relative min-h-[470px] overflow-hidden rounded-[38px] bg-brand-900 p-7 text-white shadow-soft sm:p-9"
@@ -266,12 +269,14 @@ export function HomePage() {
                 ))}
 
               </div>
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Aktuality zatím nejsou publikované"
               text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -289,7 +294,7 @@ export function HomePage() {
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : featuredUpcoming ? (
-            <div className="stagger-children grid gap-4 lg:grid-cols-12">
+            <DataFade className="stagger-children grid gap-4 lg:grid-cols-12">
               <UpcomingMatchTile
                 match={featuredUpcoming}
                 featured
@@ -318,12 +323,14 @@ export function HomePage() {
                   }
                 />
               ))}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Nejbližší zápasy zatím nejsou k dispozici"
               text="Sekce se naplní automaticky z tabulky matches."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -336,11 +343,13 @@ export function HomePage() {
             </div>
           </section>
         ) : menPlayersQuery.data?.length ? (
-          <PlayerStripCarousel
-            team={men}
-            players={menPlayersQuery.data}
-            flush
-          />
+          <DataFade>
+            <PlayerStripCarousel
+              team={men}
+              players={menPlayersQuery.data}
+              flush
+            />
+          </DataFade>
         ) : null
       )}
 
@@ -370,7 +379,9 @@ export function HomePage() {
               {standingsQuery.isLoading ? (
                 <LoadingState rows={5} />
               ) : standingsPreview.length ? (
-                <StandingsTable rows={standingsPreview} compact />
+                <DataFade>
+                  <StandingsTable rows={standingsPreview} compact />
+                </DataFade>
               ) : (
                 <EmptyState
                   title="Tabulka není dostupná"
@@ -392,13 +403,19 @@ export function HomePage() {
             linkLabel="Přehled týmů"
           />
 
-          {teamsQuery.data?.length ? (
-            <TeamEditorialGrid teams={teamsQuery.data} />
+          {teamsQuery.isLoading ? (
+            <LoadingState rows={4} />
+          ) : teamsQuery.data?.length ? (
+            <DataFade>
+              <TeamEditorialGrid teams={teamsQuery.data} />
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Týmy se nepodařilo načíst"
               text="Po připojení Supabase se zde zobrazí všechny aktivní kategorie."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -431,7 +448,7 @@ export function HomePage() {
                 <LoadingState rows={2} />
               </div>
             ) : galleryPreview.length ? (
-              <div className="grid grid-cols-2 gap-3">
+              <DataFade className="grid grid-cols-2 gap-3">
                 {galleryPreview.map((gallery, index) => (
                   <Link
                     key={gallery.id}
@@ -457,16 +474,16 @@ export function HomePage() {
                     </div>
                   </Link>
                 ))}
-              </div>
+              </DataFade>
             ) : (
-              <div className="overflow-hidden rounded-[30px] border border-white/10">
+              <DataFade className="overflow-hidden rounded-[30px] border border-white/10">
                 <img
                   src="/hero-lichnov-field.webp"
                   alt=""
                   aria-hidden="true"
                   className="aspect-[16/8] h-full w-full object-cover opacity-70"
                 />
-              </div>
+              </DataFade>
             )}
           </div>
         </div>
