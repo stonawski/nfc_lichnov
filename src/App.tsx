@@ -1,18 +1,52 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { LoadingState } from './components/LoadingState'
 import { NetworkStatus } from './components/NetworkStatus'
-import { ClubStatsPage } from './pages/ClubStatsPage'
-import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
 import { HomePage } from './pages/HomePage'
-import { MatchDetailPage } from './pages/MatchDetailPage'
-import { MatchesPage } from './pages/MatchesPage'
-import { NewsDetailPage } from './pages/NewsDetailPage'
-import { NewsPage } from './pages/NewsPage'
-import { NotFoundPage } from './pages/NotFoundPage'
-import { ArealPage, ClubPage, ContactPage, HistoryPage } from './pages/StaticPages'
-import { TeamPage } from './pages/TeamPage'
-import { TeamsPage } from './pages/TeamsPage'
+
+const TeamsPage = lazy(() =>
+  import('./pages/TeamsPage').then((module) => ({ default: module.TeamsPage })),
+)
+const TeamPage = lazy(() =>
+  import('./pages/TeamPage').then((module) => ({ default: module.TeamPage })),
+)
+const MatchesPage = lazy(() =>
+  import('./pages/MatchesPage').then((module) => ({ default: module.MatchesPage })),
+)
+const MatchDetailPage = lazy(() =>
+  import('./pages/MatchDetailPage').then((module) => ({ default: module.MatchDetailPage })),
+)
+const NewsPage = lazy(() =>
+  import('./pages/NewsPage').then((module) => ({ default: module.NewsPage })),
+)
+const NewsDetailPage = lazy(() =>
+  import('./pages/NewsDetailPage').then((module) => ({ default: module.NewsDetailPage })),
+)
+const GalleryPage = lazy(() =>
+  import('./pages/GalleryPage').then((module) => ({ default: module.GalleryPage })),
+)
+const GalleryDetailPage = lazy(() =>
+  import('./pages/GalleryPage').then((module) => ({ default: module.GalleryDetailPage })),
+)
+const ClubPage = lazy(() =>
+  import('./pages/StaticPages').then((module) => ({ default: module.ClubPage })),
+)
+const HistoryPage = lazy(() =>
+  import('./pages/StaticPages').then((module) => ({ default: module.HistoryPage })),
+)
+const ArealPage = lazy(() =>
+  import('./pages/StaticPages').then((module) => ({ default: module.ArealPage })),
+)
+const ContactPage = lazy(() =>
+  import('./pages/StaticPages').then((module) => ({ default: module.ContactPage })),
+)
+const ClubStatsPage = lazy(() =>
+  import('./pages/ClubStatsPage').then((module) => ({ default: module.ClubStatsPage })),
+)
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })),
+)
 
 const AdminGuard = lazy(() =>
   import('./admin/AdminGuard').then((module) => ({ default: module.AdminGuard })),
@@ -89,48 +123,80 @@ function AdminLoading() {
   )
 }
 
+function RouteLoading() {
+  return (
+    <main className="min-h-[65svh] bg-sand-50 px-5 py-20 md:px-8">
+      <div className="mx-auto max-w-[1240px]">
+        <LoadingState rows={5} />
+      </div>
+    </main>
+  )
+}
+
+function PublicLazy({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<RouteLoading />}>{children}</Suspense>
+}
+
 export default function App() {
   return (
     <>
       <NetworkStatus />
-      <Suspense fallback={<AdminLoading />}>
-        <Routes>
-        <Route path="/admin/prihlaseni" element={<AdminLoginPage />} />
+      <Routes>
+        <Route
+          path="/admin/prihlaseni"
+          element={
+            <Suspense fallback={<AdminLoading />}>
+              <AdminLoginPage />
+            </Suspense>
+          }
+        />
 
-        <Route path="/admin" element={<AdminGuard />}>
-          <Route element={<AdminLayout />}>
-            <Route index element={<AdminDashboardPage />} />
-            <Route path="galerie" element={<AdminGalleriesPage />} />
-            <Route path="galerie/:id" element={<AdminGalleryDetailPage />} />
-            <Route path="aktuality" element={<AdminNewsPage />} />
-            <Route path="aktuality/:id" element={<AdminNewsEditorPage />} />
-            <Route path="hraci" element={<AdminPlayersPage />} />
-            <Route path="hraci/:id" element={<AdminPlayerEditorPage />} />
-            <Route path="realizacni-tym" element={<AdminStaffPage />} />
-            <Route path="realizacni-tym/:id" element={<AdminStaffEditorPage />} />
-            <Route path="statistiky" element={<AdminClubStatsPage />} />
+        <Route
+          path="/admin"
+          element={
+            <Suspense fallback={<AdminLoading />}>
+              <AdminGuard />
+            </Suspense>
+          }
+        >
+          <Route
+            element={
+              <Suspense fallback={<AdminLoading />}>
+                <AdminLayout />
+              </Suspense>
+            }
+          >
+            <Route index element={<Suspense fallback={<AdminLoading />}><AdminDashboardPage /></Suspense>} />
+            <Route path="galerie" element={<Suspense fallback={<AdminLoading />}><AdminGalleriesPage /></Suspense>} />
+            <Route path="galerie/:id" element={<Suspense fallback={<AdminLoading />}><AdminGalleryDetailPage /></Suspense>} />
+            <Route path="aktuality" element={<Suspense fallback={<AdminLoading />}><AdminNewsPage /></Suspense>} />
+            <Route path="aktuality/:id" element={<Suspense fallback={<AdminLoading />}><AdminNewsEditorPage /></Suspense>} />
+            <Route path="hraci" element={<Suspense fallback={<AdminLoading />}><AdminPlayersPage /></Suspense>} />
+            <Route path="hraci/:id" element={<Suspense fallback={<AdminLoading />}><AdminPlayerEditorPage /></Suspense>} />
+            <Route path="realizacni-tym" element={<Suspense fallback={<AdminLoading />}><AdminStaffPage /></Suspense>} />
+            <Route path="realizacni-tym/:id" element={<Suspense fallback={<AdminLoading />}><AdminStaffEditorPage /></Suspense>} />
+            <Route path="statistiky" element={<Suspense fallback={<AdminLoading />}><AdminClubStatsPage /></Suspense>} />
           </Route>
         </Route>
 
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/tymy" element={<TeamsPage />} />
-          <Route path="/tymy/:slug" element={<TeamPage />} />
-          <Route path="/zapasy" element={<MatchesPage />} />
-          <Route path="/zapasy/:id" element={<MatchDetailPage />} />
-          <Route path="/aktuality" element={<NewsPage />} />
-          <Route path="/aktuality/:slug" element={<NewsDetailPage />} />
-          <Route path="/galerie" element={<GalleryPage />} />
-          <Route path="/galerie/:slug" element={<GalleryDetailPage />} />
-          <Route path="/klub" element={<ClubPage />} />
-          <Route path="/klub/historie" element={<HistoryPage />} />
-          <Route path="/klub/statistiky" element={<ClubStatsPage />} />
-          <Route path="/klub/areal" element={<ArealPage />} />
-          <Route path="/kontakt" element={<ContactPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/tymy" element={<PublicLazy><TeamsPage /></PublicLazy>} />
+          <Route path="/tymy/:slug" element={<PublicLazy><TeamPage /></PublicLazy>} />
+          <Route path="/zapasy" element={<PublicLazy><MatchesPage /></PublicLazy>} />
+          <Route path="/zapasy/:id" element={<PublicLazy><MatchDetailPage /></PublicLazy>} />
+          <Route path="/aktuality" element={<PublicLazy><NewsPage /></PublicLazy>} />
+          <Route path="/aktuality/:slug" element={<PublicLazy><NewsDetailPage /></PublicLazy>} />
+          <Route path="/galerie" element={<PublicLazy><GalleryPage /></PublicLazy>} />
+          <Route path="/galerie/:slug" element={<PublicLazy><GalleryDetailPage /></PublicLazy>} />
+          <Route path="/klub" element={<PublicLazy><ClubPage /></PublicLazy>} />
+          <Route path="/klub/historie" element={<PublicLazy><HistoryPage /></PublicLazy>} />
+          <Route path="/klub/statistiky" element={<PublicLazy><ClubStatsPage /></PublicLazy>} />
+          <Route path="/klub/areal" element={<PublicLazy><ArealPage /></PublicLazy>} />
+          <Route path="/kontakt" element={<PublicLazy><ContactPage /></PublicLazy>} />
+          <Route path="*" element={<PublicLazy><NotFoundPage /></PublicLazy>} />
         </Route>
-        </Routes>
-      </Suspense>
+      </Routes>
     </>
   )
 }
