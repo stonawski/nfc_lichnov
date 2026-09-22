@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
 import {
@@ -216,16 +217,7 @@ export function GalleryDetailPage() {
   return (
     <main>
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
-        <div className="pointer-events-none absolute inset-0 bg-brand-900">
-          <img
-            src={gallery.cover_image || '/hero-lichnov-field.webp'}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.98)_0%,rgba(24,53,42,.88)_42%,rgba(24,53,42,.46)_74%,rgba(24,53,42,.24)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,.08)_0%,rgba(24,53,42,.18)_58%,#18352a_100%)]" />
-        </div>
+        <HeroFieldBackdrop tone="dark" />
 
         <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-6 text-white md:py-10">
           <Link
