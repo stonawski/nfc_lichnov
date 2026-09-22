@@ -173,11 +173,6 @@ img {
 }
 
 
-.page-motion-shell,
-.route-content-enter {
-  min-height: 100vh;
-}
-
 .page-motion-shell {
   background: transparent;
 }
