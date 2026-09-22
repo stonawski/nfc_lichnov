@@ -105,7 +105,7 @@ export function AdminClubStatsPage() {
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
         <StatCard label="Historických hráčů" value={players.length} />
         <StatCard label="Sezon" value={seasons.length} />
-        <StatCard label="Zaznamenaných změn" value={audit.length} />
+        <StatCard label="Posledních změn v přehledu" value={audit.length} />
       </div>
 
       <div className="mt-6 inline-flex rounded-[18px] bg-white p-1 ring-1 ring-sand-200">
@@ -220,7 +220,8 @@ export function AdminClubStatsPage() {
                 </button>
               </div>
             )}
-          </section>        </>
+          </section>
+        </>
       ) : (
         <>
           <section className="mt-6 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-6">
@@ -639,7 +640,7 @@ function SeasonFields({
   draft: SeasonDraft
   setDraft: (value: SeasonDraft) => void
 }) {
-  const set = <K extends keyof SeasonDraft>(key: K, value: SeasonDraft[K]) =>
+  const set = <K extends keyof SeasonDraft,>(key: K, value: SeasonDraft[K]) =>
     setDraft({ ...draft, [key]: value })
 
   return (
