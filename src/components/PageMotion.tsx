@@ -1,8 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-const EXIT_MS = 190
-const ENTER_MS = 560
+const FALLBACK_EXIT_MS = 280
+const ENTER_MS = 760
+
+type ViewTransition = {
+  finished: Promise<void>
+}
+
+type TransitionDocument = Document & {
+  startViewTransition?: (update: () => void | Promise<void>) => ViewTransition
+}
 
 export function PageMotion({ children }: { children: ReactNode }) {
   const location = useLocation()
@@ -52,8 +60,7 @@ export function PageMotion({ children }: { children: ReactNode }) {
       const currentUrl = new URL(window.location.href)
       const sameRoute = nextUrl.pathname === currentUrl.pathname
 
-      // Query/hash-only changes are UI state, not a new page. Let React Router
-      // update the current screen without the global leave/enter transition.
+      // Query/hash changes are component state, not a page transition.
       if (sameRoute) return
 
       const root = rootRef.current
@@ -62,15 +69,34 @@ export function PageMotion({ children }: { children: ReactNode }) {
       event.preventDefault()
       clearTimer(navigateTimerRef)
 
-      root.classList.add('is-leaving')
+      const targetPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const transitionDocument = document as TransitionDocument
+
       document.documentElement.classList.add('route-changing')
 
-      const targetPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
+      if (!reducedMotion && transitionDocument.startViewTransition) {
+        document.documentElement.classList.add('native-route-transition')
 
+        const transition = transitionDocument.startViewTransition(() => {
+          navigateRef.current(targetPath)
+        })
+
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove(
+            'route-changing',
+            'native-route-transition',
+          )
+        })
+        return
+      }
+
+      // Smooth fallback for browsers without View Transition API.
+      root.classList.add('is-leaving')
       navigateTimerRef.current = window.setTimeout(() => {
         navigateTimerRef.current = null
         navigateRef.current(targetPath)
-      }, EXIT_MS)
+      }, reducedMotion ? 0 : FALLBACK_EXIT_MS)
     }
 
     document.addEventListener('click', handleDocumentClick, true)
@@ -79,7 +105,10 @@ export function PageMotion({ children }: { children: ReactNode }) {
       document.removeEventListener('click', handleDocumentClick, true)
       clearTimer(navigateTimerRef)
       clearTimer(enterTimerRef)
-      document.documentElement.classList.remove('route-changing')
+      document.documentElement.classList.remove(
+        'route-changing',
+        'native-route-transition',
+      )
     }
   }, [])
 
@@ -96,6 +125,7 @@ export function PageMotion({ children }: { children: ReactNode }) {
     html.style.scrollBehavior = previousScrollBehavior
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const nativeTransition = html.classList.contains('native-route-transition')
     const blocks = Array.from(
       root.querySelectorAll<HTMLElement>('main > section, main > article, main > div'),
     )
@@ -103,12 +133,18 @@ export function PageMotion({ children }: { children: ReactNode }) {
     blocks.forEach((block, index) => {
       block.classList.add('reveal-block')
       block.classList.remove('is-visible')
-      block.style.setProperty('--reveal-delay', `${Math.min(index, 3) * 70}ms`)
+      block.style.setProperty('--reveal-delay', `${Math.min(index, 3) * 90}ms`)
     })
+
+    // The first viewport must already be visible when the browser captures
+    // the destination snapshot for a native cross-fade.
+    if (nativeTransition) {
+      blocks[0]?.classList.add('is-visible')
+    }
 
     if (reducedMotion || typeof IntersectionObserver === 'undefined') {
       blocks.forEach((block) => block.classList.add('is-visible'))
-      document.documentElement.classList.remove('route-changing')
+      if (!nativeTransition) html.classList.remove('route-changing')
       return
     }
 
@@ -123,21 +159,25 @@ export function PageMotion({ children }: { children: ReactNode }) {
         })
       },
       {
-        threshold: 0.08,
-        rootMargin: '0px 0px -8% 0px',
+        threshold: 0.06,
+        rootMargin: '0px 0px -5% 0px',
       },
     )
 
-    // The first viewport fades in as one stable layout. Following sections reveal on scroll.
-    requestAnimationFrame(() => {
-      blocks[0]?.classList.add('is-visible')
-    })
+    if (!nativeTransition) {
+      requestAnimationFrame(() => {
+        blocks[0]?.classList.add('is-visible')
+      })
+    }
+
     blocks.slice(1).forEach((block) => observer.observe(block))
 
     clearTimer(enterTimerRef)
     enterTimerRef.current = window.setTimeout(() => {
       enterTimerRef.current = null
-      document.documentElement.classList.remove('route-changing')
+      if (!nativeTransition) {
+        document.documentElement.classList.remove('route-changing')
+      }
     }, ENTER_MS)
 
     return () => {
