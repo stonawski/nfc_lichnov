@@ -92,7 +92,7 @@ export function HomePage() {
     <main>
       <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <div className="pointer-events-none absolute inset-0 overflow-hidden bg-sand-50">
-          <div className="absolute right-0 top-0 h-full w-full lg:w-[72%]">
+          <div className="absolute right-0 top-0 h-[70%] w-full sm:h-[76%] lg:h-[55%] lg:w-[72%]">
             <img
               src="/hero-lichnov-field.webp"
               alt=""
