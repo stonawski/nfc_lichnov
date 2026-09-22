@@ -13,6 +13,9 @@ export type ClubPlayerStat = {
   goals: number
   matches: number
   sourceOrder: number
+  facrPlayerId: number | null
+  active: boolean
+  needsReview: boolean
   updatedAt: string | null
 }
 
@@ -79,6 +82,9 @@ function fallbackPlayers(): ClubPlayerStat[] {
     goals: player.goals,
     matches: player.matches,
     sourceOrder: player.sourceOrder,
+    facrPlayerId: null,
+    active: false,
+    needsReview: false,
     updatedAt: null,
   }))
 }
@@ -111,6 +117,9 @@ function mapPlayerRow(row: Record<string, unknown>): ClubPlayerStat {
     goals: Number(row.goals ?? 0),
     matches: Number(row.matches ?? 0),
     sourceOrder: Number(row.source_order ?? 0),
+    facrPlayerId: row.facr_player_id == null ? null : Number(row.facr_player_id),
+    active: row.active === true,
+    needsReview: row.needs_review === true,
     updatedAt: (row.updated_at as string | null) ?? null,
   }
 }
@@ -168,7 +177,8 @@ export async function fetchPublicClubStats(): Promise<ClubStatsBundle> {
   const [playersResult, seasonsResult] = await Promise.all([
     supabase
       .from('club_player_stats')
-      .select('id,name,goals,matches,source_order,updated_at')
+      .select('id,name,goals,matches,source_order,facr_player_id,active,needs_review,updated_at')
+      .eq('needs_review', false)
       .order('source_order', { ascending: true }),
     supabase
       .from('club_seasons')
@@ -205,7 +215,7 @@ export async function fetchAdminClubStats() {
   const [playersResult, seasonsResult, lastEditResult, auditResult] = await Promise.all([
     supabase
       .from('club_player_stats')
-      .select('id,name,goals,matches,source_order,updated_at')
+      .select('id,name,goals,matches,source_order,facr_player_id,active,needs_review,updated_at')
       .order('source_order', { ascending: true }),
     supabase
       .from('club_seasons')
@@ -240,7 +250,7 @@ export async function fetchAdminClubStats() {
 
 export async function updateClubPlayerStat(
   id: number,
-  input: Pick<ClubPlayerStat, 'name' | 'matches' | 'goals'>,
+  input: Pick<ClubPlayerStat, 'name' | 'matches' | 'goals' | 'active'>,
 ) {
   const { data, error } = await supabase
     .from('club_player_stats')
@@ -248,9 +258,11 @@ export async function updateClubPlayerStat(
       name: input.name.trim(),
       matches: input.matches,
       goals: input.goals,
+      active: input.active,
+      needs_review: false,
     })
     .eq('id', id)
-    .select('id,name,goals,matches,source_order,updated_at')
+    .select('id,name,goals,matches,source_order,facr_player_id,active,needs_review,updated_at')
     .single()
 
   if (error) throw error
@@ -258,7 +270,7 @@ export async function updateClubPlayerStat(
 }
 
 export async function createClubPlayerStat(
-  input: Pick<ClubPlayerStat, 'name' | 'matches' | 'goals'>,
+  input: Pick<ClubPlayerStat, 'name' | 'matches' | 'goals' | 'active'>,
 ) {
   const { data: latest, error: latestError } = await supabase
     .from('club_player_stats')
@@ -275,14 +287,23 @@ export async function createClubPlayerStat(
       name: input.name.trim(),
       matches: input.matches,
       goals: input.goals,
+      active: input.active,
+      needs_review: false,
       source_order:
         typeof latest?.source_order === 'number' ? latest.source_order + 1 : 1,
     })
-    .select('id,name,goals,matches,source_order,updated_at')
+    .select('id,name,goals,matches,source_order,facr_player_id,active,needs_review,updated_at')
     .single()
 
   if (error) throw error
   return mapPlayerRow(data)
+}
+
+
+export async function syncCurrentPlayersIntoClubStats() {
+  const { data, error } = await supabase.rpc('sync_club_player_stats_current')
+  if (error) throw error
+  return typeof data === 'number' ? data : Number(data ?? 0)
 }
 
 export async function deleteClubPlayerStat(id: number) {
