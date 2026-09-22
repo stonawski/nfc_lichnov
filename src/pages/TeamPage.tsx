@@ -12,7 +12,7 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { DataFade } from '../components/DataFade'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { Seo } from '../components/Seo'
@@ -76,6 +76,18 @@ export function TeamPage() {
     return (
       <PageWrap>
         <LoadingState rows={4} />
+      </PageWrap>
+    )
+  }
+
+  if (teamQuery.isError) {
+    return (
+      <PageWrap>
+        <ErrorState
+          title="Tým se nepodařilo načíst"
+          text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení se sportovními daty."
+          onRetry={() => void teamQuery.refetch()}
+        />
       </PageWrap>
     )
   }
