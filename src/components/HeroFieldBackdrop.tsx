@@ -16,6 +16,9 @@ export function HeroFieldBackdrop({
           src="/hero-lichnov-field.webp"
           alt=""
           aria-hidden="true"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
           style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
         />
