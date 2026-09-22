@@ -10,6 +10,7 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PublicPageHero } from '../components/PublicPageHero'
 import {
   fetchGalleries,
   fetchGalleryBySlug,
@@ -47,26 +48,22 @@ export function GalleryPage() {
   const loading = galleriesQuery.isLoading || imagesQuery.isLoading
 
   return (
-    <main className="px-5 py-16 md:px-8 md:py-24">
-      <div className="mx-auto max-w-[1240px]">
-        <div className="grid gap-8 lg:grid-cols-[1fr_.45fr] lg:items-end">
-          <div className="max-w-4xl">
-            <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
-              Galerie
-            </div>
-            <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.06em] text-brand-900 sm:text-6xl md:text-7xl">
-              Život klubu
-              <span className="block text-brand-500">v obrazech.</span>
-            </h1>
+    <main>
+      <PublicPageHero
+        eyebrow="Galerie"
+        title="Život klubu"
+        accent="v obrazech."
+        text="Zápasy, turnaje, tréninky i chvíle mimo hřiště. Fotografie z jednotlivých akcí najdeš přehledně na jednom místě."
+        aside={
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-700 shadow-sm backdrop-blur-xl">
+            <Images size={13} />
+            {galleries.length || '—'} galerií
           </div>
+        }
+      />
 
-          <p className="max-w-md text-sm leading-7 text-ink-500 lg:justify-self-end">
-            Zápasy, turnaje, tréninky i chvíle mimo hřiště. Fotografie z jednotlivých
-            akcí najdeš přehledně na jednom místě.
-          </p>
-        </div>
-
-        <div className="mt-14">
+      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+        <div className="mx-auto max-w-[1240px]">
           {loading ? (
             <LoadingState rows={5} />
           ) : galleriesQuery.isError || imagesQuery.isError ? (
@@ -108,7 +105,7 @@ export function GalleryPage() {
             />
           )}
         </div>
-      </div>
+      </section>
     </main>
   )
 }
