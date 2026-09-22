@@ -134,7 +134,7 @@ export function MatchDetailPage() {
         description={`Detail zápasu ${match.home_team_name} – ${match.away_team_name}: termín, výsledek, sestava a průběh utkání.`}
         canonicalPath={`/zapasy/${match.id}`}
       />
-      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col justify-center">
