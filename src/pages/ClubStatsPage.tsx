@@ -17,6 +17,7 @@ import {
   PLAYER_STATS_SOURCE_UPDATED_AT,
   type ClubPlayerStat,
 } from '../lib/clubStatsData'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 
 type RankingMode = 'matches' | 'goals'
 
@@ -393,17 +394,7 @@ function StatsHero({
 }) {
   return (
     <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
-      <div className="pointer-events-none absolute inset-0 bg-sand-50">
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.08)' }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.94)_28%,rgba(250,248,243,.58)_60%,rgba(250,248,243,.16)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.08)_48%,rgba(250,248,243,.72)_78%,#faf8f3_100%)]" />
-      </div>
+        <HeroFieldBackdrop />
 
       <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-8 md:py-12">
         <div className="max-w-[820px]">
