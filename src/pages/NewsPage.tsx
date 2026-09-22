@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ArrowUpRight, Newspaper } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
@@ -24,12 +24,6 @@ export function NewsPage() {
         title="Co se děje"
         accent="v NFC Lichnov."
         text="Zápasy, turnaje, mládež, dění v klubu a všechno podstatné na jednom místě."
-        aside={
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-700 shadow-sm backdrop-blur-xl">
-            <Newspaper size={13} />
-            {articles.length || '—'} článků
-          </div>
-        }
       />
 
       <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
@@ -144,10 +138,64 @@ export function NewsPage() {
               )}
             </>
           ) : (
-            <EmptyState
-              title="Zatím bez aktualit"
-              text="Po zveřejnění prvního článku se objeví zde."
-            />
+            <div className="overflow-hidden rounded-[38px] bg-brand-900 text-white shadow-soft">
+              <div className="grid lg:grid-cols-[1.08fr_.92fr]">
+                <div className="relative min-h-[360px] overflow-hidden p-7 sm:min-h-[420px] sm:p-10 lg:p-12">
+                  <img
+                    src="/hero-lichnov-field.webp"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-55"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.96)_0%,rgba(24,53,42,.80)_58%,rgba(24,53,42,.48)_100%)]" />
+
+                  <div className="relative flex h-full min-h-[306px] flex-col justify-end sm:min-h-[340px]">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+                      Klubový deník
+                    </div>
+                    <h2 className="mt-3 max-w-xl text-4xl font-black leading-[.98] tracking-[-0.055em] sm:text-5xl">
+                      První zprávy připravujeme.
+                    </h2>
+                    <p className="mt-5 max-w-lg text-sm leading-7 text-white/68 sm:text-base">
+                      Jakmile zveřejníme první článek, objeví se tady. Do té doby
+                      můžeš sledovat aktuální program, výsledky a jednotlivé týmy.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid bg-[#143126] sm:grid-cols-2 lg:grid-cols-1">
+                  <Link
+                    to="/zapasy"
+                    className="group flex min-h-[170px] items-end justify-between gap-5 border-b border-white/10 p-7 transition hover:bg-white/[0.05] sm:border-b-0 sm:border-r lg:border-b lg:border-r-0"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">
+                        Aktuálně
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em]">
+                        Program a výsledky
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-white/45 transition group-hover:translate-x-1 group-hover:text-white" />
+                  </Link>
+
+                  <Link
+                    to="/tymy"
+                    className="group flex min-h-[170px] items-end justify-between gap-5 p-7 transition hover:bg-white/[0.05]"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">
+                        NFC Lichnov
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em]">
+                        Projít naše týmy
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-white/45 transition group-hover:translate-x-1 group-hover:text-white" />
+                  </Link>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>
