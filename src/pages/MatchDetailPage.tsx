@@ -10,6 +10,7 @@ import {
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import {
   fetchMatchById,
   fetchMatchParticipants,
@@ -113,17 +114,7 @@ export function MatchDetailPage() {
   return (
     <main>
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
-        <div className="pointer-events-none absolute inset-0">
-          <img
-            src="/hero-lichnov-field.webp"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-55"
-            style={{ filter: 'saturate(.72) contrast(.9) brightness(1.1)' }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.94)_28%,rgba(250,248,243,.58)_64%,rgba(250,248,243,.24)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.14)_55%,#faf8f3_100%)]" />
-        </div>
+        <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col justify-center">
           <Link
