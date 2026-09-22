@@ -2,6 +2,7 @@ import {
   ArrowUpRight,
   Images,
   Newspaper,
+  Trophy,
   UserRound,
   UsersRound,
 } from 'lucide-react'
@@ -34,6 +35,13 @@ const modules = [
     title: 'Realizační tým',
     description: 'Trenéři, vedení týmu, fotografie a medailonky.',
     icon: UsersRound,
+    status: 'Připraveno',
+  },
+  {
+    to: '/admin/statistiky',
+    title: 'Historické statistiky',
+    description: 'Zápasy, střelci, sezony a audit změn klubové historie.',
+    icon: Trophy,
     status: 'Připraveno',
   },
 ]

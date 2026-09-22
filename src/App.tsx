@@ -7,11 +7,13 @@ import { MatchDetailPage } from './pages/MatchDetailPage'
 import { MatchesPage } from './pages/MatchesPage'
 import { NewsDetailPage } from './pages/NewsDetailPage'
 import { NewsPage } from './pages/NewsPage'
-import { ClubPage, ContactPage } from './pages/StaticPages'
+import { ArealPage, ClubPage, ContactPage, HistoryPage } from './pages/StaticPages'
+import { ClubStatsPage } from './pages/ClubStatsPage'
 import { TeamPage } from './pages/TeamPage'
 import { TeamsPage } from './pages/TeamsPage'
 import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
+import { AdminClubStatsPage } from './pages/admin/AdminClubStatsPage'
 import { AdminGalleriesPage } from './pages/admin/AdminGalleriesPage'
 import { AdminGalleryDetailPage } from './pages/admin/AdminGalleryDetailPage'
 import { AdminLoginPage } from './pages/admin/AdminLoginPage'
@@ -38,6 +40,7 @@ export default function App() {
           <Route path="hraci/:id" element={<AdminPlayerEditorPage />} />
           <Route path="realizacni-tym" element={<AdminStaffPage />} />
           <Route path="realizacni-tym/:id" element={<AdminStaffEditorPage />} />
+          <Route path="statistiky" element={<AdminClubStatsPage />} />
         </Route>
       </Route>
 
@@ -52,6 +55,9 @@ export default function App() {
         <Route path="/galerie" element={<GalleryPage />} />
         <Route path="/galerie/:slug" element={<GalleryDetailPage />} />
         <Route path="/klub" element={<ClubPage />} />
+        <Route path="/klub/historie" element={<HistoryPage />} />
+        <Route path="/klub/statistiky" element={<ClubStatsPage />} />
+        <Route path="/klub/areal" element={<ArealPage />} />
         <Route path="/kontakt" element={<ContactPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

@@ -458,17 +458,18 @@ export function HomePage() {
             title="Klub je víc než sestava."
           />
 
-          <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] md:grid-cols-4 md:divide-x md:divide-sand-200">
+          <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] sm:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-sand-200">
             {[
               ["O klubu", "/klub"],
-              ["Historie", "/klub#historie"],
-              ["Sportovní areál", "/klub#areal"],
+              ["Historie", "/klub/historie"],
+              ["Statistiky", "/klub/statistiky"],
+              ["Sportovní areál", "/klub/areal"],
               ["Kontakt", "/kontakt"],
             ].map(([label, to]) => (
               <Link
                 key={label}
                 to={to}
-                className="group flex items-center justify-between border-b border-sand-200 px-5 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 transition hover:bg-white last:border-b-0 md:border-b-0 md:px-6 md:py-9"
+                className="group flex items-center justify-between border-b border-sand-200 px-5 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 transition hover:bg-white last:border-b-0 md:px-6 md:py-9 lg:border-b-0"
               >
                 {label}
                 <ArrowUpRight

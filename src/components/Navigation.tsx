@@ -6,8 +6,9 @@ import { ClubLogo } from './ClubLogo'
 
 const clubLinks = [
   { label: 'O klubu', to: '/klub', description: 'Kdo jsme a jak klub funguje' },
-  { label: 'Historie', to: '/klub#historie', description: 'Příběh fotbalu v Lichnově' },
-  { label: 'Sportovní areál', to: '/klub#areal', description: 'Hřiště, zázemí a návštěva' },
+  { label: 'Historie', to: '/klub/historie', description: 'Příběh fotbalu v Lichnově' },
+  { label: 'Statistiky', to: '/klub/statistiky', description: 'Rekordy, střelci a archiv sezon' },
+  { label: 'Sportovní areál', to: '/klub/areal', description: 'Hřiště, zázemí a návštěva' },
   { label: 'Kontakt', to: '/kontakt', description: 'Spojení na klub' },
 ]
 
