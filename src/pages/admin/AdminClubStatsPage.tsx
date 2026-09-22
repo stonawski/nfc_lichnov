@@ -827,7 +827,7 @@ function ModeButton({
 }: {
   active: boolean
   onClick: () => void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <button
@@ -842,7 +842,7 @@ function ModeButton({
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block">
       <span className="text-[10px] font-bold uppercase tracking-[0.13em] text-ink-500">
