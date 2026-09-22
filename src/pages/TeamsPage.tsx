@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ArrowUpRight, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { PublicPageHero } from '../components/PublicPageHero'
 import { fetchTeams } from '../lib/data'
@@ -21,10 +22,14 @@ export function TeamsPage() {
         accent="Každá generace má své místo."
         text="Vyber kategorii a podívej se na zápasy, hráče, tabulku a realizační tým."
         aside={
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-700 shadow-sm backdrop-blur-xl">
-            <ShieldCheck size={13} />
-            {teams.length || '—'} aktivních kategorií
-          </div>
+          !isLoading ? (
+            <DataFade>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-700 shadow-sm backdrop-blur-xl">
+                <ShieldCheck size={13} />
+                {teams.length} aktivních kategorií
+              </div>
+            </DataFade>
+          ) : undefined
         }
       />
 
@@ -33,7 +38,7 @@ export function TeamsPage() {
           {isLoading ? (
             <LoadingState rows={4} />
           ) : teams.length ? (
-            <div className="stagger-children grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <DataFade className="stagger-children grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {teams.map((team, index) => (
                 <Link
                   key={team.id}
@@ -95,12 +100,14 @@ export function TeamsPage() {
                   </div>
                 </Link>
               ))}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Žádné týmy"
               text="V databázi zatím nejsou dostupné aktivní týmy."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
