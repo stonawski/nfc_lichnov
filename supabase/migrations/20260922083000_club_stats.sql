@@ -644,7 +644,7 @@ begin
 
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists stamp_club_player_stats_update on public.club_player_stats;
 create trigger stamp_club_player_stats_update
