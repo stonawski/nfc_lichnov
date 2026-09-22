@@ -12,6 +12,7 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { PlayerStripCarousel } from '../components/PlayerStripCarousel'
 import { StandingsTable } from '../components/StandingsTable'
 import {
@@ -108,17 +109,7 @@ export function TeamPage() {
   return (
     <main className="bg-sand-50">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <img
-            src="/hero-lichnov-field.webp"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-[76%_center] opacity-55"
-            style={{ filter: 'saturate(.72) contrast(.9) brightness(1.12)' }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.96)_22%,rgba(250,248,243,.64)_48%,rgba(250,248,243,.20)_72%,rgba(250,248,243,.08)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.05)_55%,#faf8f3_100%)]" />
-        </div>
+        <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
           <div className="relative overflow-hidden rounded-[42px] bg-brand-900 px-6 py-7 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)] sm:px-9 sm:py-10 lg:px-12 lg:py-12">
