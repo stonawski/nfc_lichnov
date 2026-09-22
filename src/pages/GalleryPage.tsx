@@ -215,7 +215,7 @@ export function GalleryDetailPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <div className="pointer-events-none absolute inset-0 bg-brand-900">
           <img
             src={gallery.cover_image || '/hero-lichnov-field.webp'}
@@ -227,7 +227,7 @@ export function GalleryDetailPage() {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,.08)_0%,rgba(24,53,42,.18)_58%,#18352a_100%)]" />
         </div>
 
-        <div className="relative mx-auto max-w-[1240px] py-6 text-white md:py-10">
+        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-6 text-white md:py-10">
           <Link
             to="/galerie"
             className="inline-flex items-center gap-2 text-sm font-bold text-white/65 transition hover:text-white"
