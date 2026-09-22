@@ -89,7 +89,7 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
             <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
           ) : (
             <DataFade>
-              <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+              <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" loading="eager" />
             </DataFade>
           )}
           <div className="hidden sm:block">
@@ -189,7 +189,7 @@ export function Navigation({ teams, loading = false }: { teams: Team[]; loading?
                   <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
                 ) : (
                   <DataFade>
-                    <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                    <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" loading="eager" />
                   </DataFade>
                 )}
                 <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
