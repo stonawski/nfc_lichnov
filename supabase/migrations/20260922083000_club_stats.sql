@@ -37,6 +37,15 @@ create table if not exists public.club_stats_audit (
   after_data jsonb
 );
 
+create table if not exists public.club_stats_last_edit (
+  entity_type text not null check (entity_type in ('player', 'season')),
+  entity_key text not null,
+  changed_at timestamptz not null,
+  changed_by uuid,
+  changed_by_email text,
+  primary key (entity_type, entity_key)
+);
+
 create index if not exists club_stats_audit_entity_idx
   on public.club_stats_audit (entity_type, entity_key, changed_at desc);
 
@@ -584,10 +593,10 @@ begin
 
   if tg_table_name = 'club_player_stats' then
     v_entity_type := 'player';
-    v_entity_key := coalesce(new.id, old.id)::text;
+    v_entity_key := coalesce(to_jsonb(new) ->> 'id', to_jsonb(old) ->> 'id');
   else
     v_entity_type := 'season';
-    v_entity_key := coalesce(new.ordinal, old.ordinal)::text;
+    v_entity_key := coalesce(to_jsonb(new) ->> 'ordinal', to_jsonb(old) ->> 'ordinal');
   end if;
 
   insert into public.club_stats_audit (
@@ -608,6 +617,26 @@ begin
     case when tg_op in ('UPDATE', 'DELETE') then to_jsonb(old) else null end,
     case when tg_op in ('INSERT', 'UPDATE') then to_jsonb(new) else null end
   );
+
+  insert into public.club_stats_last_edit (
+    entity_type,
+    entity_key,
+    changed_at,
+    changed_by,
+    changed_by_email
+  )
+  values (
+    v_entity_type,
+    v_entity_key,
+    now(),
+    auth.uid(),
+    auth.jwt() ->> 'email'
+  )
+  on conflict (entity_type, entity_key)
+  do update set
+    changed_at = excluded.changed_at,
+    changed_by = excluded.changed_by,
+    changed_by_email = excluded.changed_by_email;
 
   if tg_op = 'DELETE' then
     return old;
@@ -640,6 +669,7 @@ for each row execute function public.audit_club_stats_change();
 alter table public.club_player_stats enable row level security;
 alter table public.club_seasons enable row level security;
 alter table public.club_stats_audit enable row level security;
+alter table public.club_stats_last_edit enable row level security;
 
 drop policy if exists "club player stats public read" on public.club_player_stats;
 create policy "club player stats public read"
@@ -704,16 +734,26 @@ for select
 to authenticated
 using (public.can_edit_content());
 
+drop policy if exists "club stats last edit editor read" on public.club_stats_last_edit;
+create policy "club stats last edit editor read"
+on public.club_stats_last_edit
+for select
+to authenticated
+using (public.can_edit_content());
+
 revoke all on public.club_player_stats from anon;
 revoke all on public.club_seasons from anon;
 revoke all on public.club_stats_audit from anon;
 revoke all on public.club_stats_audit from authenticated;
+revoke all on public.club_stats_last_edit from anon;
+revoke all on public.club_stats_last_edit from authenticated;
 
 grant select on public.club_player_stats to anon, authenticated;
 grant select on public.club_seasons to anon, authenticated;
 grant insert, update, delete on public.club_player_stats to authenticated;
 grant insert, update, delete on public.club_seasons to authenticated;
 grant select on public.club_stats_audit to authenticated;
+grant select on public.club_stats_last_edit to authenticated;
 
 grant usage, select on sequence public.club_player_stats_id_seq to authenticated;
 grant select on sequence public.club_stats_audit_id_seq to authenticated;
