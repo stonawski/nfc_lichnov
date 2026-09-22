@@ -4,6 +4,7 @@ import {
   Check,
   History,
   Plus,
+  RefreshCw,
   Save,
   Search,
   Trash2,
@@ -18,6 +19,7 @@ import {
   deleteClubPlayerStat,
   deleteClubSeasonStat,
   fetchAdminClubStats,
+  syncCurrentPlayersIntoClubStats,
   updateClubPlayerStat,
   updateClubSeasonStat,
   type ClubPlayerStat,
@@ -29,6 +31,7 @@ import {
 } from '../../lib/clubStatsData'
 
 type AdminMode = 'players' | 'seasons'
+type PlayerFilter = 'all' | 'active' | 'review'
 
 export function AdminClubStatsPage() {
   const [mode, setMode] = useState<AdminMode>('players')
@@ -37,12 +40,20 @@ export function AdminClubStatsPage() {
   const [showAllSeasons, setShowAllSeasons] = useState(false)
   const [creatingPlayer, setCreatingPlayer] = useState(false)
   const [creatingSeason, setCreatingSeason] = useState(false)
+  const [playerFilter, setPlayerFilter] = useState<PlayerFilter>('all')
   const queryClient = useQueryClient()
 
   const statsQuery = useQuery({
     queryKey: ['admin-club-stats'],
     queryFn: fetchAdminClubStats,
     retry: false,
+  })
+
+  const syncMutation = useMutation({
+    mutationFn: syncCurrentPlayersIntoClubStats,
+    onSuccess: async () => {
+      await refresh()
+    },
   })
 
   const refresh = async () => {
@@ -68,9 +79,11 @@ export function AdminClubStatsPage() {
   }, [lastEdits])
 
   const normalizedQuery = normalizeSearch(query)
-  const filteredPlayers = players.filter((player) =>
-    normalizeSearch(player.name).includes(normalizedQuery),
-  )
+  const filteredPlayers = players.filter((player) => {
+    if (playerFilter === 'active' && !player.active) return false
+    if (playerFilter === 'review' && !player.needsReview) return false
+    return normalizeSearch(player.name).includes(normalizedQuery)
+  })
   const visiblePlayers =
     showAllPlayers || normalizedQuery ? filteredPlayers : filteredPlayers.slice(0, 40)
   const visibleSeasons = showAllSeasons
@@ -103,10 +116,11 @@ export function AdminClubStatsPage() {
         </a>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Historických hráčů" value={players.length} />
+        <StatCard label="Aktivních hráčů" value={players.filter((player) => player.active).length} />
+        <StatCard label="Ke kontrole" value={players.filter((player) => player.needsReview).length} />
         <StatCard label="Sezon" value={seasons.length} />
-        <StatCard label="Posledních změn v přehledu" value={audit.length} />
       </div>
 
       <div className="mt-6 inline-flex rounded-[18px] bg-white p-1 ring-1 ring-sand-200">
@@ -146,15 +160,42 @@ export function AdminClubStatsPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setCreatingPlayer(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700"
-              >
-                <Plus size={16} />
-                Přidat hráče
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={syncMutation.isPending}
+                  onClick={() => syncMutation.mutate()}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100 disabled:opacity-50"
+                >
+                  <RefreshCw size={16} className={syncMutation.isPending ? 'animate-spin' : ''} />
+                  Synchronizovat A-tým
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCreatingPlayer(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700"
+                >
+                  <Plus size={16} />
+                  Přidat hráče
+                </button>
+              </div>
             </div>
+
+            <div className="mt-4 rounded-2xl border border-sand-200 bg-white px-4 py-3 text-xs leading-5 text-ink-500">
+              Synchronizace pouze propojí aktuální hráče a doplní chybějící řádky s 0 zápasy / 0 góly.
+              Historická čísla se z profilu hráče nikdy nepřebírají automaticky.
+            </div>
+
+            {syncMutation.isSuccess && (
+              <div className="mt-3 text-xs font-semibold text-brand-700">
+                Synchronizace dokončena. Nově přidáno {syncMutation.data} hráčů.
+              </div>
+            )}
+            {syncMutation.isError && (
+              <div className="mt-3 text-xs font-semibold text-red-700">
+                Synchronizaci se nepodařilo dokončit.
+              </div>
+            )}
 
             <label className="relative mt-5 block">
               <Search
@@ -168,6 +209,18 @@ export function AdminClubStatsPage() {
                 className="admin-input !pl-11"
               />
             </label>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <FilterButton active={playerFilter === 'all'} onClick={() => setPlayerFilter('all')}>
+                Všichni
+              </FilterButton>
+              <FilterButton active={playerFilter === 'active'} onClick={() => setPlayerFilter('active')}>
+                Aktivní
+              </FilterButton>
+              <FilterButton active={playerFilter === 'review'} onClick={() => setPlayerFilter('review')}>
+                Ke kontrole
+              </FilterButton>
+            </div>
           </section>
 
           {creatingPlayer && (
@@ -182,11 +235,12 @@ export function AdminClubStatsPage() {
 
           <section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
             <div className="overflow-x-auto">
-              <div className="min-w-[760px]">
-                <div className="grid grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] gap-3 border-b border-sand-200 px-6 py-3 text-[9px] font-black uppercase tracking-[0.13em] text-ink-500">
+              <div className="min-w-[860px]">
+                <div className="grid grid-cols-[minmax(240px,1fr)_100px_100px_90px_minmax(210px,.8fr)_110px] gap-3 border-b border-sand-200 px-6 py-3 text-[9px] font-black uppercase tracking-[0.13em] text-ink-500">
                   <div>Hráč</div>
                   <div>Zápasy</div>
                   <div>Góly</div>
+                  <div>Aktivní</div>
                   <div>Poslední úprava</div>
                   <div className="text-right">Akce</div>
                 </div>
@@ -302,11 +356,13 @@ function PlayerEditorRow({
   const [name, setName] = useState(player.name)
   const [matches, setMatches] = useState(String(player.matches))
   const [goals, setGoals] = useState(String(player.goals))
+  const [active, setActive] = useState(player.active)
 
   useEffect(() => {
     setName(player.name)
     setMatches(String(player.matches))
     setGoals(String(player.goals))
+    setActive(player.active)
   }, [player])
 
   const saveMutation = useMutation({
@@ -315,6 +371,7 @@ function PlayerEditorRow({
         name,
         matches: toNonNegativeInt(matches),
         goals: toNonNegativeInt(goals),
+        active,
       }),
     onSuccess: onSaved,
   })
@@ -327,15 +384,33 @@ function PlayerEditorRow({
   const hasChanges =
     name.trim() !== player.name ||
     toNonNegativeInt(matches) !== player.matches ||
-    toNonNegativeInt(goals) !== player.goals
+    toNonNegativeInt(goals) !== player.goals ||
+    active !== player.active ||
+    player.needsReview
 
   return (
-    <div className="grid grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] items-center gap-3 border-b border-sand-200 px-6 py-4 last:border-b-0">
-      <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        className="admin-input min-w-0"
-      />
+    <div className={`grid grid-cols-[minmax(240px,1fr)_100px_100px_90px_minmax(210px,.8fr)_110px] items-center gap-3 border-b border-sand-200 px-6 py-4 last:border-b-0 ${
+      player.needsReview ? 'bg-amber-50/70' : ''
+    }`}>
+      <div className="min-w-0">
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="admin-input min-w-0"
+        />
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          {player.facrPlayerId != null && (
+            <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-ink-500">
+              FAČR {player.facrPlayerId}
+            </span>
+          )}
+          {player.needsReview && (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] text-amber-800">
+              doplnit statistiky
+            </span>
+          )}
+        </div>
+      </div>
       <input
         type="number"
         min="0"
@@ -350,6 +425,15 @@ function PlayerEditorRow({
         onChange={(event) => setGoals(event.target.value)}
         className="admin-input"
       />
+      <label className="flex items-center gap-2 text-xs font-bold text-brand-900">
+        <input
+          type="checkbox"
+          checked={active}
+          onChange={(event) => setActive(event.target.checked)}
+          className="h-4 w-4 accent-brand-700"
+        />
+        Ano
+      </label>
       <LastEdited audit={audit} updatedAt={player.updatedAt} />
       <div className="flex justify-end gap-2">
         <button
@@ -397,6 +481,7 @@ function NewPlayerCard({
   const [name, setName] = useState('')
   const [matches, setMatches] = useState('0')
   const [goals, setGoals] = useState('0')
+  const [active, setActive] = useState(false)
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -404,6 +489,7 @@ function NewPlayerCard({
         name,
         matches: toNonNegativeInt(matches),
         goals: toNonNegativeInt(goals),
+        active,
       }),
     onSuccess: onSaved,
   })
@@ -428,7 +514,7 @@ function NewPlayerCard({
       </div>
 
       <form
-        className="mt-5 grid gap-3 sm:grid-cols-[1fr_150px_150px_auto]"
+        className="mt-5 grid gap-3 sm:grid-cols-[1fr_140px_140px_130px_auto]"
         onSubmit={(event) => {
           event.preventDefault()
           if (name.trim()) mutation.mutate()
@@ -457,6 +543,15 @@ function NewPlayerCard({
           className="admin-input"
           placeholder="Góly"
         />
+        <label className="flex items-center gap-2 rounded-2xl border border-sand-200 bg-white px-4 py-3 text-sm font-bold text-brand-900">
+          <input
+            type="checkbox"
+            checked={active}
+            onChange={(event) => setActive(event.target.checked)}
+            className="h-4 w-4 accent-brand-700"
+          />
+          Aktivní
+        </label>
         <button
           type="submit"
           disabled={mutation.isPending}
@@ -818,6 +913,31 @@ function LastEdited({
       <br />
       {formatTimestamp(audit?.changedAt || updatedAt)}
     </div>
+  )
+}
+
+
+function FilterButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-xl px-3 py-2 text-xs font-bold transition ${
+        active
+          ? 'bg-brand-900 text-white'
+          : 'bg-white text-ink-500 ring-1 ring-sand-200 hover:text-brand-900'
+      }`}
+    >
+      {children}
+    </button>
   )
 }
 
