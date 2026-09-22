@@ -4,6 +4,11 @@
 
 :root {
   color-scheme: light;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fast: 280ms;
+  --motion-base: 420ms;
+  --motion-slow: 720ms;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   background: #FAF8F3;
@@ -87,7 +92,7 @@ img {
 .nav-link {
   position: relative;
   color: #202621;
-  transition: color 180ms ease;
+  transition: color var(--motion-base) var(--motion-ease);
 }
 
 .nav-link::after {
@@ -101,7 +106,7 @@ img {
   background: #00923F;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 220ms ease;
+  transition: transform var(--motion-base) var(--motion-ease);
 }
 
 .nav-link:hover,
@@ -117,7 +122,7 @@ img {
 }
 
 .mobile-menu-enter {
-  animation: mobile-menu-enter 180ms ease-out both;
+  animation: mobile-menu-enter 520ms var(--motion-ease) both;
 }
 
 @keyframes mobile-menu-enter {
@@ -178,18 +183,19 @@ img {
 }
 
 .route-content-enter {
-  animation: route-content-enter 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: opacity, transform;
+  animation: route-content-enter var(--motion-slow) var(--motion-ease) both;
+  will-change: opacity;
+}
+
+html.native-route-transition .route-content-enter {
+  animation: none;
 }
 
 .page-motion-shell.is-leaving .route-content-enter {
   animation: none;
   opacity: 0;
-  transform: translateY(-4px);
   pointer-events: none;
-  transition:
-    opacity 190ms ease,
-    transform 190ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 280ms var(--motion-ease);
 }
 
 html.route-changing {
@@ -198,7 +204,7 @@ html.route-changing {
 
 .reveal-block {
   opacity: 0;
-  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 820ms var(--motion-ease-soft);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity;
 }
@@ -208,19 +214,35 @@ html.route-changing {
 }
 
 .content-enter {
-  animation: content-enter 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: content-enter 720ms var(--motion-ease) both;
+}
+
+.component-swap-enter {
+  animation: component-swap-enter 560ms var(--motion-ease) both;
+}
+
+.carousel-content-enter {
+  animation: carousel-content-enter 520ms var(--motion-ease) both;
+}
+
+.lightbox-enter {
+  animation: lightbox-enter 420ms var(--motion-ease) both;
+}
+
+.lightbox-media-enter {
+  animation: lightbox-media-enter 520ms var(--motion-ease) both;
 }
 
 .stagger-children > * {
-  animation: content-enter 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: content-enter 760ms var(--motion-ease) both;
 }
 
-.stagger-children > *:nth-child(2) { animation-delay: 85ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 170ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 255ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 340ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 425ms; }
-.stagger-children > *:nth-child(n+7) { animation-delay: 480ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 95ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 190ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 285ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 380ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 475ms; }
+.stagger-children > *:nth-child(n+7) { animation-delay: 540ms; }
 
 .loading-row-enter {
   position: relative;
@@ -257,13 +279,58 @@ html.route-changing {
 
 @keyframes route-content-enter {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    opacity: 0.18;
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+@keyframes component-swap-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.998);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes carousel-content-enter {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes lightbox-enter {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-media-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -300,6 +367,33 @@ html.route-changing {
   100% {
     transform: translateX(115%);
   }
+}
+
+
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 680ms;
+    animation-timing-function: var(--motion-ease);
+  }
+
+  ::view-transition-old(root) {
+    animation-name: route-view-old;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: route-view-new;
+  }
+}
+
+@keyframes route-view-old {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes route-view-new {
+  from { opacity: 0.12; }
+  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
