@@ -121,7 +121,7 @@ export function TeamPage() {
   )
 
   return (
-    <main className="data-fade-in bg-sand-50">
+    <main className="data-fade-in">
       <Seo
         title={team.name}
         description={`${team.name} NFC Lichnov — zápasy, hráči, tabulka a realizační tým.`}
