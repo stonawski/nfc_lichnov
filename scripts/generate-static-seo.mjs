@@ -11,7 +11,7 @@ await mkdir(distDir, { recursive: true })
 const robots = [
   'User-agent: *',
   'Allow: /',
-  'Disallow: /admin/',
+  'Disallow: /admin',
   ...(siteUrl ? ['', `Sitemap: ${siteUrl}/sitemap.xml`] : []),
   '',
 ].join('\n')
