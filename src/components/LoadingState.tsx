@@ -2,7 +2,13 @@ import type { CSSProperties } from 'react'
 
 export function LoadingState({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="content-enter space-y-3" aria-label="Načítání">
+    <div
+      className="content-enter space-y-3"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Načítání obsahu"
+    >
       {Array.from({ length: rows }).map((_, index) => (
         <div
           key={index}
