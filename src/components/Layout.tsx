@@ -57,7 +57,7 @@ export function Layout() {
         Přeskočit na obsah
       </a>
       <Navigation teams={teams} loading={teamsLoading} />
-      <div id="main-content" className="relative isolate" tabIndex={-1}>
+      <div id="main-content" className="relative isolate flex-1" tabIndex={-1}>
         <div className="persistent-hero-layer" aria-hidden="true">
           <PersistentHeroFieldBackdrop
             visible={heroBackdrop.visible}
