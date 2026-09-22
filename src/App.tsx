@@ -13,6 +13,7 @@ import { TeamPage } from './pages/TeamPage'
 import { TeamsPage } from './pages/TeamsPage'
 import { GalleryDetailPage, GalleryPage } from './pages/GalleryPage'
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
+import { AdminClubStatsPage } from './pages/admin/AdminClubStatsPage'
 import { AdminGalleriesPage } from './pages/admin/AdminGalleriesPage'
 import { AdminGalleryDetailPage } from './pages/admin/AdminGalleryDetailPage'
 import { AdminLoginPage } from './pages/admin/AdminLoginPage'
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="hraci/:id" element={<AdminPlayerEditorPage />} />
           <Route path="realizacni-tym" element={<AdminStaffPage />} />
           <Route path="realizacni-tym/:id" element={<AdminStaffEditorPage />} />
+          <Route path="statistiky" element={<AdminClubStatsPage />} />
         </Route>
       </Route>
 
