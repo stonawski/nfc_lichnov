@@ -11,6 +11,10 @@ export function PageMotion({ children }: { children: ReactNode }) {
     html.style.scrollBehavior = 'auto'
     window.scrollTo(0, 0)
     html.style.scrollBehavior = previousScrollBehavior
+
+    window.requestAnimationFrame(() => {
+      document.getElementById('main-content')?.focus({ preventScroll: true })
+    })
   }, [location.pathname])
 
   return (
