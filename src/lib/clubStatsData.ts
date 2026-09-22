@@ -51,6 +51,14 @@ export type ClubStatsBundle = {
 
 export const PLAYER_STATS_SOURCE_UPDATED_AT = '2025-02-28'
 
+export function getBundledClubStats(): ClubStatsBundle {
+  return {
+    players: fallbackPlayers(),
+    seasons: fallbackSeasons(),
+    usingFallback: true,
+  }
+}
+
 const milestoneBySeason = new Map(
   competitionMilestones.map((milestone) => [
     milestone.afterSeason,
@@ -141,11 +149,7 @@ function mapAuditRow(row: Record<string, unknown>): ClubStatsAuditEntry {
 
 export async function fetchPublicClubStats(): Promise<ClubStatsBundle> {
   if (!isSupabaseConfigured) {
-    return {
-      players: fallbackPlayers(),
-      seasons: fallbackSeasons(),
-      usingFallback: true,
-    }
+    return getBundledClubStats()
   }
 
   const [playersResult, seasonsResult] = await Promise.all([
@@ -174,11 +178,7 @@ export async function fetchPublicClubStats(): Promise<ClubStatsBundle> {
       )
     }
 
-    return {
-      players: fallbackPlayers(),
-      seasons: fallbackSeasons(),
-      usingFallback: true,
-    }
+    return getBundledClubStats()
   }
 
   return {
