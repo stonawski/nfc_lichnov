@@ -86,7 +86,7 @@ export function MatchesPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
         <div className="pointer-events-none absolute inset-0 bg-sand-50">
           <div className="absolute right-0 top-0 h-full w-full sm:w-[78%] lg:w-[68%]">
             <img
@@ -101,7 +101,7 @@ export function MatchesPage() {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.12)_46%,rgba(250,248,243,.56)_78%,#faf8f3_100%)]" />
         </div>
 
-        <div className="relative mx-auto max-w-[1240px]">
+        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
           <div className="grid gap-5 py-5 lg:grid-cols-[1fr_.48fr] lg:items-end lg:py-7">
             <div className="max-w-3xl">
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
