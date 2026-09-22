@@ -1,10 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  ArrowDown,
-  ArrowUp,
   CalendarDays,
   Check,
-  Clock3,
   History,
   Plus,
   Save,
@@ -183,30 +180,34 @@ export function AdminClubStatsPage() {
           )}
 
           <section className="mt-6 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
-            <div className="grid grid-cols-[minmax(0,1fr)_90px_90px_120px] gap-3 border-b border-sand-200 px-5 py-3 text-[9px] font-black uppercase tracking-[0.13em] text-ink-500 sm:grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] sm:px-6">
-              <div>Hráč</div>
-              <div>Zápasy</div>
-              <div>Góly</div>
-              <div className="hidden sm:block">Poslední úprava</div>
-              <div className="text-right">Akce</div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[760px]">
+                <div className="grid grid-cols-[minmax(220px,1fr)_110px_110px_minmax(210px,.8fr)_110px] gap-3 border-b border-sand-200 px-6 py-3 text-[9px] font-black uppercase tracking-[0.13em] text-ink-500">
+                  <div>Hráč</div>
+                  <div>Zápasy</div>
+                  <div>Góly</div>
+                  <div>Poslední úprava</div>
+                  <div className="text-right">Akce</div>
+                </div>
+
+                {visiblePlayers.map((player) => (
+                  <PlayerEditorRow
+                    key={String(player.id)}
+                    player={player}
+                    audit={latestAudit.get(`player:${String(player.id)}`)}
+                    onSaved={refresh}
+                  />
+                ))}
+
+                {!visiblePlayers.length && (
+                  <div className="px-6 py-12 text-center text-sm text-ink-500">
+                    Žádný hráč neodpovídá hledání.
+                  </div>
+                )}
+              </div>
             </div>
 
-            {visiblePlayers.map((player) => (
-              <PlayerEditorRow
-                key={String(player.id)}
-                player={player}
-                audit={latestAudit.get(`player:${String(player.id)}`)}
-                onSaved={refresh}
-              />
-            ))}
-
-            {!visiblePlayers.length && (
-              <div className="px-6 py-12 text-center text-sm text-ink-500">
-                Žádný hráč neodpovídá hledání.
-              </div>
-            )}
-
-              </div>\n            </div>\n\n            {!normalizedQuery && filteredPlayers.length > 40 && (
+            {!normalizedQuery && filteredPlayers.length > 40 && (
               <div className="border-t border-sand-200 p-4 text-center">
                 <button
                   type="button"
@@ -219,8 +220,7 @@ export function AdminClubStatsPage() {
                 </button>
               </div>
             )}
-          </section>
-        </>
+          </section>        </>
       ) : (
         <>
           <section className="mt-6 rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-6">
@@ -381,7 +381,6 @@ function PlayerEditorRow({
           Změnu se nepodařilo uložit.
         </div>
       )}
-      <LastEdited audit={audit} updatedAt={player.updatedAt} className="col-span-full sm:hidden" />
     </div>
   )
 }
