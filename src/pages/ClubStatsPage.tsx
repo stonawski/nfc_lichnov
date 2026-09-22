@@ -527,7 +527,7 @@ function RecordCard({
   detail: string
 }) {
   return (
-    <article className="rounded-[32px] border border-white/70 bg-white/88 p-6 shadow-[0_18px_60px_rgba(18,48,36,.08)] backdrop-blur-xl sm:p-7">
+    <article className="rounded-[32px] border border-white/70 bg-white/[0.88] p-6 shadow-[0_18px_60px_rgba(18,48,36,.08)] backdrop-blur-xl sm:p-7">
       <div className="flex items-center justify-between gap-4">
         <div className="text-[10px] font-bold uppercase tracking-[0.17em] text-ink-500">
           {eyebrow}
