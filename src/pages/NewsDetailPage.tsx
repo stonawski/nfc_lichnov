@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { Seo } from '../components/Seo'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { fetchNewsBySlug } from '../lib/data'
 import { formatDate } from '../lib/format'
 
@@ -20,6 +20,18 @@ export function NewsDetailPage() {
     return (
       <Wrap>
         <LoadingState rows={4} />
+      </Wrap>
+    )
+  }
+
+  if (query.isError) {
+    return (
+      <Wrap>
+        <ErrorState
+          title="Článek se nepodařilo načíst"
+          text="Zkus načtení zopakovat."
+          onRetry={() => void query.refetch()}
+        />
       </Wrap>
     )
   }
