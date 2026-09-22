@@ -17,6 +17,8 @@ import {
   PLAYER_STATS_SOURCE_UPDATED_AT,
   type ClubPlayerStat,
 } from '../lib/clubStatsData'
+import { DataFade } from '../components/DataFade'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 
 type RankingMode = 'matches' | 'goals'
 
@@ -98,7 +100,7 @@ export function ClubStatsPage() {
         lastSeason={lastSeason}
       />
 
-      <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+      <section className="data-fade-in bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionIntro
             eyebrow="Historické pořadí"
@@ -180,7 +182,11 @@ export function ClubStatsPage() {
               </div>
             </div>
 
-            <PlayerTable rows={visiblePlayers} mode={rankingMode} />
+            <PlayerTable
+              key={`${rankingMode}-${activeOnly ? 'active' : 'all'}-${showAllPlayers ? 'expanded' : 'compact'}`}
+              rows={visiblePlayers}
+              mode={rankingMode}
+            />
 
             {!query.trim() && filteredRanking.length > 30 && (
               <div className="border-t border-sand-200 p-4 text-center sm:p-5">
@@ -203,7 +209,7 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+      <section className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <SectionIntro
@@ -263,7 +269,7 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
+      <section className="data-fade-in bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-7 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
             <div>
@@ -302,7 +308,10 @@ export function ClubStatsPage() {
           </div>
 
           <div className="mt-10 overflow-hidden rounded-[30px] border border-white/10 bg-[#143126]">
-            <div className="overflow-x-auto">
+            <div
+              key={showAllSeasons ? 'all-seasons' : 'recent-seasons'}
+              className="component-swap-enter overflow-x-auto"
+            >
               <table className="w-full min-w-[900px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-white/10 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">
@@ -385,20 +394,10 @@ function StatsHero({
   lastSeason: string
 }) {
   return (
-    <section className="relative -mt-[84px] overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
-      <div className="pointer-events-none absolute inset-0 bg-sand-50">
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.08)' }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.94)_28%,rgba(250,248,243,.58)_60%,rgba(250,248,243,.16)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.02)_0%,rgba(250,248,243,.08)_48%,rgba(250,248,243,.72)_78%,#faf8f3_100%)]" />
-      </div>
+    <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+        <HeroFieldBackdrop />
 
-      <div className="relative mx-auto max-w-[1240px] py-8 md:py-12">
+      <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-8 md:py-12">
         <div className="max-w-[820px]">
           <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
             Klubové statistiky
@@ -412,7 +411,7 @@ function StatsHero({
           </p>
         </div>
 
-        <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
+        <DataFade className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
           <RecordCard
             icon={<Users size={20} />}
             eyebrow="Nejvíce zápasů"
@@ -434,7 +433,7 @@ function StatsHero({
             label="historických sezon"
             detail={`od ${firstSeason} do ${lastSeason}`}
           />
-        </div>
+        </DataFade>
 
         <div className="mt-5 grid gap-3 rounded-[24px] border border-white/70 bg-white/80 px-5 py-4 text-sm leading-6 text-ink-500 shadow-sm backdrop-blur-xl md:grid-cols-[1fr_auto] md:items-center">
           <p>
@@ -463,7 +462,7 @@ function PlayerTable({
   mode: RankingMode
 }) {
   return (
-    <div>
+    <div className="component-swap-enter">
       <div className="grid grid-cols-[46px_minmax(0,1fr)_78px_72px] gap-2 border-b border-sand-200 bg-[#fbfaf6] px-4 py-3 text-[8px] font-black uppercase tracking-[0.12em] text-ink-500 sm:grid-cols-[60px_minmax(0,1fr)_110px_100px] sm:px-6 sm:text-[9px]">
         <div>Poř.</div>
         <div>Hráč</div>

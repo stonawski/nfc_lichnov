@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 
 const CLUB_ADDRESS = 'Lichnov 286, 742 75 Lichnov'
 const CLUB_GPS = '49.5681739,18.1676489'
@@ -438,20 +439,10 @@ function ClubHero({
   text: string
 }) {
   return (
-    <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
-      <div className="pointer-events-none absolute inset-0 bg-sand-50">
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          style={{ filter: 'saturate(.72) contrast(.9) brightness(1.1)' }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.94)_30%,rgba(250,248,243,.58)_58%,rgba(250,248,243,.18)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.1)_55%,#faf8f3_100%)]" />
-      </div>
+    <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+      <HeroFieldBackdrop />
 
-      <div className="relative mx-auto max-w-[1240px] py-8 md:py-12">
+      <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 items-center py-8 md:py-12">
         <div className="max-w-[780px]">
           <SectionEyebrow>{eyebrow}</SectionEyebrow>
           <h1 className="mt-4 text-[clamp(3.1rem,7vw,6.6rem)] font-black leading-[.88] tracking-[-0.072em] text-brand-900">

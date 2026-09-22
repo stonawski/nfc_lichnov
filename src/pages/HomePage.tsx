@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
+import { DataFade } from "../components/DataFade";
+import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
 import { MatchCarousel } from "../components/MatchCarousel";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
@@ -9,6 +11,7 @@ import { SectionHeading } from "../components/SectionHeading";
 import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
+  fetchGalleries,
   fetchHomepageMatchSummaries,
   fetchPublishedNews,
   fetchStandingsByTeam,
@@ -39,6 +42,11 @@ export function HomePage() {
     queryFn: fetchUpcomingMatches,
     retry: false,
   });
+  const galleriesQuery = useQuery({
+    queryKey: ["galleries", "home"],
+    queryFn: fetchGalleries,
+    retry: false,
+  });
 
   const men = teamsQuery.data?.find((team) => team.slug === "muzi");
   const standingsQuery = useQuery({
@@ -55,6 +63,8 @@ export function HomePage() {
   });
 
   const news = newsQuery.data ?? [];
+  const galleries = galleriesQuery.data ?? [];
+  const galleryPreview = galleries.slice(0, 2);
   const upcomingMatches = upcomingQuery.data ?? [];
   const featuredUpcoming =
     upcomingMatches.find((match) => match.team?.slug === "muzi") ??
@@ -82,34 +92,8 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden bg-sand-50">
-          <div className="absolute right-0 top-0 h-[70%] w-full sm:h-[76%] lg:h-[55%] lg:w-[72%]">
-            <img
-              src="/hero-lichnov-field.webp"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
-              style={{ filter: "saturate(.82) contrast(.92) brightness(1.08)" }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)",
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)",
-              }}
-            />
-          </div>
-          <div className="hero-glow absolute inset-0 opacity-45" />
-          <div className="absolute left-[-8rem] top-40 h-80 w-80 rounded-full bg-brand-500/[0.08] blur-3xl" />
-        </div>
+      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
+        <HeroFieldBackdrop />
 
         <div className="relative mx-auto max-w-[1240px]">
           <div className="grid gap-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12">
@@ -151,20 +135,18 @@ export function HomePage() {
                 </Link>
               </div>
 
-              <div className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
-                <HeroStat
-                  value={
-                    teamsQuery.data?.length
-                      ? String(teamsQuery.data.length)
-                      : "—"
-                  }
-                  label="aktivních týmů"
-                />
-                <HeroStat
-                  value={men?.season || "2026/27"}
-                  label="aktuální sezóna"
-                />
-              </div>
+              {!teamsQuery.isLoading && (
+                <DataFade className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
+                  <HeroStat
+                    value={String(teamsQuery.data?.length ?? 0)}
+                    label="aktivních týmů"
+                  />
+                  <HeroStat
+                    value={men?.season || "—"}
+                    label="aktuální sezóna"
+                  />
+                </DataFade>
+              )}
             </div>
 
             <div className="relative lg:pl-4">
@@ -192,13 +174,17 @@ export function HomePage() {
                   text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
                 />
               ) : (
-                <MatchCarousel items={matchesQuery.data ?? []} />
+                <DataFade>
+                  <MatchCarousel items={matchesQuery.data ?? []} />
+                </DataFade>
               )}
             </div>
           </div>
 
           {(teamsQuery.data?.length ?? 0) > 0 && (
-            <TeamRail teams={teamsQuery.data ?? []} />
+            <DataFade>
+              <TeamRail teams={teamsQuery.data ?? []} />
+            </DataFade>
           )}
         </div>
       </section>
@@ -214,7 +200,7 @@ export function HomePage() {
           {newsQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : news.length ? (
-            <div className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
+            <DataFade className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
               <Link
                 to={`/aktuality/${news[0].slug}`}
                 className="group relative min-h-[470px] overflow-hidden rounded-[38px] bg-brand-900 p-7 text-white shadow-soft sm:p-9"
@@ -283,12 +269,14 @@ export function HomePage() {
                 ))}
 
               </div>
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Aktuality zatím nejsou publikované"
               text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -306,7 +294,7 @@ export function HomePage() {
           {upcomingQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : featuredUpcoming ? (
-            <div className="stagger-children grid gap-4 lg:grid-cols-12">
+            <DataFade className="stagger-children grid gap-4 lg:grid-cols-12">
               <UpcomingMatchTile
                 match={featuredUpcoming}
                 featured
@@ -335,12 +323,14 @@ export function HomePage() {
                   }
                 />
               ))}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Nejbližší zápasy zatím nejsou k dispozici"
               text="Sekce se naplní automaticky z tabulky matches."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -353,11 +343,13 @@ export function HomePage() {
             </div>
           </section>
         ) : menPlayersQuery.data?.length ? (
-          <PlayerStripCarousel
-            team={men}
-            players={menPlayersQuery.data}
-            flush
-          />
+          <DataFade>
+            <PlayerStripCarousel
+              team={men}
+              players={menPlayersQuery.data}
+              flush
+            />
+          </DataFade>
         ) : null
       )}
 
@@ -387,7 +379,9 @@ export function HomePage() {
               {standingsQuery.isLoading ? (
                 <LoadingState rows={5} />
               ) : standingsPreview.length ? (
-                <StandingsTable rows={standingsPreview} compact />
+                <DataFade>
+                  <StandingsTable rows={standingsPreview} compact />
+                </DataFade>
               ) : (
                 <EmptyState
                   title="Tabulka není dostupná"
@@ -409,20 +403,26 @@ export function HomePage() {
             linkLabel="Přehled týmů"
           />
 
-          {teamsQuery.data?.length ? (
-            <TeamEditorialGrid teams={teamsQuery.data} />
+          {teamsQuery.isLoading ? (
+            <LoadingState rows={4} />
+          ) : teamsQuery.data?.length ? (
+            <DataFade>
+              <TeamEditorialGrid teams={teamsQuery.data} />
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="Týmy se nepodařilo načíst"
               text="Po připojení Supabase se zde zobrazí všechny aktivní kategorie."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
 
       <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
             <div>
               <div className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">
                 Život klubu
@@ -431,23 +431,61 @@ export function HomePage() {
                 Fotbal nejsou jen výsledky.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-                Galerie bude patřit zápasům, tréninkům, mládeži, fanouškům i
-                tomu, co se děje mimo devadesát minut na hřišti.
+                Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Poslední
+                galerie ukazují klub tak, jak skutečně žije.
               </p>
+
+              <Link
+                to="/galerie"
+                className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900 transition hover:-translate-y-0.5"
+              >
+                Všechny galerie <ArrowRight size={16} />
+              </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="aspect-[4/3] rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_30%_25%,rgba(0,146,63,.55),transparent_35%),linear-gradient(145deg,#244938,#18352A)]" />
-              <div className="mt-8 aspect-[4/3] rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_70%_30%,rgba(243,239,230,.2),transparent_35%),linear-gradient(145deg,#1d412f,#0d281d)]" />
-            </div>
+            {galleriesQuery.isLoading ? (
+              <div className="rounded-[30px] bg-white/[0.06] p-3">
+                <LoadingState rows={2} />
+              </div>
+            ) : galleryPreview.length ? (
+              <DataFade className="grid grid-cols-2 gap-3">
+                {galleryPreview.map((gallery, index) => (
+                  <Link
+                    key={gallery.id}
+                    to={`/galerie/${gallery.slug || gallery.id}`}
+                    className={`group relative aspect-[4/3] overflow-hidden rounded-[28px] border border-white/10 bg-[#10291f] ${
+                      index === 1 ? "mt-8" : ""
+                    }`}
+                  >
+                    <img
+                      src={gallery.cover_image || "/hero-lichnov-field.webp"}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/18 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                      <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/50">
+                        {formatDate(gallery.event_date || gallery.created_at)}
+                      </div>
+                      <div className="mt-1 line-clamp-2 text-sm font-extrabold leading-tight text-white sm:text-base">
+                        {gallery.title}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </DataFade>
+            ) : (
+              <DataFade className="overflow-hidden rounded-[30px] border border-white/10">
+                <img
+                  src="/hero-lichnov-field.webp"
+                  alt=""
+                  aria-hidden="true"
+                  className="aspect-[16/8] h-full w-full object-cover opacity-70"
+                />
+              </DataFade>
+            )}
           </div>
-
-          <Link
-            to="/galerie"
-            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900"
-          >
-            Galerie <ArrowRight size={16} />
-          </Link>
         </div>
       </section>
 
@@ -508,9 +546,14 @@ function UpcomingMatchTile({
           : "border-sand-200 bg-white text-ink-900"
       } ${className}`}
     >
-      <div
-        className={`absolute right-[-4rem] top-[-4rem] h-48 w-48 rounded-full ${featured ? "bg-brand-500/20" : "bg-brand-500/[0.06]"}`}
-      />
+      {featured && (
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.08]"
+        />
+      )}
 
       <div
         className={`relative flex h-full flex-col ${featured ? "p-7 sm:p-8" : large ? "p-6 sm:p-7" : "p-5"}`}

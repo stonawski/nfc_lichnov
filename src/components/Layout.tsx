@@ -6,7 +6,7 @@ import { Navigation } from './Navigation'
 import { PageMotion } from './PageMotion'
 
 export function Layout() {
-  const { data: teams = [] } = useQuery({
+  const { data: teams = [], isLoading: teamsLoading } = useQuery({
     queryKey: ['teams'],
     queryFn: fetchTeams,
     retry: false,
@@ -14,8 +14,8 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-sand-50 text-ink-900">
-      <Navigation teams={teams} />
-      <div className="flex-1">
+      <Navigation teams={teams} loading={teamsLoading} />
+      <div>
         <PageMotion>
           <Outlet />
         </PageMotion>

@@ -9,7 +9,9 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { fetchCurrentMatches, fetchTeams } from '../lib/data'
 import {
   formatMatchDate,
@@ -86,22 +88,10 @@ export function MatchesPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
-        <div className="pointer-events-none absolute inset-0 bg-sand-50">
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[78%] lg:w-[68%]">
-            <img
-              src="/hero-lichnov-field.webp"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-              style={{ filter: 'saturate(.74) contrast(.9) brightness(1.08)' }}
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,#faf8f3_0%,rgba(250,248,243,.92)_22%,rgba(250,248,243,.48)_54%,rgba(250,248,243,.14)_100%)]" />
-          </div>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,248,243,.04)_0%,rgba(250,248,243,.12)_46%,rgba(250,248,243,.56)_78%,#faf8f3_100%)]" />
-        </div>
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[118px] sm:-mt-[88px] sm:pt-[126px] md:px-8 md:pb-20 md:pt-[132px]">
+        <HeroFieldBackdrop />
 
-        <div className="relative mx-auto max-w-[1240px]">
+        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
           <div className="grid gap-5 py-5 lg:grid-cols-[1fr_.48fr] lg:items-end lg:py-7">
             <div className="max-w-3xl">
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
@@ -118,32 +108,39 @@ export function MatchesPage() {
             </p>
           </div>
 
-          <div className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
-            <div className="flex flex-wrap gap-2">
-              <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
-                Všechny týmy
-              </Filter>
-
-              {teams.map((team) => (
-                <Filter
-                  key={team.id}
-                  active={selectedTeamSlug === team.slug}
-                  onClick={() => setTeamFilter(team.slug)}
-                >
-                  {team.name}
+          {teamsQuery.isLoading ? (
+            <div className="h-[68px] rounded-[24px] border border-white/80 bg-white/55 backdrop-blur-xl" />
+          ) : (
+            <DataFade className="rounded-[24px] border border-white/90 bg-white/90 p-3 shadow-[0_12px_34px_rgba(24,53,42,.07)] backdrop-blur-xl sm:p-4">
+              <div className="flex flex-wrap gap-2">
+                <Filter active={teamId === 'all'} onClick={() => setTeamFilter('all')}>
+                  Všechny týmy
                 </Filter>
-              ))}
-            </div>
-          </div>
+
+                {teams.map((team) => (
+                  <Filter
+                    key={team.id}
+                    active={selectedTeamSlug === team.slug}
+                    onClick={() => setTeamFilter(team.slug)}
+                  >
+                    {team.name}
+                  </Filter>
+                ))}
+              </div>
+            </DataFade>
+          )}
 
           {!matchesQuery.isLoading && !teamsQuery.isLoading && featuredMatch && (
-            <div className="mt-10 md:mt-12">
+            <DataFade
+              key={`featured-${selectedTeamSlug}-${featuredMatch.id}`}
+              className="mt-10 md:mt-12"
+            >
               <FeaturedMatch
                 match={featuredMatch}
                 team={teamMap.get(featuredMatch.team_id)}
                 returnTo={returnTo}
               />
-            </div>
+            </DataFade>
           )}
         </div>
       </section>
@@ -156,7 +153,10 @@ export function MatchesPage() {
         </section>
       ) : matches.length ? (
         <>
-          <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+          <section
+            key={`upcoming-${selectedTeamSlug}`}
+            className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24"
+          >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Program"
@@ -194,7 +194,10 @@ export function MatchesPage() {
             </div>
           </section>
 
-          <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+          <section
+            key={`results-${selectedTeamSlug}`}
+            className="data-fade-in bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+          >
             <div className="mx-auto max-w-[1240px]">
               <SectionHeader
                 eyebrow="Odehráno"
@@ -233,7 +236,10 @@ export function MatchesPage() {
           </section>
         </>
       ) : (
-        <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+        <section
+          key={`empty-${selectedTeamSlug}`}
+          className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24"
+        >
           <div className="mx-auto max-w-[1240px]">
             <EmptyState
               title="Žádné zápasy"
@@ -481,7 +487,7 @@ function ExpandButton({
         {expanded ? 'Zobrazit méně' : `Zobrazit další (${hiddenCount})`}
         <ChevronDown
           size={15}
-          className={`transition duration-200 ${expanded ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
+          className={`transition duration-[420ms] ease-smooth ${expanded ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
         />
       </button>
     </div>

@@ -1,8 +1,9 @@
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import type { Team } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
+import { DataFade } from './DataFade'
 
 const clubLinks = [
   { label: 'O klubu', to: '/klub', description: 'Kdo jsme a jak klub funguje' },
@@ -12,17 +13,41 @@ const clubLinks = [
   { label: 'Kontakt', to: '/kontakt', description: 'Spojení na klub' },
 ]
 
-export function Navigation({ teams }: { teams: Team[] }) {
+export function Navigation({ teams, loading = false }: { teams: Team[]; loading?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileMounted, setMobileMounted] = useState(false)
   const [mobileTeamsOpen, setMobileTeamsOpen] = useState(false)
   const [mobileClubOpen, setMobileClubOpen] = useState(false)
   const location = useLocation()
+  const mobileTimerRef = useRef<number | null>(null)
   const primaryLogo = teams.find((team) => team.slug === 'muzi')?.logo_url ?? teams[0]?.logo_url
   const teamsActive = location.pathname.startsWith('/tymy')
   const clubActive = location.pathname.startsWith('/klub') || location.pathname === '/kontakt'
 
-  useEffect(() => {
+
+  function clearMobileTimer() {
+    if (mobileTimerRef.current == null) return
+    window.clearTimeout(mobileTimerRef.current)
+    mobileTimerRef.current = null
+  }
+
+  function openMobile() {
+    clearMobileTimer()
+    setMobileMounted(true)
+    requestAnimationFrame(() => setMobileOpen(true))
+  }
+
+  function closeMobile() {
     setMobileOpen(false)
+    clearMobileTimer()
+    mobileTimerRef.current = window.setTimeout(() => {
+      mobileTimerRef.current = null
+      setMobileMounted(false)
+    }, 520)
+  }
+
+  useEffect(() => {
+    closeMobile()
 
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
@@ -30,17 +55,17 @@ export function Navigation({ teams }: { teams: Team[] }) {
   }, [location.pathname, location.hash])
 
   useEffect(() => {
-    if (!mobileOpen) return
+    if (!mobileMounted) return
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileOpen(false)
+      if (event.key === 'Escape') closeMobile()
     }
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [mobileOpen])
+  }, [mobileMounted])
 
-  const closeMobile = () => setMobileOpen(false)
+  useEffect(() => () => clearMobileTimer(), [])
 
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
@@ -49,7 +74,13 @@ export function Navigation({ teams }: { teams: Team[] }) {
           to="/"
           className="flex shrink-0 items-center gap-2.5 rounded-2xl px-1 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
-          <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+          {loading ? (
+            <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
+          ) : (
+            <DataFade>
+              <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+            </DataFade>
+          )}
           <div className="hidden sm:block">
             <div className="text-[15px] font-extrabold tracking-[-0.035em] text-brand-900">NFC Lichnov</div>
           </div>
@@ -61,7 +92,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
               <div className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-ink-500">
                 Kategorie NFC Lichnov
               </div>
-              <div className="grid grid-cols-2 gap-1">
+              <DataFade className="grid grid-cols-2 gap-1">
                 {teams.map((team) => (
                   <Link
                     key={team.id}
@@ -76,7 +107,7 @@ export function Navigation({ teams }: { teams: Team[] }) {
                     <div className="mt-1 pl-4 text-[11px] text-ink-500">Zápasy · hráči · statistiky</div>
                   </Link>
                 ))}
-              </div>
+              </DataFade>
             </div>
           </Dropdown>
 
@@ -118,25 +149,35 @@ export function Navigation({ teams }: { teams: Team[] }) {
           type="button"
           aria-label="Otevřít menu"
           aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen(true)}
+          onClick={openMobile}
           className="grid h-10 w-10 place-items-center rounded-[14px] bg-white text-brand-900 ring-1 ring-sand-200 transition hover:bg-sand-100 lg:hidden"
         >
           <Menu size={19} />
         </button>
       </nav>
 
-      {mobileOpen && (
+      {mobileMounted && (
         <div
-          className="fixed inset-0 z-[60] bg-brand-900/25 p-3 backdrop-blur-md lg:hidden"
+          className={`fixed inset-0 z-[60] bg-brand-900/25 p-3 backdrop-blur-md transition-[opacity,backdrop-filter] duration-[520ms] ease-smooth lg:hidden ${
+            mobileOpen ? 'opacity-100' : 'opacity-0'
+          }`}
           onClick={closeMobile}
         >
           <div
-            className="mobile-menu-enter ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft"
+            className={`ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto rounded-[30px] border border-white/70 bg-[#fbfaf6] p-5 shadow-soft transition-[transform,opacity] duration-[560ms] ease-smooth ${
+              mobileOpen ? 'translate-x-0 opacity-100' : 'translate-x-5 opacity-0'
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
               <Link to="/" onClick={closeMobile} className="flex items-center gap-3">
-                <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                {loading ? (
+                  <div className="h-11 w-11 shrink-0 rounded-2xl bg-sand-100" />
+                ) : (
+                  <DataFade>
+                    <ClubLogo src={primaryLogo} name="NFC Lichnov" size="md" />
+                  </DataFade>
+                )}
                 <div className="font-extrabold tracking-tight text-brand-900">NFC Lichnov</div>
               </Link>
 
@@ -156,16 +197,18 @@ export function Navigation({ teams }: { teams: Team[] }) {
                 open={mobileTeamsOpen}
                 onToggle={() => setMobileTeamsOpen((value) => !value)}
               >
-                {teams.map((team) => (
-                  <Link
+                <DataFade>
+                  {teams.map((team) => (
+                    <Link
                     key={team.id}
                     to={`/tymy/${team.slug}`}
                     onClick={closeMobile}
                     className="block rounded-xl px-3 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-white"
                   >
                     {team.name}
-                  </Link>
-                ))}
+                    </Link>
+                  ))}
+                </DataFade>
               </MobileGroup>
 
               <MobileLink to="/zapasy" close={closeMobile}>Zápasy</MobileLink>
@@ -242,10 +285,10 @@ function Dropdown({
         className={`nav-link flex items-center gap-1 px-3.5 py-2 text-[13px] font-semibold ${active ? 'nav-link-active' : ''}`}
       >
         {label}
-        <ChevronDown size={14} className="transition duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+        <ChevronDown size={14} className="transition duration-[420ms] ease-smooth group-hover:rotate-180 group-focus-within:rotate-180" />
       </button>
 
-      <div className="pointer-events-none absolute left-1/2 top-full z-30 -translate-x-1/2 translate-y-1 pt-3 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
+      <div className="pointer-events-none absolute left-1/2 top-full z-30 -translate-x-1/2 translate-y-2 pt-3 opacity-0 transition duration-[460ms] ease-smooth group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
         <div className="rounded-[24px] border border-white/85 bg-[#fbfaf6]/95 shadow-soft ring-1 ring-sand-200/60 backdrop-blur-2xl">
           {children}
         </div>
@@ -285,9 +328,20 @@ function MobileGroup({
         className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-xl font-semibold tracking-tight text-ink-900 transition hover:bg-white"
       >
         {label}
-        <ChevronDown size={18} className={`transition ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          size={18}
+          className={`transition duration-[420ms] ease-smooth ${open ? 'rotate-180' : ''}`}
+        />
       </button>
-      {open && <div className="ml-2 mt-1 border-l border-sand-200 pl-3">{children}</div>}
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-[520ms] ease-smooth ${
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="ml-2 mt-1 border-l border-sand-200 pl-3">{children}</div>
+        </div>
+      </div>
     </div>
   )
 }

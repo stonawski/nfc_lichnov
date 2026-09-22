@@ -9,7 +9,9 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import {
   fetchMatchById,
   fetchMatchParticipants,
@@ -111,9 +113,11 @@ export function MatchDetailPage() {
         : team?.name || 'NFC Lichnov'
 
   return (
-    <main>
-      <section className="px-5 pb-10 pt-14 md:px-8 md:pb-14 md:pt-20">
-        <div className="mx-auto max-w-[1180px]">
+    <main className="data-fade-in">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+        <HeroFieldBackdrop />
+
+        <div className="relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col justify-center">
           <Link
             to={backTo}
             className="inline-flex items-center gap-2 text-sm font-bold text-ink-500 transition hover:text-brand-900"
@@ -131,7 +135,7 @@ export function MatchDetailPage() {
         </div>
       </section>
 
-      <section className="px-5 py-10 md:px-8 md:py-14">
+      <section className="bg-white px-5 py-14 md:px-8 md:py-20">
         <div className="mx-auto grid max-w-[1180px] gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
           <div className="overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
             <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
@@ -141,18 +145,20 @@ export function MatchDetailPage() {
                 <LoadingState rows={5} />
               </div>
             ) : clubParticipants.length ? (
-              <FormationPitch
-                teamName={clubName}
-                participants={clubParticipants}
-                events={timeline}
-              />
+              <DataFade>
+                <FormationPitch
+                  teamName={clubName}
+                  participants={clubParticipants}
+                  events={timeline}
+                />
+              </DataFade>
             ) : (
-              <div className="mt-6">
+              <DataFade className="mt-6">
                 <EmptyState
                   title="Sestava není k dispozici"
                   text="Pro tento zápas zatím backend nevrací údaje o hráčích."
                 />
-              </div>
+              </DataFade>
             )}
           </div>
 
@@ -164,14 +170,16 @@ export function MatchDetailPage() {
                 <LoadingState rows={5} />
               </div>
             ) : timeline.length ? (
-              <Timeline events={timeline} />
+              <DataFade>
+                <Timeline events={timeline} />
+              </DataFade>
             ) : (
-              <div className="mt-6">
+              <DataFade className="mt-6">
                 <EmptyState
                   title="Průběh není k dispozici"
                   text="Pro tento zápas zatím backend nevrací události zápasu."
                 />
-              </div>
+              </DataFade>
             )}
           </div>
         </div>
@@ -202,8 +210,14 @@ function MatchHero({
   )
 
   return (
-    <div className="relative mt-8 overflow-hidden rounded-[40px] bg-brand-900 px-6 py-8 text-white shadow-soft sm:px-9 sm:py-10 lg:px-12 lg:py-12">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(0,146,63,.45),transparent_32%),radial-gradient(circle_at_90%_80%,rgba(255,255,255,.08),transparent_26%)]" />
+    <div className="relative mt-8 overflow-hidden rounded-[40px] bg-brand-900 px-6 py-8 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)] sm:px-9 sm:py-10 lg:px-12 lg:py-12">
+      <img
+        src="/hero-lichnov-field.webp"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-[65%_center] opacity-[0.12]"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(100deg,#18352a_0%,rgba(24,53,42,.96)_48%,rgba(20,83,45,.82)_100%)]" />
 
       <div className="relative">
         <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">

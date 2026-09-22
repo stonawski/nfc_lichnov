@@ -1,15 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
   Images,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { DataFade } from '../components/DataFade'
+import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PublicPageHero } from '../components/PublicPageHero'
 import {
   fetchGalleries,
   fetchGalleryBySlug,
@@ -47,26 +51,16 @@ export function GalleryPage() {
   const loading = galleriesQuery.isLoading || imagesQuery.isLoading
 
   return (
-    <main className="px-5 py-16 md:px-8 md:py-24">
-      <div className="mx-auto max-w-[1240px]">
-        <div className="grid gap-8 lg:grid-cols-[1fr_.45fr] lg:items-end">
-          <div className="max-w-4xl">
-            <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
-              Galerie
-            </div>
-            <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.06em] text-brand-900 sm:text-6xl md:text-7xl">
-              Život klubu
-              <span className="block text-brand-500">v obrazech.</span>
-            </h1>
-          </div>
+    <main>
+      <PublicPageHero
+        eyebrow="Galerie"
+        title="Život klubu"
+        accent="v obrazech."
+        text="Zápasy, turnaje, tréninky i chvíle mimo hřiště. Fotografie z jednotlivých akcí najdeš přehledně na jednom místě."
+      />
 
-          <p className="max-w-md text-sm leading-7 text-ink-500 lg:justify-self-end">
-            Zápasy, turnaje, tréninky i chvíle mimo hřiště. Fotografie z jednotlivých
-            akcí najdeš přehledně na jednom místě.
-          </p>
-        </div>
-
-        <div className="mt-14">
+      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
+        <div className="mx-auto max-w-[1240px]">
           {loading ? (
             <LoadingState rows={5} />
           ) : galleriesQuery.isError || imagesQuery.isError ? (
@@ -75,7 +69,7 @@ export function GalleryPage() {
               text="Zkontroluj přístup k tabulkám galleries a gallery_images v Supabase."
             />
           ) : galleries.length ? (
-            <div className="stagger-children grid gap-5 md:grid-cols-2 lg:grid-cols-12">
+            <DataFade className="stagger-children grid gap-5 md:grid-cols-2 lg:grid-cols-12">
               {galleries.map((gallery, index) => {
                 const images = imagesByGallery.get(gallery.id) ?? []
                 const firstImage = images.find((image) => galleryImageUrl(image))
@@ -100,15 +94,70 @@ export function GalleryPage() {
                   />
                 )
               })}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
-              title="Galerie je zatím prázdná"
-              text="Jakmile nahrajeme první fotografie, objeví se automaticky tady."
-            />
+            <DataFade className="overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_55px_rgba(24,53,42,.06)]">
+              <div className="grid lg:grid-cols-[1.12fr_.88fr]">
+                <div className="relative min-h-[380px] overflow-hidden p-7 text-white sm:min-h-[440px] sm:p-10 lg:p-12">
+                  <img
+                    src="/hero-lichnov-field.webp"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover object-[65%_center]"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.94)_0%,rgba(24,53,42,.70)_60%,rgba(24,53,42,.32)_100%)]" />
+
+                  <div className="relative flex h-full min-h-[326px] flex-col justify-end sm:min-h-[360px]">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+                      Fotogalerie NFC
+                    </div>
+                    <h2 className="mt-3 max-w-xl text-4xl font-black leading-[.98] tracking-[-0.055em] sm:text-5xl">
+                      První galerie teprve přibydou.
+                    </h2>
+                    <p className="mt-5 max-w-lg text-sm leading-7 text-white/70 sm:text-base">
+                      Chceme tady uchovávat zápasy, turnaje, mládež i běžný život
+                      klubu. Jakmile budou první fotografie publikované, galerie se
+                      poskládá automaticky.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid bg-sand-100 sm:grid-cols-2 lg:grid-cols-1">
+                  <Link
+                    to="/zapasy"
+                    className="group flex min-h-[190px] items-end justify-between gap-5 border-b border-sand-200 p-7 transition hover:bg-white sm:border-b-0 sm:border-r lg:border-b lg:border-r-0"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                        Než přibudou fotky
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-brand-900">
+                        Podívat se na zápasy
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500" />
+                  </Link>
+
+                  <Link
+                    to="/klub/historie"
+                    className="group flex min-h-[190px] items-end justify-between gap-5 p-7 transition hover:bg-white"
+                  >
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                        Od roku 1963
+                      </div>
+                      <div className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-brand-900">
+                        Poznat historii klubu
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-ink-500 transition group-hover:translate-x-1 group-hover:text-brand-500" />
+                  </Link>
+                </div>
+              </div>
+            </DataFade>
           )}
         </div>
-      </div>
+      </section>
     </main>
   )
 }
@@ -137,28 +186,11 @@ export function GalleryDetailPage() {
   useEffect(() => {
     if (activeIndex == null) return
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveIndex(null)
-      if (event.key === 'ArrowLeft') {
-        setActiveIndex((current) =>
-          current == null ? null : (current - 1 + images.length) % images.length,
-        )
-      }
-      if (event.key === 'ArrowRight') {
-        setActiveIndex((current) =>
-          current == null ? null : (current + 1) % images.length,
-        )
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown)
     document.body.style.overflow = 'hidden'
-
     return () => {
-      document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
     }
-  }, [activeIndex, images.length])
+  }, [activeIndex])
 
   if (galleryQuery.isLoading) {
     return (
@@ -184,35 +216,36 @@ export function GalleryDetailPage() {
   }
 
   return (
-    <main>
-      <section className="px-5 py-14 md:px-8 md:py-20">
-        <div className="mx-auto max-w-[1240px]">
+    <main className="data-fade-in">
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
+        <HeroFieldBackdrop tone="dark" />
+
+        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center py-6 text-white md:py-10">
           <Link
             to="/galerie"
-            className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 transition hover:text-brand-500"
+            className="inline-flex items-center gap-2 text-sm font-bold text-white/65 transition hover:text-white"
           >
             <ArrowLeft size={16} />
             Zpět na galerie
           </Link>
 
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_.55fr] lg:items-end">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-brand-500">
+          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.48fr] lg:items-end">
+            <div className="max-w-4xl">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55 sm:text-xs">
                 Fotogalerie
               </div>
-              <h1 className="mt-4 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-brand-900 sm:text-6xl">
+              <h1 className="mt-4 text-[clamp(3rem,7vw,6.2rem)] font-black leading-[.91] tracking-[-0.068em]">
                 {gallery.title || 'NFC Lichnov'}
               </h1>
-
               {(gallery.event_date || gallery.created_at) && (
-                <div className="mt-5 text-sm font-semibold text-ink-500">
+                <div className="mt-5 text-sm font-semibold text-white/60">
                   {formatDate(gallery.event_date || gallery.created_at)}
                 </div>
               )}
             </div>
 
             {gallery.description && (
-              <p className="max-w-lg text-sm leading-7 text-ink-500 lg:justify-self-end">
+              <p className="max-w-lg text-sm leading-7 text-white/70 sm:text-base lg:justify-self-end">
                 {gallery.description}
               </p>
             )}
@@ -220,7 +253,7 @@ export function GalleryDetailPage() {
         </div>
       </section>
 
-      <section className="px-5 pb-20 md:px-8 md:pb-28">
+      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           {imagesQuery.isLoading ? (
             <LoadingState rows={6} />
@@ -230,7 +263,7 @@ export function GalleryDetailPage() {
               text="Zkontroluj veřejná oprávnění tabulky gallery_images."
             />
           ) : images.length ? (
-            <div className="stagger-children columns-1 gap-4 sm:columns-2 lg:columns-3">
+            <DataFade className="stagger-children columns-1 gap-4 sm:columns-2 lg:columns-3">
               {images.map((image, index) => {
                 const url = galleryImageUrl(image)
                 if (!url) return null
@@ -257,12 +290,14 @@ export function GalleryDetailPage() {
                   </button>
                 )
               })}
-            </div>
+            </DataFade>
           ) : (
-            <EmptyState
+            <DataFade>
+              <EmptyState
               title="V této galerii zatím nejsou fotografie"
               text="Fotky se zde objeví po prvním uploadu do galerie."
-            />
+              />
+            </DataFade>
           )}
         </div>
       </section>
@@ -309,7 +344,12 @@ function GalleryCard({
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
         />
       ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_20%,rgba(0,146,63,.52),transparent_34%),linear-gradient(145deg,#244938,#18352A)]" />
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-65"
+        />
       )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/28 to-transparent" />
@@ -366,20 +406,49 @@ function Lightbox({
   onPrevious: () => void
   onNext: () => void
 }) {
+  const [closing, setClosing] = useState(false)
+  const closeTimerRef = useRef<number | null>(null)
   const url = galleryImageUrl(image)
+
+  const requestClose = useCallback(() => {
+    if (closing) return
+    setClosing(true)
+    closeTimerRef.current = window.setTimeout(onClose, 320)
+  }, [closing, onClose])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') requestClose()
+      if (event.key === 'ArrowLeft') onPrevious()
+      if (event.key === 'ArrowRight') onNext()
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onNext, onPrevious, requestClose])
+
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current != null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    },
+    [],
+  )
+
   if (!url) return null
 
   return (
     <div
-      className="fixed inset-0 z-[80] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6"
+      className={`${closing ? 'lightbox-exit' : 'lightbox-enter'} fixed inset-0 z-[80] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6`}
       role="dialog"
       aria-modal="true"
       aria-label="Náhled fotografie"
-      onClick={onClose}
+      onClick={requestClose}
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={requestClose}
         aria-label="Zavřít fotografii"
         className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-6 sm:top-6"
       >
@@ -415,7 +484,8 @@ function Lightbox({
       )}
 
       <div
-        className="flex max-h-[92vh] max-w-[92vw] flex-col items-center"
+        key={image.id}
+        className="lightbox-media-enter flex max-h-[92vh] max-w-[92vw] flex-col items-center"
         onClick={(event) => event.stopPropagation()}
       >
         <img
