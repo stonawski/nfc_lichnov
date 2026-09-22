@@ -37,7 +37,7 @@ export function NewsDetailPage() {
   const article = query.data
 
   return (
-    <main>
+    <main className="data-fade-in">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-16 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop tone="dark" />
 
