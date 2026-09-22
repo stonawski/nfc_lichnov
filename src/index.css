@@ -188,17 +188,9 @@ img {
   min-height: min(900px, 100svh);
 }
 
-.site-hero-content {
-  min-height: calc(min(900px, 100svh) - 144px);
-}
-
 @media (max-width: 639px) {
   .site-hero-frame {
     min-height: min(840px, 100svh);
-  }
-
-  .site-hero-content {
-    min-height: calc(min(840px, 100svh) - 124px);
   }
 }
 
