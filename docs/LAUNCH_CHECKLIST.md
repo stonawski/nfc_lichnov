@@ -7,6 +7,7 @@ This checklist is the final gate before the new public website replaces the lega
 - [ ] `npm ci` succeeds from a clean checkout.
 - [ ] `npm run build` succeeds with production environment variables.
 - [ ] GitHub Actions CI is green on `main`.
+- [ ] Review the current two moderate npm audit findings before launch; do not use `npm audit fix --force` without checking the breaking upgrade.
 - [ ] Test the production build with `npm run preview`.
 - [ ] Verify direct navigation and refresh on nested routes such as `/tymy/muzi`, `/zapasy/:id` and `/aktuality/:slug`.
 
@@ -46,6 +47,7 @@ This checklist is the final gate before the new public website replaces the lega
 - [ ] Decide how the legacy `nfclichnov.wbs.cz` site will point users/search engines to the new website.
 - [ ] Add permanent redirects for old URLs where the hosting platform allows it.
 - [ ] Verify social sharing previews for homepage and at least one article.
+- [ ] If the hosting/social crawler does not execute client-side JavaScript, add prerender/SSR/edge metadata for dynamic article, gallery, team and match URLs before relying on rich link previews.
 
 ## Responsive and accessibility QA
 
@@ -77,6 +79,7 @@ This checklist is the final gate before the new public website replaces the lega
 - [ ] Test the site in Chrome, Safari and Firefox.
 - [ ] Test one iPhone/iPad and one Android device if available.
 - [ ] After DNS cutover, repeat login, media upload, public data and direct-route refresh checks.
+- [ ] Decide whether analytics is needed and, if enabled, verify consent/privacy requirements before adding a provider.
 
 ## Monitoring after launch
 
