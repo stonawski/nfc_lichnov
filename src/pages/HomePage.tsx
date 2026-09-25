@@ -5,7 +5,7 @@ import { ClubLogo } from "../components/ClubLogo";
 import { DataFade } from "../components/DataFade";
 import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
-import { MatchCarousel } from "../components/MatchCarousel";
+import { HomeMatchBoard } from "../components/HomeMatchBoard";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
 import { SectionHeading } from "../components/SectionHeading";
 import { StandingsTable } from "../components/StandingsTable";
@@ -106,64 +106,38 @@ export function HomePage() {
 
           </div>
 
-          <div className="mt-4 grid gap-5 lg:grid-cols-2 lg:gap-6">
-            <div className="min-w-0">
-              <div className="mb-3 px-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  Odehráno
-                </div>
-                <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
-                  Poslední výsledky
-                </h2>
+          <div className="mt-4">
+            <div className="mb-3 px-1">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                Zápasy
               </div>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
+                Výsledky a program
+              </h2>
+            </div>
 
-              {matchesQuery.isLoading ? (
-                <LoadingState rows={3} />
-              ) : matchesQuery.isError ? (
-                <EmptyState
-                  title="Data se nepodařilo načíst"
-                  text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
+            {matchesQuery.isLoading || upcomingQuery.isLoading ? (
+              <LoadingState rows={4} />
+            ) : matchesQuery.isError || upcomingQuery.isError ? (
+              <EmptyState
+                title="Data se nepodařilo načíst"
+                text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
+              />
+            ) : (
+              <DataFade>
+                <HomeMatchBoard
+                  results={matchesQuery.data ?? []}
+                  upcoming={upcomingSummaries}
                 />
-              ) : (
-                <DataFade>
-                  <MatchCarousel items={matchesQuery.data ?? []} />
-                </DataFade>
-              )}
-            </div>
-
-            <div className="min-w-0">
-              <div className="mb-3 px-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  Program
-                </div>
-                <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
-                  Nadcházející zápasy
-                </h2>
-              </div>
-
-              {upcomingQuery.isLoading ? (
-                <LoadingState rows={3} />
-              ) : upcomingSummaries.length ? (
-                <DataFade>
-                  <MatchCarousel items={upcomingSummaries} venueLinks />
-                </DataFade>
-              ) : (
-                <DataFade>
-                  <EmptyState
-                    title="Nejbližší zápasy zatím nejsou k dispozici"
-                    text="Jakmile bude zveřejněný další program, zobrazí se automaticky tady."
-                  />
-                </DataFade>
-              )}
-            </div>
+              </DataFade>
+            )}
           </div>
 
           <div className="mt-9">
-            <div className="flex items-center gap-3" aria-hidden="true">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-brand-900/20 to-brand-900/5" />
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500/55" />
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-brand-900/20 to-brand-900/5" />
-            </div>
+            <div
+              className="h-px w-full bg-gradient-to-r from-brand-900/28 via-brand-900/12 to-transparent"
+              aria-hidden="true"
+            />
 
             <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap gap-3">
