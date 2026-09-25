@@ -1,3 +1,5 @@
+import type { Match } from './types'
+
 export const TEAM_ORDER = [
   'muzi',
   'dorost',
@@ -6,6 +8,11 @@ export const TEAM_ORDER = [
   'mladsi-pripravka',
   'predpripravka',
 ]
+
+// The imported FAČR kickoff value is stored with a UTC offset while its clock value
+// already represents the official local kickoff. Formatting it in browser local time
+// would therefore add the Czech UTC offset once more.
+const MATCH_SOURCE_TIME_ZONE = 'UTC'
 
 export function formatDate(value: string | null | undefined, options?: Intl.DateTimeFormatOptions) {
   if (!value) return ''
@@ -24,6 +31,7 @@ export function formatMatchDate(value: string | null | undefined) {
     month: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: MATCH_SOURCE_TIME_ZONE,
   }).format(new Date(value))
 }
 
@@ -32,6 +40,7 @@ export function formatMatchDay(value: string | null | undefined) {
   return new Intl.DateTimeFormat('cs-CZ', {
     day: 'numeric',
     month: 'numeric',
+    timeZone: MATCH_SOURCE_TIME_ZONE,
   }).format(new Date(value))
 }
 
@@ -40,7 +49,19 @@ export function formatMatchTime(value: string | null | undefined) {
   return new Intl.DateTimeFormat('cs-CZ', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: MATCH_SOURCE_TIME_ZONE,
   }).format(new Date(value))
+}
+
+export function matchVenueMapUrl(
+  match: Pick<Match, 'pitch_name' | 'home_team_name'>,
+) {
+  const pitch = match.pitch_name?.trim()
+  const query = pitch
+    ? `${pitch}, ${match.home_team_name}`
+    : `${match.home_team_name} fotbalové hřiště`
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 }
 
 export function isUpcomingMatch(value: string | null | undefined) {
