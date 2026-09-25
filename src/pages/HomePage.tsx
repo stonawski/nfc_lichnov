@@ -102,6 +102,44 @@ export function HomePage() {
             <p className="mt-5 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
               Poslední výsledky a nejbližší zápasy všech kategorií hned na první pohled.
             </p>
+
+            <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/zapasy"
+                  className="inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(24,53,42,.16)] transition-colors hover:bg-brand-700"
+                >
+                  Zobrazit zápasy <ArrowRight size={16} />
+                </Link>
+                <Link
+                  to="/tymy"
+                  className="inline-flex items-center gap-2 rounded-[16px] bg-white/80 px-5 py-3 text-sm font-semibold text-brand-900 ring-1 ring-sand-200 transition-colors hover:bg-white"
+                >
+                  Naše týmy
+                </Link>
+              </div>
+
+              {!teamsQuery.isLoading && (
+                <DataFade className="grid min-w-[270px] grid-cols-2 divide-x divide-sand-200 border-t border-sand-200 pt-4 sm:border-t-0 sm:pt-0">
+                  <div className="pr-5">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
+                      {teamsQuery.data?.length ?? 0}
+                    </div>
+                    <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
+                      aktivních týmů
+                    </div>
+                  </div>
+                  <div className="pl-5">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
+                      {men?.season || "—"}
+                    </div>
+                    <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
+                      aktuální sezóna
+                    </div>
+                  </div>
+                </DataFade>
+              )}
+            </div>
           </div>
 
           <div className="mt-4 grid gap-5 lg:grid-cols-2 lg:gap-6">
@@ -342,14 +380,17 @@ export function HomePage() {
                 {
                   title: "Fanouškovská šála",
                   image: "/shop/nfc-scarf.jpg",
+                  href: "https://nfclichnov.kastomi.com/3894-pletena-zimni-sala",
                 },
                 {
                   title: "Tréninkové kalhoty",
                   image: "/shop/nfc-training-pants.jpg",
+                  href: "https://nfclichnov.kastomi.com/4356-teplakova-souprava-teplaky",
                 },
                 {
                   title: "Polo NFC Lichnov",
                   image: "/shop/nfc-polo.jpg",
+                  href: "https://nfclichnov.kastomi.com/3985-polotricko-s-prouzky",
                 },
               ].map((product) => (
                 <article
@@ -371,6 +412,14 @@ export function HomePage() {
                     <div className="mt-1 text-base font-extrabold tracking-[-0.035em] text-brand-900">
                       {product.title}
                     </div>
+                    <a
+                      href={product.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex items-center gap-1.5 rounded-[12px] bg-sand-100 px-3 py-2 text-xs font-bold text-brand-900 transition-colors hover:bg-brand-900 hover:text-white"
+                    >
+                      Detail produktu <ArrowUpRight size={13} />
+                    </a>
                   </div>
                 </article>
               ))}
