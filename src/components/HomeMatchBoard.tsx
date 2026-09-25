@@ -61,7 +61,7 @@ export function HomeMatchBoard({
           <ClubLogo
             src={activeTeam.logo_url}
             name={activeTeam.name}
-            className="h-11 w-11 shrink-0"
+            size="md"
           />
           <div className="min-w-0">
             <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-500">
@@ -244,13 +244,13 @@ function TeamInline({
       }`}
     >
       {align === 'left' && (
-        <ClubLogo src={logo} name={name} className="h-9 w-9 shrink-0" />
+        <ClubLogo src={logo} name={name} size="sm" />
       )}
       <div className="line-clamp-2 text-xs font-extrabold leading-tight text-ink-900 sm:text-sm">
         {name}
       </div>
       {align === 'right' && (
-        <ClubLogo src={logo} name={name} className="h-9 w-9 shrink-0" />
+        <ClubLogo src={logo} name={name} size="sm" />
       )}
     </div>
   )
