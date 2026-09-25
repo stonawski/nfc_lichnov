@@ -85,23 +85,35 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-12 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-16 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
+      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto max-w-[1240px]">
-          <div className="grid gap-8 lg:grid-cols-[.82fr_1.18fr] lg:items-end lg:gap-10 xl:gap-14">
-            <div className="py-5 sm:py-8 lg:pb-6 lg:pt-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-                NFC Lichnov
+          <div className="grid gap-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12">
+            <div className="py-6 sm:py-10 lg:py-14">
+              <div className="mb-6 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                  NFC Lichnov
+                </span>
+                <span className="rounded-full border border-sand-200 bg-sand-100/70 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-ink-500 backdrop-blur">
+                  fotbal napříč generacemi
+                </span>
               </div>
 
-              <h1 className="mt-6 max-w-[620px] text-[clamp(3.4rem,6.2vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
-                Fotbal v Lichnově.
+              <h1 className="max-w-[760px] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
+                <span className="block text-[clamp(3.25rem,7vw,6.85rem)]">
+                  Fotbal v Lichnově.
+                </span>
+                <span className="mt-2 block text-[clamp(2.9rem,5.35vw,5.55rem)] leading-[0.9] text-brand-500">
+                  <span className="block sm:whitespace-nowrap">Od nejmenších</span>
+                  <span className="block">až po muže.</span>
+                </span>
               </h1>
 
-              <p className="mt-6 max-w-[540px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
-                Poslední výsledky, nejbližší zápasy a vše důležité z klubu na jednom místě.
+              <p className="mt-7 max-w-[590px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
+                Výsledky, zápasy, hráči a život klubu na jednom místě. Přehledně
+                pro fanoušky, rodiče i všechny, kteří jsou součástí NFC.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -120,9 +132,9 @@ export function HomePage() {
               </div>
 
               {!teamsQuery.isLoading && (
-                <DataFade className="mt-8 grid max-w-[340px] grid-cols-2 border-t border-brand-900/12 pt-5">
+                <DataFade className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
                   <div className="pr-6">
-                    <div className="text-2xl font-black tracking-[-0.045em] text-brand-900">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
                       {teamsQuery.data?.length ?? 0}
                     </div>
                     <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
@@ -130,7 +142,7 @@ export function HomePage() {
                     </div>
                   </div>
                   <div className="border-l border-sand-200 pl-6">
-                    <div className="text-2xl font-black tracking-[-0.045em] text-brand-900">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
                       {men?.season || "—"}
                     </div>
                     <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
@@ -141,7 +153,16 @@ export function HomePage() {
               )}
             </div>
 
-            <div className="min-w-0 lg:pb-2">
+            <div className="relative min-w-0 lg:pl-4">
+              <div className="mb-4 px-1">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                  Zápasy
+                </div>
+                <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
+                  Výsledky a program
+                </h2>
+              </div>
+
               {matchesQuery.isLoading || upcomingQuery.isLoading ? (
                 <LoadingState rows={5} />
               ) : matchesQuery.isError || upcomingQuery.isError ? (
