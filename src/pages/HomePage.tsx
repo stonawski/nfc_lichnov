@@ -181,11 +181,13 @@ export function HomePage() {
             </div>
           </div>
 
-          {(teamsQuery.data?.length ?? 0) > 0 && (
+          {upcomingQuery.isLoading ? (
+            <div className="mt-3 h-[112px] rounded-[22px] border border-sand-200 bg-white/45 backdrop-blur sm:mt-5" />
+          ) : upcomingMatches.length ? (
             <DataFade>
-              <TeamRail teams={teamsQuery.data ?? []} />
+              <UpcomingRail matches={upcomingMatches.slice(0, 3)} />
             </DataFade>
-          )}
+          ) : null}
         </div>
       </section>
 
@@ -721,18 +723,55 @@ function HeroStat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function TeamRail({ teams }: { teams: Team[] }) {
+function UpcomingRail({
+  matches,
+}: {
+  matches: Array<Match & { team?: Team }>;
+}) {
   return (
-    <div className="mt-3 overflow-hidden rounded-[22px] border border-sand-200 bg-white/45 backdrop-blur sm:mt-5">
-      <div className="flex overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {teams.map((team) => (
+    <div className="mt-3 overflow-hidden rounded-[22px] border border-sand-200 bg-white/60 backdrop-blur sm:mt-5">
+      <div className="flex items-center justify-between gap-4 border-b border-sand-200/80 px-4 py-2.5 sm:px-5">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={14} className="text-brand-500" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-900">
+            Co nás čeká
+          </span>
+        </div>
+        <Link
+          to="/zapasy"
+          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-500 transition hover:text-brand-500"
+        >
+          Celý program <ArrowRight size={12} />
+        </Link>
+      </div>
+
+      <div className="grid divide-y divide-sand-200/70 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+        {matches.map((match) => (
           <Link
-            key={team.id}
-            to={`/tymy/${team.slug}`}
-            className="group flex shrink-0 items-center gap-2 rounded-[14px] px-3 py-2 text-xs font-semibold text-ink-500 transition hover:bg-white hover:text-brand-900 sm:px-4"
+            key={match.id}
+            to={`/zapasy/${match.id}`}
+            className="group flex min-w-0 items-center gap-3 px-4 py-3 transition hover:bg-white/75 sm:px-5"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-500/35 transition group-hover:bg-brand-500" />
-            {team.name}
+            <div className="shrink-0 text-center">
+              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-brand-500">
+                {match.team?.name || "NFC"}
+              </div>
+              <div className="mt-1 text-xs font-bold text-brand-900">
+                {formatMatchDate(match.playing_at)}
+              </div>
+            </div>
+            <div className="min-w-0 flex-1 border-l border-sand-200 pl-3">
+              <div className="truncate text-xs font-extrabold text-brand-900">
+                {match.home_team_name}
+              </div>
+              <div className="mt-0.5 truncate text-xs text-ink-500">
+                {match.away_team_name}
+              </div>
+            </div>
+            <ArrowUpRight
+              size={14}
+              className="shrink-0 text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"
+            />
           </Link>
         ))}
       </div>
