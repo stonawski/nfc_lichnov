@@ -25,6 +25,7 @@ import {
   initials,
   isUpcomingMatch,
   matchScore,
+  matchVenueMapUrl,
 } from '../lib/format'
 import { normalizeTacticalPosition } from '../lib/playerPosition'
 import { safeReturnPath } from '../lib/navigationState'
@@ -289,12 +290,16 @@ function MatchHero({
             {formatMatchDate(match.playing_at)}
           </span>
 
-          {match.pitch_name && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin size={14} />
-              {match.pitch_name}
-            </span>
-          )}
+          <a
+            href={matchVenueMapUrl(match)}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 transition hover:text-white"
+            title="Otevřít hřiště v Google Maps"
+          >
+            <MapPin size={14} />
+            {match.pitch_name || `Hřiště — ${match.home_team_name}`}
+          </a>
 
           {match.season && <span>Sezóna {match.season}</span>}
         </div>
