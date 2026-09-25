@@ -395,7 +395,85 @@ export function HomePage() {
 
       
 
-      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+      
+      <section className="border-y border-sand-200 bg-[#f4f7f2] py-16 md:py-24">
+        <div className="mx-auto max-w-[1480px] px-5 md:px-8">
+          <div className="grid gap-10 lg:grid-cols-[.62fr_1.38fr] lg:items-center lg:gap-14">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
+                <ShoppingBag size={15} />
+                Klubový e-shop
+              </div>
+              <h2 className="mt-4 text-4xl font-extrabold leading-[.96] tracking-[-0.055em] text-brand-900 sm:text-5xl md:text-6xl">
+                NFC nosíme i mimo hřiště.
+              </h2>
+              <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
+                Fanouškovské doplňky a klubové oblečení NFC Lichnov. Vybrali jsme
+                několik kousků z aktuální nabídky — kompletní sortiment najdeš
+                v oficiálním e-shopu.
+              </p>
+              <a
+                href="https://nfclichnov.kastomi.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-brand-700"
+              >
+                Prohlédnout celý e-shop <ArrowUpRight size={16} />
+              </a>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  title: "Fanouškovská šála",
+                  image: "/shop/nfc-scarf.jpg",
+                },
+                {
+                  title: "Tréninkové kalhoty",
+                  image: "/shop/nfc-training-pants.jpg",
+                },
+                {
+                  title: "Polo NFC Lichnov",
+                  image: "/shop/nfc-polo.jpg",
+                },
+              ].map((product) => (
+                <a
+                  key={product.title}
+                  href="https://nfclichnov.kastomi.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group overflow-hidden rounded-[30px] border border-sand-200 bg-white shadow-[0_14px_38px_rgba(24,53,42,.06)] transition duration-300 hover:-translate-y-1 hover:border-brand-500/20 hover:shadow-soft"
+                >
+                  <div className="aspect-square overflow-hidden bg-white p-4 sm:p-5">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      loading="lazy"
+                      className="h-full w-full object-contain transition duration-500 group-hover:scale-[1.035]"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 border-t border-sand-200 px-5 py-4">
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-brand-500">
+                        NFC Lichnov
+                      </div>
+                      <div className="mt-1 text-base font-extrabold tracking-[-0.035em] text-brand-900">
+                        {product.title}
+                      </div>
+                    </div>
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sand-100 text-brand-900 transition group-hover:bg-brand-900 group-hover:text-white">
+                      <ArrowUpRight size={16} />
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+<section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
             <div>
@@ -464,67 +542,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-16 md:px-8 md:py-20">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="overflow-hidden rounded-[38px] border border-sand-200 bg-sand-100 p-7 sm:p-9 md:p-11">
-            <div className="grid gap-9 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
-              <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
-                  <ShoppingBag size={15} />
-                  Klubový e-shop
-                </div>
-                <h2 className="mt-4 max-w-xl text-4xl font-extrabold leading-[.98] tracking-[-0.055em] text-brand-900 md:text-5xl">
-                  NFC i mimo hřiště.
-                </h2>
-                <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
-                  Klubové oblečení, vybavení pro volný čas a doplňky v barvách NFC.
-                  Aktuální nabídku a dostupné velikosti najdeš v oficiálním e-shopu.
-                </p>
-                <a
-                  href="https://nfclichnov.kastomi.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-7 inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-brand-700"
-                >
-                  Otevřít e-shop <ArrowUpRight size={16} />
-                </a>
-              </div>
-
-              <div>
-                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Co v e-shopu najdeš
-                </div>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    ["Klubové oblečení", "NFC na zápas i mimo něj."],
-                    ["Trénink a volný čas", "Věci pro hráče i fanoušky."],
-                    ["Klubové doplňky", "Aktuální nabídka na Kastomi."],
-                  ].map(([title, text]) => (
-                    <a
-                      key={title}
-                      href="https://nfclichnov.kastomi.com/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group rounded-[24px] border border-white bg-white/75 p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="text-base font-extrabold tracking-[-0.035em] text-brand-900">
-                          {title}
-                        </div>
-                        <ArrowUpRight
-                          size={16}
-                          className="shrink-0 text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"
-                        />
-                      </div>
-                      <p className="mt-3 text-xs leading-5 text-ink-500">{text}</p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
 
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
