@@ -55,10 +55,26 @@ export function HomeMatchBoard({
     upcomingSummary?.kind === 'upcoming' ? upcomingSummary.match : null
 
   return (
-    <div className="content-enter overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] shadow-soft">
-      <div className="border-b border-sand-200 px-4 py-4 sm:px-5">
+    <div className="content-enter overflow-hidden rounded-[34px] border border-white/70 bg-white/82 shadow-[0_24px_70px_rgba(24,53,42,.10)] backdrop-blur-xl">
+      <div className="border-b border-sand-200/80 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
+        <div className="flex items-center gap-3">
+          <ClubLogo
+            src={activeTeam.logo_url}
+            name={activeTeam.name}
+            className="h-11 w-11 shrink-0"
+          />
+          <div className="min-w-0">
+            <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-500">
+              Zápasový přehled
+            </div>
+            <div className="mt-1 truncate text-xl font-extrabold tracking-[-0.04em] text-brand-900">
+              {activeTeam.name}
+            </div>
+          </div>
+        </div>
+
         <div
-          className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-4 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label="Výběr týmu"
         >
@@ -72,10 +88,10 @@ export function HomeMatchBoard({
                 role="tab"
                 aria-selected={active}
                 onClick={() => setTeamId(team.id)}
-                className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors ${
+                className={`shrink-0 rounded-[11px] px-3 py-2 text-[11px] font-bold transition-colors ${
                   active
                     ? 'bg-brand-900 text-white'
-                    : 'bg-sand-100 text-ink-500 hover:bg-sand-200 hover:text-brand-900'
+                    : 'bg-sand-100/80 text-ink-500 hover:bg-sand-200/80 hover:text-brand-900'
                 }`}
               >
                 {team.short_name || team.name}
@@ -85,14 +101,14 @@ export function HomeMatchBoard({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 md:divide-x md:divide-sand-200">
-        <MatchPanel
+      <div className="divide-y divide-sand-200/80">
+        <MatchRow
           label="Poslední výsledek"
           match={resultMatch}
           kind="result"
         />
-        <MatchPanel
-          label="Nadcházející zápas"
+        <MatchRow
+          label="Další zápas"
           match={upcomingMatch}
           kind="upcoming"
           venueLink
@@ -102,7 +118,7 @@ export function HomeMatchBoard({
   )
 }
 
-function MatchPanel({
+function MatchRow({
   label,
   match,
   kind,
@@ -115,11 +131,13 @@ function MatchPanel({
 }) {
   if (!match) {
     return (
-      <div className="min-h-[300px] p-5 sm:p-6">
-        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-          {label}
+      <div className="grid min-h-[150px] gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[130px_1fr] lg:items-center">
+        <div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.17em] text-brand-500">
+            {label}
+          </div>
         </div>
-        <div className="mt-16 rounded-[22px] bg-sand-50 px-5 py-7 text-center text-sm text-ink-500">
+        <div className="rounded-[20px] bg-sand-50 px-4 py-5 text-sm text-ink-500">
           {kind === 'result'
             ? 'Pro tento tým zatím nemáme poslední výsledek.'
             : 'Pro tento tým zatím nemáme další zápas.'}
@@ -141,77 +159,99 @@ function MatchPanel({
       : null
 
   return (
-    <div className="min-h-[300px] p-5 sm:p-6">
-      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-        {label}
-      </div>
-
-      <div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-5">
-        <ClubSide
-          name={match.home_team_name}
-          logo={match.home_team_logo}
-        />
-
-        <div className="min-w-[92px] text-center">
-          {kind === 'upcoming' ? (
-            <>
-              <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                Výkop
-              </div>
-              <div className="mt-1 text-3xl font-black tracking-[-0.06em] text-brand-900">
-                {formatMatchDay(match.playing_at)}
-              </div>
-              <div className="mt-1 text-xs font-bold text-brand-500">
-                {formatMatchTime(match.playing_at)}
-              </div>
-            </>
-          ) : (
-            <div className="text-5xl font-black tracking-[-0.07em] text-brand-900">
-              {score ?? '—'}
-            </div>
-          )}
+    <div className="px-5 py-5 sm:px-6">
+      <div className="grid gap-4 lg:grid-cols-[130px_1fr_auto] lg:items-center">
+        <div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.17em] text-brand-500">
+            {label}
+          </div>
+          <div className="mt-1.5 text-[11px] font-semibold text-ink-500">
+            {formatMatchDate(match.playing_at)}
+          </div>
         </div>
 
-        <ClubSide
-          name={match.away_team_name}
-          logo={match.away_team_logo}
-        />
-      </div>
+        <div className="grid min-w-0 grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4">
+          <TeamInline
+            name={match.home_team_name}
+            logo={match.home_team_logo}
+            align="right"
+          />
 
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t border-sand-200 pt-4 text-center text-xs font-medium text-ink-500">
-        <span>{formatMatchDate(match.playing_at)}</span>
-        {match.competition_name && <span>· {match.competition_name}</span>}
-        {match.round && <span>· {match.round}</span>}
-        {venueLink && (
-          <a
-            href={matchVenueMapUrl(match)}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 font-bold text-brand-700 transition-colors hover:text-brand-500"
-            title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
-          >
-            <MapPin size={13} />
-            {match.pitch_name || `Hřiště — ${match.home_team_name}`}
-          </a>
-        )}
+          <div className="min-w-[78px] text-center">
+            {kind === 'result' ? (
+              <div className="text-4xl font-black tracking-[-0.065em] text-brand-900">
+                {score ?? '—'}
+              </div>
+            ) : (
+              <>
+                <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
+                  Výkop
+                </div>
+                <div className="mt-1 text-2xl font-black tracking-[-0.055em] text-brand-900">
+                  {formatMatchDay(match.playing_at)}
+                </div>
+                <div className="mt-0.5 text-xs font-bold text-brand-500">
+                  {formatMatchTime(match.playing_at)}
+                </div>
+              </>
+            )}
+          </div>
+
+          <TeamInline
+            name={match.away_team_name}
+            logo={match.away_team_logo}
+            align="left"
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-3 lg:w-[150px] lg:flex-col lg:items-end">
+          <div className="text-right text-[10px] leading-4 text-ink-500">
+            {match.competition_name && <div>{match.competition_name}</div>}
+            {match.round && <div>{match.round}</div>}
+          </div>
+
+          {venueLink && (
+            <a
+              href={matchVenueMapUrl(match)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-[11px] bg-sand-100 px-3 py-2 text-[10px] font-bold text-brand-900 transition-colors hover:bg-brand-900 hover:text-white"
+              title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
+            >
+              <MapPin size={12} />
+              Hřiště
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
-function ClubSide({
+function TeamInline({
   name,
   logo,
+  align,
 }: {
   name: string
   logo: string | null
+  align: 'left' | 'right'
 }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
-      <ClubLogo src={logo} name={name} />
-      <div className="line-clamp-2 min-h-[36px] max-w-[145px] text-sm font-bold leading-[1.15] text-ink-900">
+    <div
+      className={`flex min-w-0 items-center gap-2.5 ${
+        align === 'right' ? 'justify-end text-right' : 'justify-start text-left'
+      }`}
+    >
+      {align === 'left' && (
+        <ClubLogo src={logo} name={name} className="h-9 w-9 shrink-0" />
+      )}
+      <div className="line-clamp-2 text-xs font-extrabold leading-tight text-ink-900 sm:text-sm">
         {name}
       </div>
+      {align === 'right' && (
+        <ClubLogo src={logo} name={name} className="h-9 w-9 shrink-0" />
+      )}
     </div>
   )
 }
