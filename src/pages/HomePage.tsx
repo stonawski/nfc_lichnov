@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarDays, MapPin, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
 import { DataFade } from "../components/DataFade";
@@ -111,13 +111,13 @@ export function HomePage() {
               <h1 className="max-w-[760px] text-[clamp(3.25rem,7vw,6.85rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
                 Fotbal v Lichnově.
                 <span className="mt-2 block text-brand-500">
-                  Od nejmenších až po muže.
+                  Výsledky. Program. Aktuality.
                 </span>
               </h1>
 
               <p className="mt-7 max-w-[590px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
-                Výsledky, zápasy, hráči a život klubu na jednom místě. Přehledně
-                pro fanoušky, rodiče i všechny, kteří jsou součástí NFC.
+                To nejdůležitější z klubu hned na první pohled — poslední výsledky,
+                nejbližší zápasy a aktuální dění v NFC Lichnov.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -184,6 +184,60 @@ export function HomePage() {
           {(teamsQuery.data?.length ?? 0) > 0 && (
             <DataFade>
               <TeamRail teams={teamsQuery.data ?? []} />
+            </DataFade>
+          )}
+        </div>
+      </section>
+
+      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
+        <div className="mx-auto max-w-[1240px]">
+          <SectionHeading
+            eyebrow="Program"
+            title="Co nás čeká"
+            text="Jeden nejbližší zápas z každé kategorie."
+            to="/zapasy"
+            linkLabel="Celý program"
+          />
+
+          {upcomingQuery.isLoading ? (
+            <LoadingState rows={3} />
+          ) : featuredUpcoming ? (
+            <DataFade className="stagger-children grid gap-4 lg:grid-cols-12">
+              <UpcomingMatchTile
+                match={featuredUpcoming}
+                featured
+                large
+                className="min-h-[290px] lg:col-span-7"
+              />
+
+              {dorostUpcoming && (
+                <UpcomingMatchTile
+                  match={dorostUpcoming}
+                  large
+                  className="min-h-[290px] lg:col-span-5"
+                />
+              )}
+
+              {lowerUpcoming.map((match) => (
+                <UpcomingMatchTile
+                  key={match.id}
+                  match={match}
+                  className={
+                    lowerUpcoming.length >= 3
+                      ? "min-h-[185px] lg:col-span-4"
+                      : lowerUpcoming.length === 2
+                        ? "min-h-[185px] lg:col-span-6"
+                        : "min-h-[185px] lg:col-span-12"
+                  }
+                />
+              ))}
+            </DataFade>
+          ) : (
+            <DataFade>
+              <EmptyState
+              title="Nejbližší zápasy zatím nejsou k dispozici"
+              text="Sekce se naplní automaticky z tabulky matches."
+              />
             </DataFade>
           )}
         </div>
@@ -281,60 +335,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Program"
-            title="Co nás čeká"
-            text="Jeden nejbližší zápas z každé kategorie."
-            to="/zapasy"
-            linkLabel="Celý program"
-          />
-
-          {upcomingQuery.isLoading ? (
-            <LoadingState rows={3} />
-          ) : featuredUpcoming ? (
-            <DataFade className="stagger-children grid gap-4 lg:grid-cols-12">
-              <UpcomingMatchTile
-                match={featuredUpcoming}
-                featured
-                large
-                className="min-h-[290px] lg:col-span-7"
-              />
-
-              {dorostUpcoming && (
-                <UpcomingMatchTile
-                  match={dorostUpcoming}
-                  large
-                  className="min-h-[290px] lg:col-span-5"
-                />
-              )}
-
-              {lowerUpcoming.map((match) => (
-                <UpcomingMatchTile
-                  key={match.id}
-                  match={match}
-                  className={
-                    lowerUpcoming.length >= 3
-                      ? "min-h-[185px] lg:col-span-4"
-                      : lowerUpcoming.length === 2
-                        ? "min-h-[185px] lg:col-span-6"
-                        : "min-h-[185px] lg:col-span-12"
-                  }
-                />
-              ))}
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Nejbližší zápasy zatím nejsou k dispozici"
-              text="Sekce se naplní automaticky z tabulky matches."
-              />
-            </DataFade>
-          )}
-        </div>
-      </section>
-
       {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
         <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
           <div className="mx-auto max-w-[1240px]">
@@ -391,32 +391,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Od mužů po nejmenší"
-            title="Jeden klub. Šest týmů."
-            text="Každá kategorie má vlastní prostor pro zápasy, hráče a statistiky."
-            to="/tymy"
-            linkLabel="Přehled týmů"
-          />
-
-          {teamsQuery.isLoading ? (
-            <LoadingState rows={4} />
-          ) : teamsQuery.data?.length ? (
-            <DataFade>
-              <TeamEditorialGrid teams={teamsQuery.data} />
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Týmy se nepodařilo načíst"
-              text="Po připojení Supabase se zde zobrazí všechny aktivní kategorie."
-              />
-            </DataFade>
-          )}
-        </div>
-      </section>
+      
 
       <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
@@ -486,6 +461,69 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <section className="bg-white px-5 py-16 md:px-8 md:py-20">
+        <div className="mx-auto max-w-[1240px]">
+          <div className="overflow-hidden rounded-[38px] border border-sand-200 bg-sand-100 p-7 sm:p-9 md:p-11">
+            <div className="grid gap-9 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
+              <div>
+                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
+                  <ShoppingBag size={15} />
+                  Klubový e-shop
+                </div>
+                <h2 className="mt-4 max-w-xl text-4xl font-extrabold leading-[.98] tracking-[-0.055em] text-brand-900 md:text-5xl">
+                  NFC i mimo hřiště.
+                </h2>
+                <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
+                  Klubové oblečení, vybavení pro volný čas a doplňky v barvách NFC.
+                  Aktuální nabídku a dostupné velikosti najdeš v oficiálním e-shopu.
+                </p>
+                <a
+                  href="https://nfclichnov.kastomi.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-7 inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-brand-700"
+                >
+                  Otevřít e-shop <ArrowUpRight size={16} />
+                </a>
+              </div>
+
+              <div>
+                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                  Co v e-shopu najdeš
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    ["Klubové oblečení", "NFC na zápas i mimo něj."],
+                    ["Trénink a volný čas", "Věci pro hráče i fanoušky."],
+                    ["Klubové doplňky", "Aktuální nabídka na Kastomi."],
+                  ].map(([title, text]) => (
+                    <a
+                      key={title}
+                      href="https://nfclichnov.kastomi.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group rounded-[24px] border border-white bg-white/75 p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="text-base font-extrabold tracking-[-0.035em] text-brand-900">
+                          {title}
+                        </div>
+                        <ArrowUpRight
+                          size={16}
+                          className="shrink-0 text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"
+                        />
+                      </div>
+                      <p className="mt-3 text-xs leading-5 text-ink-500">{text}</p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
@@ -687,55 +725,3 @@ function TeamRail({ teams }: { teams: Team[] }) {
   );
 }
 
-function TeamEditorialGrid({ teams }: { teams: Team[] }) {
-  return (
-    <div className="stagger-children grid auto-rows-[170px] gap-4 md:grid-cols-12 md:auto-rows-[190px]">
-      {teams.map((team, index) => {
-        const span =
-          index === 0
-            ? "md:col-span-7 md:row-span-2"
-            : index === 1
-              ? "md:col-span-5"
-              : index === 2
-                ? "md:col-span-5"
-                : "md:col-span-4";
-
-        return (
-          <Link
-            key={team.id}
-            to={`/tymy/${team.slug}`}
-            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-[#f4f1e9] p-6 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft ${span}`}
-          >
-            <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-500/10 transition duration-500 group-hover:scale-125" />
-            <div className="absolute bottom-0 right-0 h-24 w-24 rounded-tl-full border-l border-t border-brand-500/10 opacity-0 transition group-hover:opacity-100" />
-
-            <div className="relative flex h-full flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <ClubLogo
-                  src={team.logo_url}
-                  name={team.name}
-                  size={index === 0 ? "lg" : "sm"}
-                />
-                <ArrowUpRight
-                  className="text-ink-500 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-brand-500"
-                  size={18}
-                />
-              </div>
-
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  NFC Lichnov
-                </div>
-                <div
-                  className={`${index === 0 ? "text-4xl md:text-5xl" : "text-2xl"} mt-2 font-extrabold tracking-[-0.05em] text-brand-900`}
-                >
-                  {team.name}
-                </div>
-              </div>
-            </div>
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
