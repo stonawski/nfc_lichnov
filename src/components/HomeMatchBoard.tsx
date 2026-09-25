@@ -55,7 +55,7 @@ export function HomeMatchBoard({
     upcomingSummary?.kind === 'upcoming' ? upcomingSummary.match : null
 
   return (
-    <div className="content-enter overflow-hidden rounded-[34px] border border-white/70 bg-white/82 shadow-[0_24px_70px_rgba(24,53,42,.10)] backdrop-blur-xl">
+    <div className="content-enter overflow-hidden rounded-[34px] border border-white/70 bg-white/[.82] shadow-[0_24px_70px_rgba(24,53,42,.10)] backdrop-blur-xl">
       <div className="border-b border-sand-200/80 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
         <div className="flex items-center gap-3">
           <ClubLogo
