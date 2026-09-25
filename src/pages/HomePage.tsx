@@ -18,7 +18,7 @@ import {
   fetchTeams,
   fetchUpcomingMatches,
 } from "../lib/data";
-import { formatDate, formatMatchDate } from "../lib/format";
+import { formatDate, formatMatchDate, matchVenueMapUrl } from "../lib/format";
 import type { Match, Team } from "../lib/types";
 
 export function HomePage() {
@@ -572,11 +572,11 @@ function UpcomingMatchTile({
 }) {
   const teamName = match.team?.name || "NFC Lichnov";
   const to = `/tymy/${match.team?.slug ?? ""}`;
+  const venueLabel = match.pitch_name || `Hřiště — ${match.home_team_name}`;
 
   return (
-    <Link
-      to={to}
-      className={`group relative overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${
+    <article
+      className={`group relative flex flex-col overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${
         featured
           ? "border-brand-900 bg-brand-900 text-white"
           : "border-sand-200 bg-white text-ink-900"
@@ -591,8 +591,11 @@ function UpcomingMatchTile({
         />
       )}
 
-      <div
-        className={`relative flex h-full flex-col ${featured ? "p-7 sm:p-8" : large ? "p-6 sm:p-7" : "p-5"}`}
+      <Link
+        to={to}
+        className={`relative flex flex-1 flex-col ${
+          featured ? "p-7 pb-5 sm:p-8 sm:pb-5" : large ? "p-6 pb-4 sm:p-7 sm:pb-4" : "p-5 pb-4"
+        }`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -642,23 +645,35 @@ function UpcomingMatchTile({
             align="left"
           />
         </div>
+      </Link>
 
-        <div
-          className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-xs ${featured ? "text-white/55" : "text-ink-500"}`}
+      <div
+        className={`relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t px-5 py-3 text-xs ${
+          featured
+            ? "border-white/10 text-white/55"
+            : "border-sand-200 text-ink-500"
+        }`}
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <CalendarDays size={14} />
+          {formatMatchDate(match.playing_at)}
+        </span>
+        <a
+          href={matchVenueMapUrl(match)}
+          target="_blank"
+          rel="noreferrer"
+          className={`inline-flex items-center gap-1.5 font-bold transition ${
+            featured
+              ? "text-white/65 hover:text-white"
+              : "text-brand-700 hover:text-brand-500"
+          }`}
+          title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
         >
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarDays size={14} />
-            {formatMatchDate(match.playing_at)}
-          </span>
-          {match.pitch_name && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin size={14} />
-              {match.pitch_name}
-            </span>
-          )}
-        </div>
+          <MapPin size={14} />
+          <span className="max-w-[220px] truncate">{venueLabel}</span>
+        </a>
       </div>
-    </Link>
+    </article>
   );
 }
 
