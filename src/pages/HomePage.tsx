@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
 import { DataFade } from "../components/DataFade";
 import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
-import { MatchCarousel } from "../components/MatchCarousel";
+import { HomeMatchBoard } from "../components/HomeMatchBoard";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
 import { SectionHeading } from "../components/SectionHeading";
 import { StandingsTable } from "../components/StandingsTable";
@@ -18,8 +18,8 @@ import {
   fetchTeams,
   fetchUpcomingMatches,
 } from "../lib/data";
-import { formatDate, formatMatchDate } from "../lib/format";
-import type { Match, Team } from "../lib/types";
+import { formatDate } from "../lib/format";
+import type { TeamMatchSummary } from "../lib/types";
 
 export function HomePage() {
   const teamsQuery = useQuery({
@@ -66,18 +66,11 @@ export function HomePage() {
   const galleries = galleriesQuery.data ?? [];
   const galleryPreview = galleries.slice(0, 2);
   const upcomingMatches = upcomingQuery.data ?? [];
-  const featuredUpcoming =
-    upcomingMatches.find((match) => match.team?.slug === "muzi") ??
-    upcomingMatches[0];
-  const dorostUpcoming = upcomingMatches.find(
-    (match) => match.team?.slug === "dorost",
+  const upcomingSummaries: TeamMatchSummary[] = upcomingMatches.flatMap((match) =>
+    match.team
+      ? [{ team: match.team, match, kind: "upcoming" as const }]
+      : [],
   );
-  const lowerUpcoming = upcomingMatches
-    .filter(
-      (match) =>
-        match.id !== featuredUpcoming?.id && match.id !== dorostUpcoming?.id,
-    )
-    .slice(0, 3);
   const standings = standingsQuery.data ?? [];
   const lichnovIndex = standings.findIndex((row) =>
     /lichnov/i.test(row.team_name || row.club_name || ""),
@@ -108,10 +101,13 @@ export function HomePage() {
                 </span>
               </div>
 
-              <h1 className="max-w-[760px] text-[clamp(3.25rem,7vw,6.85rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
-                Fotbal v Lichnově.
-                <span className="mt-2 block text-brand-500">
-                  Od nejmenších až po muže.
+              <h1 className="max-w-[760px] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
+                <span className="block text-[clamp(3.25rem,7vw,6.85rem)]">
+                  Fotbal v Lichnově.
+                </span>
+                <span className="mt-2 block text-[clamp(2.9rem,5.35vw,5.55rem)] leading-[0.9] text-brand-500">
+                  <span className="block sm:whitespace-nowrap">Od nejmenších</span>
+                  <span className="block">až po muže.</span>
                 </span>
               </h1>
 
@@ -123,13 +119,13 @@ export function HomePage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/zapasy"
-                  className="inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(24,53,42,.16)] transition hover:-translate-y-0.5 hover:bg-brand-700"
+                  className="inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(24,53,42,.16)] transition-colors hover:bg-brand-700"
                 >
                   Zobrazit zápasy <ArrowRight size={16} />
                 </Link>
                 <Link
                   to="/tymy"
-                  className="inline-flex items-center gap-2 rounded-[16px] bg-white/80 px-5 py-3 text-sm font-semibold text-brand-900 ring-1 ring-sand-200 transition hover:-translate-y-0.5 hover:bg-white"
+                  className="inline-flex items-center gap-2 rounded-[16px] bg-white/80 px-5 py-3 text-sm font-semibold text-brand-900 ring-1 ring-sand-200 transition-colors hover:bg-white"
                 >
                   Naše týmy
                 </Link>
@@ -137,57 +133,57 @@ export function HomePage() {
 
               {!teamsQuery.isLoading && (
                 <DataFade className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
-                  <HeroStat
-                    value={String(teamsQuery.data?.length ?? 0)}
-                    label="aktivních týmů"
-                  />
-                  <HeroStat
-                    value={men?.season || "—"}
-                    label="aktuální sezóna"
-                  />
+                  <div className="pr-6">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
+                      {teamsQuery.data?.length ?? 0}
+                    </div>
+                    <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
+                      aktivních týmů
+                    </div>
+                  </div>
+                  <div className="border-l border-sand-200 pl-6">
+                    <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
+                      {men?.season || "—"}
+                    </div>
+                    <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
+                      aktuální sezóna
+                    </div>
+                  </div>
                 </DataFade>
               )}
             </div>
 
-            <div className="relative lg:pl-4">
-              <div className="mb-4 flex items-end justify-between gap-4 px-1">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                    Zápasy
-                  </div>
-                  <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
-                    Výsledky napříč kategoriemi
-                  </h2>
+            <div className="relative min-w-0 lg:pl-4">
+              <div className="mb-4 px-1">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                  Zápasy
                 </div>
-                <div className="hidden text-right text-[11px] leading-5 text-ink-500 sm:block">
-                  Přepínej mezi týmy
-                  <br />
-                  nebo přejeď prstem
-                </div>
+                <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
+                  Výsledky a program
+                </h2>
               </div>
 
-              {matchesQuery.isLoading ? (
-                <LoadingState rows={3} />
-              ) : matchesQuery.isError ? (
+              {matchesQuery.isLoading || upcomingQuery.isLoading ? (
+                <LoadingState rows={5} />
+              ) : matchesQuery.isError || upcomingQuery.isError ? (
                 <EmptyState
                   title="Data se nepodařilo načíst"
                   text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
                 />
               ) : (
                 <DataFade>
-                  <MatchCarousel items={matchesQuery.data ?? []} />
+                  <HomeMatchBoard
+                    results={matchesQuery.data ?? []}
+                    upcoming={upcomingSummaries}
+                  />
                 </DataFade>
               )}
             </div>
           </div>
-
-          {(teamsQuery.data?.length ?? 0) > 0 && (
-            <DataFade>
-              <TeamRail teams={teamsQuery.data ?? []} />
-            </DataFade>
-          )}
         </div>
       </section>
+
+      
 
       <section className="relative overflow-hidden bg-sand-100 px-5 py-20 md:px-8 md:py-28">
         <div className="relative mx-auto max-w-[1240px]">
@@ -281,60 +277,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Program"
-            title="Co nás čeká"
-            text="Jeden nejbližší zápas z každé kategorie."
-            to="/zapasy"
-            linkLabel="Celý program"
-          />
-
-          {upcomingQuery.isLoading ? (
-            <LoadingState rows={3} />
-          ) : featuredUpcoming ? (
-            <DataFade className="stagger-children grid gap-4 lg:grid-cols-12">
-              <UpcomingMatchTile
-                match={featuredUpcoming}
-                featured
-                large
-                className="min-h-[290px] lg:col-span-7"
-              />
-
-              {dorostUpcoming && (
-                <UpcomingMatchTile
-                  match={dorostUpcoming}
-                  large
-                  className="min-h-[290px] lg:col-span-5"
-                />
-              )}
-
-              {lowerUpcoming.map((match) => (
-                <UpcomingMatchTile
-                  key={match.id}
-                  match={match}
-                  className={
-                    lowerUpcoming.length >= 3
-                      ? "min-h-[185px] lg:col-span-4"
-                      : lowerUpcoming.length === 2
-                        ? "min-h-[185px] lg:col-span-6"
-                        : "min-h-[185px] lg:col-span-12"
-                  }
-                />
-              ))}
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Nejbližší zápasy zatím nejsou k dispozici"
-              text="Sekce se naplní automaticky z tabulky matches."
-              />
-            </DataFade>
-          )}
-        </div>
-      </section>
-
       {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
         <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
           <div className="mx-auto max-w-[1240px]">
@@ -391,34 +333,92 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 md:px-8 md:py-28">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Od mužů po nejmenší"
-            title="Jeden klub. Šest týmů."
-            text="Každá kategorie má vlastní prostor pro zápasy, hráče a statistiky."
-            to="/tymy"
-            linkLabel="Přehled týmů"
-          />
+      
 
-          {teamsQuery.isLoading ? (
-            <LoadingState rows={4} />
-          ) : teamsQuery.data?.length ? (
-            <DataFade>
-              <TeamEditorialGrid teams={teamsQuery.data} />
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Týmy se nepodařilo načíst"
-              text="Po připojení Supabase se zde zobrazí všechny aktivní kategorie."
-              />
-            </DataFade>
-          )}
+      
+      <section className="border-y border-sand-200 bg-[#f4f7f2] py-16 md:py-24">
+        <div className="mx-auto max-w-[1480px] px-5 md:px-8">
+          <div className="grid gap-10 lg:grid-cols-[.62fr_1.38fr] lg:items-center lg:gap-14">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
+                <ShoppingBag size={15} />
+                Klubový e-shop
+              </div>
+              <h2 className="mt-4 text-4xl font-extrabold leading-[.96] tracking-[-0.055em] text-brand-900 sm:text-5xl md:text-6xl">
+                NFC nosíme i mimo hřiště.
+              </h2>
+              <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
+                Fanouškovské doplňky a klubové oblečení NFC Lichnov. Vybrali jsme
+                několik kousků z aktuální nabídky — kompletní sortiment najdeš
+                v oficiálním e-shopu.
+              </p>
+              <a
+                href="https://nfclichnov.kastomi.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-700"
+              >
+                Prohlédnout celý e-shop <ArrowUpRight size={16} />
+              </a>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  title: "Fanouškovská šála",
+                  image: "/shop/nfc-scarf.jpg",
+                  href: "https://nfclichnov.kastomi.com/3894-pletena-zimni-sala",
+                },
+                {
+                  title: "Tréninkové kalhoty",
+                  image: "/shop/nfc-training-pants.jpg",
+                  href: "https://nfclichnov.kastomi.com/4356-teplakova-souprava-teplaky",
+                },
+                {
+                  title: "Polo NFC Lichnov",
+                  image: "/shop/nfc-polo.jpg",
+                  href: "https://nfclichnov.kastomi.com/3985-polotricko-s-prouzky",
+                },
+              ].map((product) => (
+                <a
+                  key={product.title}
+                  href={product.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group overflow-hidden rounded-[30px] border border-sand-200 bg-white shadow-[0_14px_38px_rgba(24,53,42,.06)]"
+                  aria-label={`Otevřít ${product.title} v e-shopu`}
+                >
+                  <div className="aspect-square overflow-hidden bg-white p-4 sm:p-5">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      loading="lazy"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <div className="border-t border-sand-200 px-5 py-4">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-brand-500">
+                      NFC Lichnov
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-3">
+                      <div className="text-base font-extrabold tracking-[-0.035em] text-brand-900">
+                        {product.title}
+                      </div>
+                      <ArrowUpRight
+                        size={16}
+                        className="shrink-0 text-ink-500 transition-colors group-hover:text-brand-500"
+                      />
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+
+<section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
             <div>
@@ -487,6 +487,9 @@ export function HomePage() {
         </div>
       </section>
 
+      
+
+
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
@@ -521,221 +524,3 @@ export function HomePage() {
   );
 }
 
-function UpcomingMatchTile({
-  match,
-  featured = false,
-  large = false,
-  className = "",
-}: {
-  match: Match & { team?: Team };
-  featured?: boolean;
-  large?: boolean;
-  className?: string;
-}) {
-  const teamName = match.team?.name || "NFC Lichnov";
-  const to = `/tymy/${match.team?.slug ?? ""}`;
-
-  return (
-    <Link
-      to={to}
-      className={`group relative overflow-hidden rounded-[30px] border transition duration-300 hover:-translate-y-1 hover:shadow-soft ${
-        featured
-          ? "border-brand-900 bg-brand-900 text-white"
-          : "border-sand-200 bg-white text-ink-900"
-      } ${className}`}
-    >
-      {featured && (
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-[0.08]"
-        />
-      )}
-
-      <div
-        className={`relative flex h-full flex-col ${featured ? "p-7 sm:p-8" : large ? "p-6 sm:p-7" : "p-5"}`}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div
-              className={`text-[10px] font-bold uppercase tracking-[0.17em] ${featured ? "text-white/45" : "text-brand-500"}`}
-            >
-              {teamName}
-            </div>
-            <div
-              className={`mt-1 text-xs font-semibold ${featured ? "text-white/60" : "text-ink-500"}`}
-            >
-              {formatMatchDate(match.playing_at)}
-            </div>
-          </div>
-          <ArrowUpRight
-            size={featured ? 20 : 16}
-            className={`shrink-0 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? "text-white/55 group-hover:text-white" : "text-ink-500 group-hover:text-brand-500"}`}
-          />
-        </div>
-
-        <div
-          className={`my-auto grid grid-cols-[1fr_auto_1fr] items-center ${featured ? "gap-6" : large ? "gap-5" : "gap-3"}`}
-        >
-          <MatchClub
-            name={match.home_team_name}
-            logo={match.home_team_logo}
-            featured={featured}
-            large={large}
-            align="right"
-          />
-
-          <div
-            className={`rounded-full font-black uppercase tracking-[0.12em] ${
-              featured
-                ? "bg-white/[0.08] px-3 py-2 text-[11px] text-white/60 ring-1 ring-white/10"
-                : "bg-sand-100 px-2.5 py-1.5 text-[9px] text-ink-500"
-            }`}
-          >
-            vs
-          </div>
-
-          <MatchClub
-            name={match.away_team_name}
-            logo={match.away_team_logo}
-            featured={featured}
-            large={large}
-            align="left"
-          />
-        </div>
-
-        <div
-          className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-xs ${featured ? "text-white/55" : "text-ink-500"}`}
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarDays size={14} />
-            {formatMatchDate(match.playing_at)}
-          </span>
-          {match.pitch_name && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin size={14} />
-              {match.pitch_name}
-            </span>
-          )}
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function MatchClub({
-  name,
-  logo,
-  featured,
-  large,
-  align,
-}: {
-  name: string;
-  logo: string | null;
-  featured: boolean;
-  large: boolean;
-  align: "left" | "right";
-}) {
-  return (
-    <div
-      className={`flex min-w-0 items-center gap-3 ${align === "right" ? "flex-row-reverse text-right" : ""}`}
-    >
-      <ClubLogo
-        src={logo}
-        name={name}
-        size={featured ? "lg" : large ? "md" : "sm"}
-      />
-      <div
-        className={`line-clamp-2 font-extrabold leading-[1.05] tracking-[-0.03em] ${featured ? "text-xl sm:text-2xl" : large ? "text-base sm:text-lg" : "text-sm"}`}
-      >
-        {name}
-      </div>
-    </div>
-  );
-}
-
-function HeroStat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="border-r border-sand-200 px-3 first:pl-0 last:border-r-0 sm:px-5">
-      <div className="truncate text-base font-black tracking-[-0.04em] text-brand-900 sm:text-xl">
-        {value}
-      </div>
-      <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500 sm:text-[10px]">
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function TeamRail({ teams }: { teams: Team[] }) {
-  return (
-    <div className="mt-3 overflow-hidden rounded-[22px] border border-sand-200 bg-white/45 backdrop-blur sm:mt-5">
-      <div className="flex overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {teams.map((team) => (
-          <Link
-            key={team.id}
-            to={`/tymy/${team.slug}`}
-            className="group flex shrink-0 items-center gap-2 rounded-[14px] px-3 py-2 text-xs font-semibold text-ink-500 transition hover:bg-white hover:text-brand-900 sm:px-4"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-500/35 transition group-hover:bg-brand-500" />
-            {team.name}
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TeamEditorialGrid({ teams }: { teams: Team[] }) {
-  return (
-    <div className="stagger-children grid auto-rows-[170px] gap-4 md:grid-cols-12 md:auto-rows-[190px]">
-      {teams.map((team, index) => {
-        const span =
-          index === 0
-            ? "md:col-span-7 md:row-span-2"
-            : index === 1
-              ? "md:col-span-5"
-              : index === 2
-                ? "md:col-span-5"
-                : "md:col-span-4";
-
-        return (
-          <Link
-            key={team.id}
-            to={`/tymy/${team.slug}`}
-            className={`group relative overflow-hidden rounded-5xl border border-sand-200 bg-[#f4f1e9] p-6 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft ${span}`}
-          >
-            <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-500/10 transition duration-500 group-hover:scale-125" />
-            <div className="absolute bottom-0 right-0 h-24 w-24 rounded-tl-full border-l border-t border-brand-500/10 opacity-0 transition group-hover:opacity-100" />
-
-            <div className="relative flex h-full flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <ClubLogo
-                  src={team.logo_url}
-                  name={team.name}
-                  size={index === 0 ? "lg" : "sm"}
-                />
-                <ArrowUpRight
-                  className="text-ink-500 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-brand-500"
-                  size={18}
-                />
-              </div>
-
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  NFC Lichnov
-                </div>
-                <div
-                  className={`${index === 0 ? "text-4xl md:text-5xl" : "text-2xl"} mt-2 font-extrabold tracking-[-0.05em] text-brand-900`}
-                >
-                  {team.name}
-                </div>
-              </div>
-            </div>
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
