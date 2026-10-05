@@ -90,13 +90,9 @@ export function HomePage() {
 
         <div className="relative mx-auto max-w-[1240px]">
           <div className="home-homepage-hero-intro max-w-[780px] py-5 sm:py-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-              NFC Lichnov
-            </div>
-
-            <h1 className="home-homepage-hero-title mt-6 text-[clamp(3.25rem,7vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
-              Fotbal v Lichnově.
+            <h1 className="home-homepage-hero-title text-[clamp(3.25rem,7vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em]">
+              <span className="block text-brand-900">Fotbal v</span>
+              <span className="block text-brand-500">Lichnově.</span>
             </h1>
 
             <p className="home-homepage-hero-copy mt-6 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
