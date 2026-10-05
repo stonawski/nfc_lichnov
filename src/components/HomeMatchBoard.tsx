@@ -1,5 +1,6 @@
 import { ArrowUpRight, MapPin } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   formatMatchDate,
   formatMatchDay,
@@ -7,6 +8,7 @@ import {
   matchScore,
   matchVenueMapUrl,
 } from '../lib/format'
+import { withReturnPath } from '../lib/navigationState'
 import type { Match, Team, TeamMatchSummary } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 
@@ -127,7 +129,13 @@ function ResultCard({ match }: { match: Match | null }) {
   )
 
   return (
-    <article className="home-match-card min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
+    <article className="home-match-card group relative min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur transition-shadow hover:shadow-[0_26px_68px_rgba(24,53,42,.12)] lg:col-span-7 sm:p-7">
+      <Link
+        to={withReturnPath(`/zapasy/${match.id}`, '/')}
+        className="absolute inset-0 z-[1] rounded-[32px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        aria-label={`Otevřít detail zápasu ${match.home_team_name} – ${match.away_team_name}`}
+      />
+      <div className="pointer-events-none relative z-[2]">
       <div className="flex items-start justify-between gap-4">
         <CardEyebrow label="Poslední výsledek" />
         <div className="text-right text-[10px] leading-4 text-ink-500">
@@ -154,6 +162,7 @@ function ResultCard({ match }: { match: Match | null }) {
       <div className="home-match-card-footer mt-8 border-t border-sand-200 pt-4 text-xs font-semibold text-ink-500">
         {formatMatchDate(match.playing_at)}
       </div>
+      </div>
     </article>
   )
 }
@@ -171,13 +180,18 @@ function UpcomingCard({ match }: { match: Match | null }) {
   }
 
   return (
-    <article className="home-match-card relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
+    <article className="home-match-card group relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] transition-shadow hover:shadow-[0_28px_72px_rgba(24,53,42,.22)] lg:col-span-5 sm:p-7">
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(circle_at_85%_12%,rgba(0,146,63,.34),transparent_34%)]"
       />
+      <Link
+        to={withReturnPath(`/zapasy/${match.id}`, '/')}
+        className="absolute inset-0 z-[1] rounded-[32px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-inset"
+        aria-label={`Otevřít detail zápasu ${match.home_team_name} – ${match.away_team_name}`}
+      />
 
-      <div className="relative">
+      <div className="pointer-events-none relative z-[2]">
         <div className="flex items-start justify-between gap-4">
           <CardEyebrow label="Nadcházející zápas" dark />
           <div className="text-right text-[10px] leading-4 text-white/45">
@@ -221,7 +235,7 @@ function UpcomingCard({ match }: { match: Match | null }) {
             href={matchVenueMapUrl(match)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-[11px] bg-white/[0.08] px-3 py-2 text-[10px] font-bold text-white/80 transition-colors hover:bg-white hover:text-brand-900"
+            className="pointer-events-auto relative z-[3] inline-flex items-center gap-1.5 rounded-[11px] bg-white/[0.08] px-3 py-2 text-[10px] font-bold text-white/80 transition-colors hover:bg-white hover:text-brand-900"
             title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
           >
             <MapPin size={12} />
