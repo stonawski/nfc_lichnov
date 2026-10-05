@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react'
+import { ArrowUpRight, MapPin } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import {
   formatMatchDate,
@@ -55,26 +55,22 @@ export function HomeMatchBoard({
     upcomingSummary?.kind === 'upcoming' ? upcomingSummary.match : null
 
   return (
-    <div className="content-enter overflow-hidden rounded-[34px] border border-white/70 bg-white/[.82] shadow-[0_24px_70px_rgba(24,53,42,.10)] backdrop-blur-xl">
-      <div className="border-b border-sand-200/80 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
-        <div className="flex items-center gap-3">
-          <ClubLogo
-            src={activeTeam.logo_url}
-            name={activeTeam.name}
-            size="md"
-          />
-          <div className="min-w-0">
-            <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-500">
-              Zápasový přehled
-            </div>
-            <div className="mt-1 truncate text-xl font-extrabold tracking-[-0.04em] text-brand-900">
+    <div className="content-enter">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-500">
+            Kategorie
+          </div>
+          <div className="mt-1 flex items-center gap-2.5">
+            <ClubLogo src={activeTeam.logo_url} name={activeTeam.name} size="sm" />
+            <div className="text-lg font-extrabold tracking-[-0.035em] text-brand-900">
               {activeTeam.name}
             </div>
           </div>
         </div>
 
         <div
-          className="mt-4 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex max-w-full gap-1.5 overflow-x-auto rounded-[16px] border border-white/70 bg-white/70 p-1.5 shadow-[0_8px_24px_rgba(24,53,42,.05)] backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label="Výběr týmu"
         >
@@ -88,10 +84,10 @@ export function HomeMatchBoard({
                 role="tab"
                 aria-selected={active}
                 onClick={() => setTeamId(team.id)}
-                className={`shrink-0 rounded-[11px] px-3 py-2 text-[11px] font-bold transition-colors ${
+                className={`shrink-0 rounded-[11px] px-3.5 py-2 text-[11px] font-bold transition-colors ${
                   active
                     ? 'bg-brand-900 text-white'
-                    : 'bg-sand-100/80 text-ink-500 hover:bg-sand-200/80 hover:text-brand-900'
+                    : 'text-ink-500 hover:bg-sand-100 hover:text-brand-900'
                 }`}
               >
                 {team.short_name || team.name}
@@ -101,157 +97,180 @@ export function HomeMatchBoard({
         </div>
       </div>
 
-      <div className="divide-y divide-sand-200/80">
-        <MatchRow
-          label="Poslední výsledek"
-          match={resultMatch}
-          kind="result"
-        />
-        <MatchRow
-          label="Další zápas"
-          match={upcomingMatch}
-          kind="upcoming"
-          venueLink
-        />
+      <div className="grid gap-4 lg:grid-cols-12">
+        <ResultCard match={resultMatch} />
+        <UpcomingCard match={upcomingMatch} />
       </div>
     </div>
   )
 }
 
-function MatchRow({
-  label,
-  match,
-  kind,
-  venueLink = false,
-}: {
-  label: string
-  match: Match | null
-  kind: 'result' | 'upcoming'
-  venueLink?: boolean
-}) {
+function ResultCard({ match }: { match: Match | null }) {
   if (!match) {
     return (
-      <div className="grid min-h-[150px] gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[130px_1fr] lg:items-center">
-        <div>
-          <div className="text-[9px] font-bold uppercase tracking-[0.17em] text-brand-500">
-            {label}
-          </div>
+      <article className="min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
+        <CardEyebrow label="Poslední výsledek" />
+        <div className="mt-20 rounded-[22px] bg-sand-50 px-5 py-7 text-center text-sm text-ink-500">
+          Pro tento tým zatím nemáme poslední výsledek.
         </div>
-        <div className="rounded-[20px] bg-sand-50 px-4 py-5 text-sm text-ink-500">
-          {kind === 'result'
-            ? 'Pro tento tým zatím nemáme poslední výsledek.'
-            : 'Pro tento tým zatím nemáme další zápas.'}
-        </div>
-      </div>
+      </article>
     )
   }
 
-  const score =
-    kind === 'result'
-      ? matchScore(
-          match.score_home,
-          match.score_away,
-          match.manual_override,
-          match.manual_score_home,
-          match.manual_score_away,
-          match.playing_at,
-        )
-      : null
+  const score = matchScore(
+    match.score_home,
+    match.score_away,
+    match.manual_override,
+    match.manual_score_home,
+    match.manual_score_away,
+    match.playing_at,
+  )
 
   return (
-    <div className="px-5 py-5 sm:px-6">
-      <div className="grid gap-4 lg:grid-cols-[130px_1fr_auto] lg:items-center">
-        <div>
-          <div className="text-[9px] font-bold uppercase tracking-[0.17em] text-brand-500">
-            {label}
+    <article className="min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
+      <div className="flex items-start justify-between gap-4">
+        <CardEyebrow label="Poslední výsledek" />
+        <div className="text-right text-[10px] leading-4 text-ink-500">
+          {match.competition_name && <div>{match.competition_name}</div>}
+          {match.round && <div>{match.round}</div>}
+        </div>
+      </div>
+
+      <div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-7">
+        <ClubSide name={match.home_team_name} logo={match.home_team_logo} />
+
+        <div className="min-w-[108px] text-center">
+          <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+            Konečný stav
           </div>
-          <div className="mt-1.5 text-[11px] font-semibold text-ink-500">
-            {formatMatchDate(match.playing_at)}
+          <div className="mt-2 text-5xl font-black tracking-[-0.075em] text-brand-900 sm:text-6xl">
+            {score ?? '—'}
           </div>
         </div>
 
-        <div className="grid min-w-0 grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4">
-          <TeamInline
-            name={match.home_team_name}
-            logo={match.home_team_logo}
-            align="right"
-          />
+        <ClubSide name={match.away_team_name} logo={match.away_team_logo} />
+      </div>
 
-          <div className="min-w-[78px] text-center">
-            {kind === 'result' ? (
-              <div className="text-4xl font-black tracking-[-0.065em] text-brand-900">
-                {score ?? '—'}
-              </div>
-            ) : (
-              <>
-                <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
-                  Výkop
-                </div>
-                <div className="mt-1 text-2xl font-black tracking-[-0.055em] text-brand-900">
-                  {formatMatchDay(match.playing_at)}
-                </div>
-                <div className="mt-0.5 text-xs font-bold text-brand-500">
-                  {formatMatchTime(match.playing_at)}
-                </div>
-              </>
-            )}
-          </div>
+      <div className="mt-8 border-t border-sand-200 pt-4 text-xs font-semibold text-ink-500">
+        {formatMatchDate(match.playing_at)}
+      </div>
+    </article>
+  )
+}
 
-          <TeamInline
-            name={match.away_team_name}
-            logo={match.away_team_logo}
-            align="left"
-          />
+function UpcomingCard({ match }: { match: Match | null }) {
+  if (!match) {
+    return (
+      <article className="min-h-[330px] rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
+        <CardEyebrow label="Nadcházející zápas" dark />
+        <div className="mt-20 rounded-[22px] bg-white/[0.06] px-5 py-7 text-center text-sm text-white/60">
+          Pro tento tým zatím nemáme další zápas.
         </div>
+      </article>
+    )
+  }
 
-        <div className="flex items-center justify-between gap-3 lg:w-[150px] lg:flex-col lg:items-end">
-          <div className="text-right text-[10px] leading-4 text-ink-500">
+  return (
+    <article className="relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_85%_12%,rgba(0,146,63,.34),transparent_34%)]"
+      />
+
+      <div className="relative">
+        <div className="flex items-start justify-between gap-4">
+          <CardEyebrow label="Nadcházející zápas" dark />
+          <div className="text-right text-[10px] leading-4 text-white/45">
             {match.competition_name && <div>{match.competition_name}</div>}
             {match.round && <div>{match.round}</div>}
           </div>
+        </div>
 
-          {venueLink && (
-            <a
-              href={matchVenueMapUrl(match)}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-[11px] bg-sand-100 px-3 py-2 text-[10px] font-bold text-brand-900 transition-colors hover:bg-brand-900 hover:text-white"
-              title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
-            >
-              <MapPin size={12} />
-              Hřiště
-            </a>
-          )}
+        <div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+          <ClubSide
+            name={match.home_team_name}
+            logo={match.home_team_logo}
+            dark
+          />
+
+          <div className="min-w-[90px] text-center">
+            <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">
+              Výkop
+            </div>
+            <div className="mt-1 text-3xl font-black tracking-[-0.06em] text-white">
+              {formatMatchDay(match.playing_at)}
+            </div>
+            <div className="mt-1 text-sm font-bold text-brand-500">
+              {formatMatchTime(match.playing_at)}
+            </div>
+          </div>
+
+          <ClubSide
+            name={match.away_team_name}
+            logo={match.away_team_logo}
+            dark
+          />
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+          <div className="text-xs font-semibold text-white/55">
+            {formatMatchDate(match.playing_at)}
+          </div>
+
+          <a
+            href={matchVenueMapUrl(match)}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-[11px] bg-white/[0.08] px-3 py-2 text-[10px] font-bold text-white/80 transition-colors hover:bg-white hover:text-brand-900"
+            title={`Otevřít hřiště domácího týmu ${match.home_team_name} v Google Maps`}
+          >
+            <MapPin size={12} />
+            Hřiště
+            <ArrowUpRight size={12} />
+          </a>
         </div>
       </div>
+    </article>
+  )
+}
+
+function CardEyebrow({
+  label,
+  dark = false,
+}: {
+  label: string
+  dark?: boolean
+}) {
+  return (
+    <div
+      className={`text-[10px] font-bold uppercase tracking-[0.18em] ${
+        dark ? 'text-white/55' : 'text-brand-500'
+      }`}
+    >
+      {label}
     </div>
   )
 }
 
-function TeamInline({
+function ClubSide({
   name,
   logo,
-  align,
+  dark = false,
 }: {
   name: string
   logo: string | null
-  align: 'left' | 'right'
+  dark?: boolean
 }) {
   return (
-    <div
-      className={`flex min-w-0 items-center gap-2.5 ${
-        align === 'right' ? 'justify-end text-right' : 'justify-start text-left'
-      }`}
-    >
-      {align === 'left' && (
-        <ClubLogo src={logo} name={name} size="sm" />
-      )}
-      <div className="line-clamp-2 text-xs font-extrabold leading-tight text-ink-900 sm:text-sm">
+    <div className="flex min-w-0 flex-col items-center gap-3 text-center">
+      <ClubLogo src={logo} name={name} size="lg" />
+      <div
+        className={`line-clamp-2 min-h-[38px] max-w-[150px] text-sm font-extrabold leading-[1.15] ${
+          dark ? 'text-white' : 'text-ink-900'
+        }`}
+      >
         {name}
       </div>
-      {align === 'right' && (
-        <ClubLogo src={logo} name={name} size="sm" />
-      )}
     </div>
   )
 }
