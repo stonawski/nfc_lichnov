@@ -242,7 +242,7 @@ img {
 @media (min-width: 640px) {
   .persistent-hero-layer {
     top: -88px;
-    height: min(900px, 100svh);
+    height: 100svh;
   }
 }
 
@@ -268,6 +268,10 @@ img {
 
 .site-hero-frame {
   min-height: min(900px, 100svh);
+}
+
+.home-homepage-hero {
+  min-height: 100svh;
 }
 
 @media (max-width: 639px) {
