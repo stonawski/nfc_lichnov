@@ -85,38 +85,60 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-10 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-14 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
+      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-12 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-16 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto max-w-[1240px]">
-          <div className="grid gap-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12">
-            <div className="py-6 sm:py-10 lg:py-14">
-              <div className="mb-6 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-                  NFC Lichnov
-                </span>
-                <span className="rounded-full border border-sand-200 bg-sand-100/70 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-ink-500 backdrop-blur">
-                  fotbal napříč generacemi
-                </span>
+          <div className="max-w-[780px] py-5 sm:py-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+              NFC Lichnov
+            </div>
+
+            <h1 className="mt-6 text-[clamp(3.25rem,7vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
+              Fotbal v Lichnově.
+            </h1>
+
+            <p className="mt-6 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
+              Poslední výsledky a nejbližší zápasy všech kategorií na jednom místě.
+            </p>
+          </div>
+
+          <div className="mt-3">
+            <div className="mb-4 px-1">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                Zápasový přehled
               </div>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
+                Výsledky a program
+              </h2>
+            </div>
 
-              <h1 className="max-w-[760px] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
-                <span className="block text-[clamp(3.25rem,7vw,6.85rem)]">
-                  Fotbal v Lichnově.
-                </span>
-                <span className="mt-2 block text-[clamp(2.9rem,5.35vw,5.55rem)] leading-[0.9] text-brand-500">
-                  <span className="block sm:whitespace-nowrap">Od nejmenších</span>
-                  <span className="block">až po muže.</span>
-                </span>
-              </h1>
+            {matchesQuery.isLoading || upcomingQuery.isLoading ? (
+              <LoadingState rows={5} />
+            ) : matchesQuery.isError || upcomingQuery.isError ? (
+              <EmptyState
+                title="Data se nepodařilo načíst"
+                text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
+              />
+            ) : (
+              <DataFade>
+                <HomeMatchBoard
+                  results={matchesQuery.data ?? []}
+                  upcoming={upcomingSummaries}
+                />
+              </DataFade>
+            )}
+          </div>
 
-              <p className="mt-7 max-w-[590px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
-                Výsledky, zápasy, hráči a život klubu na jednom místě. Přehledně
-                pro fanoušky, rodiče i všechny, kteří jsou součástí NFC.
-              </p>
+          <div className="mt-9">
+            <div
+              className="h-px w-full bg-gradient-to-r from-brand-900/30 via-brand-900/10 to-transparent"
+              aria-hidden="true"
+            />
 
-              <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   to="/zapasy"
                   className="inline-flex items-center gap-2 rounded-[16px] bg-brand-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(24,53,42,.16)] transition-colors hover:bg-brand-700"
@@ -132,8 +154,8 @@ export function HomePage() {
               </div>
 
               {!teamsQuery.isLoading && (
-                <DataFade className="mt-10 grid max-w-[430px] grid-cols-2 border-t border-sand-200 pt-5">
-                  <div className="pr-6">
+                <DataFade className="grid min-w-[270px] grid-cols-2 divide-x divide-sand-200">
+                  <div className="pr-5">
                     <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
                       {teamsQuery.data?.length ?? 0}
                     </div>
@@ -141,7 +163,7 @@ export function HomePage() {
                       aktivních týmů
                     </div>
                   </div>
-                  <div className="border-l border-sand-200 pl-6">
+                  <div className="pl-5">
                     <div className="text-xl font-black tracking-[-0.04em] text-brand-900">
                       {men?.season || "—"}
                     </div>
@@ -149,33 +171,6 @@ export function HomePage() {
                       aktuální sezóna
                     </div>
                   </div>
-                </DataFade>
-              )}
-            </div>
-
-            <div className="relative min-w-0 lg:pl-4">
-              <div className="mb-4 px-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  Zápasy
-                </div>
-                <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
-                  Výsledky a program
-                </h2>
-              </div>
-
-              {matchesQuery.isLoading || upcomingQuery.isLoading ? (
-                <LoadingState rows={5} />
-              ) : matchesQuery.isError || upcomingQuery.isError ? (
-                <EmptyState
-                  title="Data se nepodařilo načíst"
-                  text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
-                />
-              ) : (
-                <DataFade>
-                  <HomeMatchBoard
-                    results={matchesQuery.data ?? []}
-                    upcoming={upcomingSummaries}
-                  />
                 </DataFade>
               )}
             </div>
