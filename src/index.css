@@ -277,6 +277,84 @@ img {
 }
 
 
+/* Keep the homepage hero fully visible on common desktop monitor heights
+   without changing the roomier composition on tall displays. */
+@media (min-width: 1024px) and (max-height: 1100px) {
+  .home-homepage-hero {
+    padding-bottom: 1.75rem;
+  }
+
+  .home-homepage-hero-intro {
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+  }
+
+  .home-homepage-hero-title {
+    margin-top: 1rem;
+    font-size: clamp(3.5rem, 6.25vw, 5.8rem);
+  }
+
+  .home-homepage-hero-copy {
+    margin-top: 1rem;
+  }
+
+  .home-homepage-match-area {
+    margin-top: 0.5rem;
+  }
+
+  .home-match-board-switcher {
+    margin-bottom: 0.75rem;
+  }
+
+  .home-match-card {
+    min-height: 280px;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .home-match-card-main {
+    margin-top: 1.5rem;
+  }
+
+  .home-match-card-footer {
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .home-homepage-hero-footer {
+    margin-top: 1.25rem;
+  }
+
+  .home-homepage-hero-actions {
+    margin-top: 1rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 900px) {
+  .home-homepage-hero {
+    padding-bottom: 1rem;
+  }
+
+  .home-homepage-hero-intro {
+    padding-top: 0.25rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .home-homepage-hero-title {
+    font-size: clamp(3.2rem, 5.6vw, 5rem);
+  }
+
+  .home-match-card {
+    min-height: 250px;
+  }
+
+  .home-match-card-main,
+  .home-match-card-footer {
+    margin-top: 1rem;
+  }
+}
+
+
 .route-content-enter {
   animation: route-content-enter 480ms var(--motion-ease) both;
   will-change: opacity;
