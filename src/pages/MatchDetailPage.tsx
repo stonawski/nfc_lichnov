@@ -134,10 +134,10 @@ export function MatchDetailPage() {
         description={`Detail zápasu ${match.home_team_name} – ${match.away_team_name}: termín, výsledek, sestava a průběh utkání.`}
         canonicalPath={`/zapasy/${match.id}`}
       />
-      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-12 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-16 md:pt-[144px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-8 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-10 md:pt-[144px]">
         <HeroFieldBackdrop />
 
-        <div className="relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col justify-center">
+        <div className="relative mx-auto w-full max-w-[1180px]">
           <Link
             to={backTo}
             className="inline-flex items-center gap-2 text-sm font-bold text-ink-500 transition hover:text-brand-900"
@@ -155,7 +155,7 @@ export function MatchDetailPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-14 md:px-8 md:py-20">
+      <section className="bg-white px-5 py-10 md:px-8 md:py-12">
         <div className="mx-auto grid max-w-[1180px] gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
           <div className="overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
             <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
@@ -230,7 +230,7 @@ function MatchHero({
   )
 
   return (
-    <div className="relative mt-8 overflow-hidden rounded-[40px] bg-brand-900 px-6 py-8 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)] sm:px-9 sm:py-10 lg:px-12 lg:py-12">
+    <div className="relative mt-6 overflow-hidden rounded-[32px] bg-brand-900 px-5 py-6 text-white shadow-[0_24px_68px_rgba(24,53,42,.15)] sm:px-7 sm:py-7 lg:px-9 lg:py-8">
       <img
         src="/hero-lichnov-field.webp"
         alt=""
@@ -245,7 +245,7 @@ function MatchHero({
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
           <HeroTeam name={match.home_team_name} logo={homeLogo} align="right" />
 
           <div className="text-center">
@@ -260,7 +260,7 @@ function MatchHero({
               </div>
             ) : (
               <div>
-                <div className="text-5xl font-black tracking-[-0.07em] sm:text-6xl">
+                <div className="text-4xl font-black tracking-[-0.07em] sm:text-5xl">
                   {score ?? match.final_score ?? '—'}
                 </div>
                 {(match.penalty_score_home != null || match.penalty_score_away != null) && (
@@ -275,7 +275,7 @@ function MatchHero({
           <HeroTeam name={match.away_team_name} logo={awayLogo} align="left" />
         </div>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-xs text-white/55">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-xs text-white/55">
           {match.competition_name && (
             <span className="inline-flex items-center gap-1.5">
               <Trophy size={14} />
@@ -325,7 +325,7 @@ function HeroTeam({
         reverse ? 'flex-row-reverse text-right' : 'text-left'
       }`}
     >
-      <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-[24px] bg-white/95 ring-1 ring-white/20 sm:h-24 sm:w-24">
+      <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-[20px] bg-white/95 ring-1 ring-white/20 sm:h-20 sm:w-20">
         {logo ? (
           <img src={logo} alt="" className="h-full w-full object-contain p-3" />
         ) : (
@@ -333,7 +333,7 @@ function HeroTeam({
         )}
       </div>
 
-      <div className="text-xl font-black leading-tight tracking-[-0.045em] sm:text-3xl">
+      <div className="text-lg font-black leading-tight tracking-[-0.045em] sm:text-2xl">
         {name}
       </div>
     </div>
