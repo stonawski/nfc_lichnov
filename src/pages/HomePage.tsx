@@ -85,35 +85,26 @@ export function HomePage() {
 
   return (
     <main>
-      <section className="site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-12 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-16 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
+      <section className="home-homepage-hero site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-12 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-16 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto max-w-[1240px]">
-          <div className="max-w-[780px] py-5 sm:py-8">
+          <div className="home-homepage-hero-intro max-w-[780px] py-5 sm:py-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/15 bg-white/65 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
               NFC Lichnov
             </div>
 
-            <h1 className="mt-6 text-[clamp(3.25rem,7vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
+            <h1 className="home-homepage-hero-title mt-6 text-[clamp(3.25rem,7vw,6.7rem)] font-black leading-[0.86] tracking-[-0.075em] text-brand-900">
               Fotbal v Lichnově.
             </h1>
 
-            <p className="mt-6 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
+            <p className="home-homepage-hero-copy mt-6 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
               Poslední výsledky a nejbližší zápasy všech kategorií na jednom místě.
             </p>
           </div>
 
-          <div className="mt-3">
-            <div className="mb-4 px-1">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                Zápasový přehled
-              </div>
-              <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.045em] text-brand-900">
-                Výsledky a program
-              </h2>
-            </div>
-
+          <div className="home-homepage-match-area mt-3">
             {matchesQuery.isLoading || upcomingQuery.isLoading ? (
               <LoadingState rows={5} />
             ) : matchesQuery.isError || upcomingQuery.isError ? (
@@ -131,13 +122,13 @@ export function HomePage() {
             )}
           </div>
 
-          <div className="mt-9">
+          <div className="home-homepage-hero-footer mt-9">
             <div
               className="h-px w-full bg-gradient-to-r from-brand-900/30 via-brand-900/10 to-transparent"
               aria-hidden="true"
             />
 
-            <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="home-homepage-hero-actions mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/zapasy"
