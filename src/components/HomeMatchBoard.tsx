@@ -56,7 +56,7 @@ export function HomeMatchBoard({
 
   return (
     <div className="content-enter">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="home-match-board-switcher mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-500">
             Kategorie
@@ -108,7 +108,7 @@ export function HomeMatchBoard({
 function ResultCard({ match }: { match: Match | null }) {
   if (!match) {
     return (
-      <article className="min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
+      <article className="home-match-card min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
         <CardEyebrow label="Poslední výsledek" />
         <div className="mt-20 rounded-[22px] bg-sand-50 px-5 py-7 text-center text-sm text-ink-500">
           Pro tento tým zatím nemáme poslední výsledek.
@@ -127,7 +127,7 @@ function ResultCard({ match }: { match: Match | null }) {
   )
 
   return (
-    <article className="min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
+    <article className="home-match-card min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur lg:col-span-7 sm:p-7">
       <div className="flex items-start justify-between gap-4">
         <CardEyebrow label="Poslední výsledek" />
         <div className="text-right text-[10px] leading-4 text-ink-500">
@@ -136,7 +136,7 @@ function ResultCard({ match }: { match: Match | null }) {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-7">
+      <div className="home-match-card-main mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-7">
         <ClubSide name={match.home_team_name} logo={match.home_team_logo} />
 
         <div className="min-w-[108px] text-center">
@@ -151,7 +151,7 @@ function ResultCard({ match }: { match: Match | null }) {
         <ClubSide name={match.away_team_name} logo={match.away_team_logo} />
       </div>
 
-      <div className="mt-8 border-t border-sand-200 pt-4 text-xs font-semibold text-ink-500">
+      <div className="home-match-card-footer mt-8 border-t border-sand-200 pt-4 text-xs font-semibold text-ink-500">
         {formatMatchDate(match.playing_at)}
       </div>
     </article>
@@ -161,7 +161,7 @@ function ResultCard({ match }: { match: Match | null }) {
 function UpcomingCard({ match }: { match: Match | null }) {
   if (!match) {
     return (
-      <article className="min-h-[330px] rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
+      <article className="home-match-card min-h-[330px] rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
         <CardEyebrow label="Nadcházející zápas" dark />
         <div className="mt-20 rounded-[22px] bg-white/[0.06] px-5 py-7 text-center text-sm text-white/60">
           Pro tento tým zatím nemáme další zápas.
@@ -171,7 +171,7 @@ function UpcomingCard({ match }: { match: Match | null }) {
   }
 
   return (
-    <article className="relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
+    <article className="home-match-card relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] lg:col-span-5 sm:p-7">
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(circle_at_85%_12%,rgba(0,146,63,.34),transparent_34%)]"
@@ -186,7 +186,7 @@ function UpcomingCard({ match }: { match: Match | null }) {
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+        <div className="home-match-card-main mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
           <ClubSide
             name={match.home_team_name}
             logo={match.home_team_logo}
@@ -212,7 +212,7 @@ function UpcomingCard({ match }: { match: Match | null }) {
           />
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+        <div className="home-match-card-footer mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
           <div className="text-xs font-semibold text-white/55">
             {formatMatchDate(match.playing_at)}
           </div>
