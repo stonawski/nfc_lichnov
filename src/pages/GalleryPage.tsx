@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
@@ -28,6 +28,7 @@ import { formatDate } from '../lib/format'
 import type { Gallery, GalleryImage } from '../lib/types'
 
 export function GalleryPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [teamId, setTeamId] = useState('all')
   const [year, setYear] = useState('all')
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest')
@@ -116,6 +117,16 @@ export function GalleryPage() {
     openImageIndex == null ? null : openGalleryImages[openImageIndex] ?? null
 
   useEffect(() => {
+    const requestedAlbum = searchParams.get('album')
+    if (!requestedAlbum || openGalleryId || !galleries.length) return
+
+    const target = galleries.find(
+      (gallery) => gallery.slug === requestedAlbum || gallery.id === requestedAlbum,
+    )
+    if (target) setOpenGalleryId(target.id)
+  }, [galleries, openGalleryId, searchParams])
+
+  useEffect(() => {
     if (!openGallery) return
 
     const previousOverflow = document.body.style.overflow
@@ -137,6 +148,12 @@ export function GalleryPage() {
   const closeAlbum = () => {
     setOpenImageIndex(null)
     setOpenGalleryId(null)
+
+    if (searchParams.has('album')) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete('album')
+      setSearchParams(nextParams, { replace: true })
+    }
   }
 
   const resetFilters = () => {
