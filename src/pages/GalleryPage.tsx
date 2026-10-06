@@ -119,10 +119,18 @@ export function GalleryPage() {
     if (!openGallery) return
 
     const previousOverflow = document.body.style.overflow
+    const previousPaddingRight = document.body.style.paddingRight
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`
+    }
     document.body.style.overflow = 'hidden'
 
     return () => {
       document.body.style.overflow = previousOverflow
+      document.body.style.paddingRight = previousPaddingRight
     }
   }, [openGallery])
 
@@ -910,10 +918,21 @@ function AlbumOverlay({
   lightboxOpen: boolean
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const [contentReady, setContentReady] = useState(false)
 
   useEffect(() => {
     closeButtonRef.current?.focus()
   }, [])
+
+  useEffect(() => {
+    setContentReady(false)
+
+    const timer = window.setTimeout(() => {
+      setContentReady(true)
+    }, 220)
+
+    return () => window.clearTimeout(timer)
+  }, [gallery.id])
 
   useEffect(() => {
     if (lightboxOpen) return
@@ -928,14 +947,14 @@ function AlbumOverlay({
 
   return createPortal(
     <div
-      className="lightbox-enter fixed inset-0 z-[120] flex items-center justify-center bg-brand-900/68 p-3 backdrop-blur-md sm:p-5 lg:p-7"
+      className="album-overlay-backdrop fixed inset-0 z-[120] flex items-center justify-center bg-brand-900/70 p-3 sm:p-5 lg:p-7"
       role="dialog"
       aria-modal="true"
       aria-labelledby="album-overlay-title"
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[94vh] w-full max-w-[1280px] flex-col overflow-hidden rounded-[34px] border border-white/60 bg-[#fbfaf6] shadow-[0_38px_100px_rgba(24,53,42,.28)]"
+        className="album-overlay-panel relative flex max-h-[94vh] w-full max-w-[1280px] flex-col overflow-hidden rounded-[34px] border border-white/60 bg-[#fbfaf6] shadow-[0_38px_100px_rgba(24,53,42,.28)]"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="relative z-10 flex shrink-0 items-start justify-between gap-6 border-b border-brand-900/[0.08] bg-[#fbfaf6]/95 px-5 py-5 backdrop-blur-xl sm:px-7 sm:py-6">
@@ -982,8 +1001,15 @@ function AlbumOverlay({
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5 lg:p-6">
-          {images.length ? (
-            <div className="columns-1 gap-3 sm:columns-2 lg:columns-3">
+          {!contentReady ? (
+            <div className="grid min-h-[360px] place-items-center">
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.14em] text-ink-500/60">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
+                Načítám album
+              </div>
+            </div>
+          ) : images.length ? (
+            <div className="album-grid-enter columns-1 gap-3 sm:columns-2 lg:columns-3">
               {images.map((image, index) => {
                 const url = galleryImageUrl(image)
                 if (!url) return null
@@ -993,12 +1019,13 @@ function AlbumOverlay({
                     key={image.id}
                     type="button"
                     onClick={() => onOpenImage(index)}
-                    className="group mb-3 block w-full break-inside-avoid overflow-hidden rounded-[20px] bg-sand-100 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="group mb-3 block w-full break-inside-avoid overflow-hidden rounded-[20px] bg-sand-100 text-left [content-visibility:auto] [contain-intrinsic-size:320px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     <img
                       src={url}
                       alt={image.caption || gallery.title || 'Fotografie NFC Lichnov'}
                       loading="lazy"
+                      decoding="async"
                       className="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.01]"
                     />
                     {image.caption && (
@@ -1011,7 +1038,7 @@ function AlbumOverlay({
               })}
             </div>
           ) : (
-            <div className="grid min-h-[360px] place-items-center text-center">
+            <div className="album-grid-enter grid min-h-[360px] place-items-center text-center">
               <div>
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-700">
                   <Images size={22} />
