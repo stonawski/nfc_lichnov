@@ -30,6 +30,8 @@ export function GalleryPage() {
   const [teamId, setTeamId] = useState('all')
   const [year, setYear] = useState('all')
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest')
+  const [openGalleryId, setOpenGalleryId] = useState<string | null>(null)
+  const [openImageIndex, setOpenImageIndex] = useState<number | null>(null)
 
   const galleriesQuery = useQuery({
     queryKey: ['galleries'],
@@ -104,6 +106,29 @@ export function GalleryPage() {
   const totalPhotos = imagesQuery.data?.length ?? 0
   const latestYear = years[0] ?? null
   const hasFilters = teamId !== 'all' || year !== 'all'
+  const openGallery =
+    galleries.find((gallery) => gallery.id === openGalleryId) ?? null
+  const openGalleryImages = (
+    openGallery ? imagesByGallery.get(openGallery.id) ?? [] : []
+  ).filter((image) => Boolean(galleryImageUrl(image)))
+  const openImage =
+    openImageIndex == null ? null : openGalleryImages[openImageIndex] ?? null
+
+  useEffect(() => {
+    if (!openGallery) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [openGallery])
+
+  const closeAlbum = () => {
+    setOpenImageIndex(null)
+    setOpenGalleryId(null)
+  }
 
   const resetFilters = () => {
     setTeamId('all')
@@ -140,6 +165,7 @@ export function GalleryPage() {
             <GalleryHeroVisual
               gallery={featured}
               images={featured ? imagesByGallery.get(featured.id) ?? [] : []}
+              onOpen={() => featured && setOpenGalleryId(featured.id)}
             />
           </div>
         </div>
@@ -234,6 +260,7 @@ export function GalleryPage() {
                         images={images}
                         featured={featuredAlbum}
                         className={span}
+                        onOpen={() => setOpenGalleryId(gallery.id)}
                       />
                     )
                   })}
@@ -322,6 +349,33 @@ export function GalleryPage() {
           </div>
         </section>
       )}
+      {openGallery && (
+        <AlbumOverlay
+          gallery={openGallery}
+          images={openGalleryImages}
+          onClose={closeAlbum}
+          onOpenImage={setOpenImageIndex}
+        />
+      )}
+
+      {openGallery && openImage && openImageIndex != null && (
+        <Lightbox
+          image={openImage}
+          index={openImageIndex}
+          count={openGalleryImages.length}
+          onClose={() => setOpenImageIndex(null)}
+          onPrevious={() =>
+            setOpenImageIndex(
+              (openImageIndex - 1 + openGalleryImages.length) %
+                openGalleryImages.length,
+            )
+          }
+          onNext={() =>
+            setOpenImageIndex((openImageIndex + 1) % openGalleryImages.length)
+          }
+        />
+      )}
+
     </main>
   )
 }
@@ -329,9 +383,11 @@ export function GalleryPage() {
 function GalleryHeroVisual({
   gallery,
   images,
+  onOpen,
 }: {
   gallery: Gallery | null
   images: GalleryImage[]
+  onOpen: () => void
 }) {
   const urls = images
     .map((image) => galleryImageUrl(image))
@@ -375,9 +431,10 @@ function GalleryHeroVisual({
   const previewUrls = albumPreviewUrls(gallery, images)
 
   return (
-    <Link
-      to={`/galerie/${gallery.slug || gallery.id}`}
-      className="group relative block min-h-[390px] overflow-hidden shadow-[0_24px_70px_rgba(24,53,42,.14)]"
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group relative block min-h-[390px] w-full overflow-hidden rounded-[36px] text-left shadow-[0_24px_70px_rgba(24,53,42,.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
     >
       <AlbumAccordionPreview
         urls={previewUrls}
@@ -407,7 +464,7 @@ function GalleryHeroVisual({
           </span>
         </div>
       </div>
-    </Link>
+    </button>
   )
 }
 
@@ -728,18 +785,21 @@ function GalleryCard({
   images,
   featured,
   className,
+  onOpen,
 }: {
   gallery: Gallery
   images: GalleryImage[]
   featured: boolean
   className: string
+  onOpen: () => void
 }) {
   const previewUrls = albumPreviewUrls(gallery, images)
 
   return (
-    <Link
-      to={`/galerie/${gallery.slug || gallery.id}`}
-      className={`group relative block overflow-hidden bg-brand-900 shadow-[0_12px_34px_rgba(24,53,42,.05)] transition-shadow hover:shadow-[0_20px_46px_rgba(24,53,42,.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+    <button
+      type="button"
+      onClick={onOpen}
+      className={`group relative block w-full overflow-hidden rounded-[30px] bg-brand-900 text-left shadow-[0_12px_34px_rgba(24,53,42,.05)] transition-shadow hover:shadow-[0_20px_46px_rgba(24,53,42,.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
         featured ? 'lg:row-span-2' : ''
       } ${className}`}
     >
@@ -781,7 +841,7 @@ function GalleryCard({
           </span>
         </div>
       </div>
-    </Link>
+    </button>
   )
 }
 
@@ -832,6 +892,137 @@ function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
 
   if (!urls.length) add('/hero-lichnov-field.webp')
   return urls.slice(0, 4)
+}
+
+function AlbumOverlay({
+  gallery,
+  images,
+  onClose,
+  onOpenImage,
+}: {
+  gallery: Gallery
+  images: GalleryImage[]
+  onClose: () => void
+  onOpenImage: (index: number) => void
+}) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
+
+  return (
+    <div
+      className="lightbox-enter fixed inset-0 z-[70] flex items-center justify-center bg-brand-900/68 p-3 backdrop-blur-md sm:p-5 lg:p-7"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="album-overlay-title"
+      onClick={onClose}
+    >
+      <div
+        className="relative flex max-h-[94vh] w-full max-w-[1280px] flex-col overflow-hidden rounded-[34px] border border-white/60 bg-[#fbfaf6] shadow-[0_38px_100px_rgba(24,53,42,.28)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="relative z-10 flex shrink-0 items-start justify-between gap-6 border-b border-brand-900/[0.08] bg-[#fbfaf6]/95 px-5 py-5 backdrop-blur-xl sm:px-7 sm:py-6">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
+              <span>Fotogalerie</span>
+              {(gallery.event_date || gallery.created_at) && (
+                <>
+                  <span className="text-brand-900/20">·</span>
+                  <span className="text-ink-500">
+                    {formatDate(gallery.event_date || gallery.created_at)}
+                  </span>
+                </>
+              )}
+              <span className="text-brand-900/20">·</span>
+              <span className="text-ink-500">
+                {images.length} {photoCountLabel(images.length)}
+              </span>
+            </div>
+
+            <h2
+              id="album-overlay-title"
+              className="mt-2 max-w-4xl text-2xl font-black leading-[1] tracking-[-0.045em] text-brand-900 sm:text-3xl"
+            >
+              {gallery.title || 'Fotogalerie NFC Lichnov'}
+            </h2>
+
+            {gallery.description && (
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-500">
+                {gallery.description}
+              </p>
+            )}
+          </div>
+
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-brand-900/10 bg-white text-brand-900 transition-colors hover:border-brand-500/25 hover:bg-brand-50"
+            aria-label="Zavřít album"
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5 lg:p-6">
+          {images.length ? (
+            <div className="columns-1 gap-3 sm:columns-2 lg:columns-3">
+              {images.map((image, index) => {
+                const url = galleryImageUrl(image)
+                if (!url) return null
+
+                return (
+                  <button
+                    key={image.id}
+                    type="button"
+                    onClick={() => onOpenImage(index)}
+                    className="group mb-3 block w-full break-inside-avoid overflow-hidden rounded-[20px] bg-sand-100 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  >
+                    <img
+                      src={url}
+                      alt={image.caption || gallery.title || 'Fotografie NFC Lichnov'}
+                      loading="lazy"
+                      className="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.01]"
+                    />
+                    {image.caption && (
+                      <div className="border-t border-sand-200 bg-white px-4 py-3 text-xs leading-5 text-ink-500">
+                        {image.caption}
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="grid min-h-[360px] place-items-center text-center">
+              <div>
+                <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-700">
+                  <Images size={22} />
+                </div>
+                <h3 className="mt-5 text-xl font-extrabold text-brand-900">
+                  Album zatím nemá fotografie
+                </h3>
+                <p className="mt-2 text-sm text-ink-500">
+                  Fotky se objeví po prvním uploadu do galerie.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function Lightbox({
