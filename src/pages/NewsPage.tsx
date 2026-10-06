@@ -4,9 +4,6 @@ import {
   ArrowUpRight,
   Pin,
   Search,
-  SlidersHorizontal,
-  Tags,
-  UsersRound,
   X,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -117,71 +114,47 @@ export function NewsPage() {
             <PinnedNewsCard article={pinned} />
           </div>
 
-          <div className="relative mt-7 overflow-hidden rounded-[34px] border border-white/90 bg-white/[0.74] p-3 shadow-[0_24px_70px_rgba(24,53,42,.10)] backdrop-blur-2xl sm:p-4">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-brand-500/[0.08] blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 left-[38%] h-48 w-48 rounded-full bg-sand-100 blur-3xl" />
-
-            <div className="relative grid gap-3 xl:grid-cols-[.78fr_1.22fr]">
-              <label className="group flex min-h-[86px] items-center gap-4 rounded-[24px] bg-brand-900 px-5 py-4 text-white shadow-[0_16px_38px_rgba(24,53,42,.16)]">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[15px] bg-white/[0.09] ring-1 ring-white/10">
-                  <Search size={18} className="text-white/75" />
-                </span>
-
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-white/40">
-                    Rychlé hledání
-                  </span>
-                  <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Název, téma, turnaj…"
-                    className="mt-1.5 w-full bg-transparent text-base font-extrabold tracking-[-0.02em] text-white outline-none placeholder:font-semibold placeholder:text-white/42"
-                  />
-                </span>
-
+          <div className="mt-8 border-y border-brand-900/10 bg-white/70 py-5">
+            <div className="grid gap-5 lg:grid-cols-[minmax(260px,.72fr)_1.28fr] lg:items-start">
+              <label className="relative block">
+                <span className="sr-only">Hledat v aktualitách</span>
+                <Search
+                  size={17}
+                  className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-ink-500"
+                />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Hledat v aktualitách"
+                  className="h-11 w-full border-b border-brand-900/15 bg-transparent pl-7 pr-8 text-sm font-semibold text-brand-900 outline-none transition-colors placeholder:font-medium placeholder:text-ink-500/60 focus:border-brand-500"
+                />
                 {search && (
                   <button
                     type="button"
                     onClick={() => setSearch('')}
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/[0.08] text-white/55 transition-colors hover:bg-white/[0.14] hover:text-white"
+                    className="absolute right-0 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-ink-500 transition-colors hover:bg-white hover:text-brand-900"
                     aria-label="Vymazat hledání"
                   >
-                    <X size={15} />
+                    <X size={14} />
                   </button>
                 )}
               </label>
 
-              <div className="rounded-[24px] border border-sand-200/80 bg-[#fbfaf6]/90 px-4 py-3.5 sm:px-5">
-                <div className="mb-3 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="grid h-8 w-8 place-items-center rounded-[11px] bg-brand-50 text-brand-700">
-                      <Tags size={14} />
-                    </span>
-                    <div>
-                      <div className="text-[9px] font-black uppercase tracking-[0.16em] text-brand-500">
-                        Druh zprávy
-                      </div>
-                      <div className="mt-0.5 text-xs font-semibold text-ink-500">
-                        Vyber téma, které tě zajímá
-                      </div>
-                    </div>
+              <div className="min-w-0">
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-sm font-extrabold text-brand-900">
+                    Druh zprávy
                   </div>
-
-                  {category !== 'all' && (
-                    <button
-                      type="button"
-                      onClick={() => setCategory('all')}
-                      className="hidden text-[10px] font-bold text-ink-500 transition-colors hover:text-brand-900 sm:block"
-                    >
-                      Vyčistit
-                    </button>
-                  )}
+                  <div className="text-[11px] font-semibold text-ink-500">
+                    {filtered.length} {articleCountLabel(filtered.length)}
+                  </div>
                 </div>
 
-                <div className="flex max-w-full gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="mt-3 flex gap-x-5 gap-y-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <FilterButton
                     active={category === 'all'}
                     onClick={() => setCategory('all')}
+                    count={articles.filter((article) => article.id !== pinned?.id).length}
                   >
                     Všechny
                   </FilterButton>
@@ -190,6 +163,7 @@ export function NewsPage() {
                       key={item}
                       active={category === item}
                       onClick={() => setCategory(item)}
+                      count={articles.filter((article) => article.id !== pinned?.id && article.category === item).length}
                     >
                       {item}
                     </FilterButton>
@@ -198,60 +172,43 @@ export function NewsPage() {
               </div>
             </div>
 
-            <div className="relative mt-3 grid gap-3 rounded-[24px] border border-white/90 bg-white/[0.88] p-3.5 shadow-[0_8px_26px_rgba(24,53,42,.04)] sm:p-4 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
-              <div className="flex items-center gap-3 pr-2">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] bg-brand-900 text-white shadow-[0_8px_20px_rgba(24,53,42,.14)]">
-                  <UsersRound size={16} />
-                </span>
-                <div>
-                  <div className="text-[9px] font-black uppercase tracking-[0.16em] text-brand-500">
-                    Kategorie týmu
-                  </div>
-                  <div className="mt-0.5 whitespace-nowrap text-xs font-semibold text-ink-500">
-                    Komu se zpráva věnuje
-                  </div>
+            <div className="mt-5 flex flex-col gap-3 border-t border-brand-900/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-4">
+                <div className="shrink-0 text-sm font-extrabold text-brand-900">
+                  Tým
+                </div>
+
+                <div className="flex min-w-0 gap-x-4 gap-y-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <TeamFilter
+                    active={teamId === 'all'}
+                    onClick={() => setTeamId('all')}
+                  >
+                    Všechny
+                  </TeamFilter>
+                  {teams.map((team) => (
+                    <TeamFilter
+                      key={team.id}
+                      active={teamId === team.id}
+                      onClick={() => setTeamId(team.id)}
+                    >
+                      {team.short_name || team.name}
+                    </TeamFilter>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <FilterButton
-                  active={teamId === 'all'}
-                  onClick={() => setTeamId('all')}
-                  compact
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-xs font-bold text-brand-700 transition-colors hover:text-brand-500 sm:self-auto"
                 >
-                  Všechny týmy
-                </FilterButton>
-                {teams.map((team) => (
-                  <FilterButton
-                    key={team.id}
-                    active={teamId === team.id}
-                    onClick={() => setTeamId(team.id)}
-                    compact
-                  >
-                    {team.short_name || team.name}
-                  </FilterButton>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between gap-3 border-t border-sand-200 pt-3 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-sand-100 px-3 py-2 text-[10px] font-bold text-ink-500">
-                  <SlidersHorizontal size={12} className="text-brand-500" />
-                  {hasFilters ? 'Filtry aktivní' : 'Bez omezení'}
-                </div>
-
-                {hasFilters && (
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-brand-700 transition-colors hover:bg-brand-50 hover:text-brand-900"
-                  >
-                    <X size={12} />
-                    Reset
-                  </button>
-                )}
-              </div>
+                  <X size={13} />
+                  Zrušit filtry
+                </button>
+              )}
             </div>
-          </div>
+          </div>          </div>
         </div>
       </section>
 
@@ -469,31 +426,59 @@ function FilterButton({
   active,
   onClick,
   children,
-  compact = false,
+  count,
 }: {
   active: boolean
   onClick: () => void
   children: React.ReactNode
-  compact?: boolean
+  count: number
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`group inline-flex shrink-0 items-center gap-2 rounded-full font-extrabold transition-colors ${
-        compact ? 'px-3.5 py-2.5 text-[10px]' : 'px-4 py-2.5 text-[11px]'
-      } ${
-        active
-          ? 'bg-brand-900 text-white shadow-[0_8px_18px_rgba(24,53,42,.14)]'
-          : 'bg-white/80 text-ink-500 ring-1 ring-sand-200/90 hover:bg-white hover:text-brand-900 hover:ring-brand-500/20'
+      className={`group relative shrink-0 pb-2 text-sm font-semibold transition-colors ${
+        active ? 'text-brand-900' : 'text-ink-500 hover:text-brand-900'
       }`}
     >
+      <span>{children}</span>
       <span
-        className={`h-1.5 w-1.5 rounded-full transition-colors ${
-          active ? 'bg-brand-500' : 'bg-sand-200 group-hover:bg-brand-500/50'
+        className={`ml-1.5 text-[10px] font-bold tabular-nums ${
+          active ? 'text-brand-500' : 'text-ink-500/55'
+        }`}
+      >
+        {count}
+      </span>
+      <span
+        className={`absolute inset-x-0 -bottom-px h-0.5 rounded-full transition-opacity ${
+          active ? 'bg-brand-500 opacity-100' : 'bg-brand-500 opacity-0 group-hover:opacity-35'
         }`}
       />
+    </button>
+  )
+}
+
+function TeamFilter({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`shrink-0 text-xs font-semibold transition-colors ${
+        active
+          ? 'text-brand-900 underline decoration-brand-500 decoration-2 underline-offset-4'
+          : 'text-ink-500 hover:text-brand-900'
+      }`}
+    >
       {children}
     </button>
   )
