@@ -7,6 +7,7 @@ export type CreateGalleryInput = {
   slug: string
   description?: string
   event_date?: string
+  team_id?: string | null
 }
 
 const gallerySelect =
@@ -32,6 +33,7 @@ export async function createGallery(input: CreateGalleryInput): Promise<Gallery>
       slug: input.slug.trim(),
       description: input.description?.trim() || null,
       event_date: input.event_date || null,
+      team_id: input.team_id || null,
       published: false,
       sort_order: 0,
     })
