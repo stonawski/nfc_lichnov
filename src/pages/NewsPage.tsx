@@ -114,52 +114,44 @@ export function NewsPage() {
             <PinnedNewsCard article={pinned} />
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-[30px] border border-brand-900/10 bg-[#f7f3e8] shadow-[0_18px_46px_rgba(24,53,42,.08)]">
-            <div className="grid lg:grid-cols-[minmax(300px,.78fr)_1.22fr]">
-              <label className="relative flex min-h-[132px] flex-col justify-between bg-brand-900 px-6 py-5 text-white sm:px-7">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white/45">
-                    Hledat v deníku
-                  </span>
-                  <Search size={17} className="text-brand-500" />
-                </div>
-
-                <div className="relative mt-5">
+          <div className="mt-8 rounded-[28px] border border-brand-900/[0.08] bg-[#fbfaf6]/95 p-5 shadow-[0_14px_38px_rgba(24,53,42,.06)] backdrop-blur-sm sm:p-6">
+            <div className="grid gap-6 lg:grid-cols-[minmax(260px,.76fr)_1.24fr] lg:items-end">
+              <label className="block">
+                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
+                  Hledat
+                </span>
+                <span className="flex h-12 items-center gap-3 rounded-[16px] border border-brand-900/[0.08] bg-white px-4 transition-colors focus-within:border-brand-500/35">
+                  <Search size={16} className="shrink-0 text-brand-900/45" />
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Název, téma, turnaj…"
-                    className="w-full border-b border-white/18 bg-transparent pb-3 pr-8 text-lg font-extrabold tracking-[-0.025em] text-white outline-none transition-colors placeholder:font-semibold placeholder:text-white/35 focus:border-brand-500"
+                    className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-brand-900 outline-none placeholder:font-medium placeholder:text-ink-500/55"
                   />
                   {search && (
                     <button
                       type="button"
                       onClick={() => setSearch('')}
-                      className="absolute right-0 top-0 grid h-7 w-7 place-items-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+                      className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-sand-100 hover:text-brand-900"
                       aria-label="Vymazat hledání"
                     >
-                      <X size={14} />
+                      <X size={13} />
                     </button>
                   )}
-                </div>
+                </span>
               </label>
 
-              <div className="px-6 py-5 sm:px-7">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <div className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
-                      Druh zprávy
-                    </div>
-                    <div className="mt-1 text-sm font-semibold text-ink-500">
-                      Vyber si, co chceš sledovat
-                    </div>
-                  </div>
-                  <div className="rounded-full bg-white/75 px-3 py-1.5 text-[10px] font-bold text-brand-900 ring-1 ring-brand-900/5">
+              <div className="min-w-0">
+                <div className="mb-2 flex items-center justify-between gap-4">
+                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
+                    Druh zprávy
+                  </span>
+                  <span className="text-[10px] font-semibold text-ink-500">
                     {filtered.length} {articleCountLabel(filtered.length)}
-                  </div>
+                  </span>
                 </div>
 
-                <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <FilterButton
                     active={category === 'all'}
                     onClick={() => setCategory('all')}
@@ -181,13 +173,12 @@ export function NewsPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 border-t border-brand-900/8 bg-brand-50/55 px-6 py-4 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
+            <div className="mt-5 flex flex-col gap-3 border-t border-brand-900/[0.08] pt-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 items-center gap-4">
-                <div className="shrink-0 text-[9px] font-black uppercase tracking-[0.18em] text-brand-700">
+                <span className="shrink-0 text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
                   Tým
-                </div>
-
-                <div className="flex min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                </span>
+                <div className="flex min-w-0 gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <TeamFilter
                     active={teamId === 'all'}
                     onClick={() => setTeamId('all')}
@@ -210,14 +201,14 @@ export function NewsPage() {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-[10px] font-black uppercase tracking-[0.08em] text-brand-700 transition-colors hover:text-brand-500 lg:self-auto"
+                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-[10px] font-bold text-brand-700 transition-colors hover:text-brand-500 lg:self-auto"
                 >
                   <X size={12} />
                   Zrušit filtry
                 </button>
               )}
             </div>
-          </div>
+          </div>          </div>
         </div>
       </section>
 
@@ -447,19 +438,15 @@ function FilterButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-xs font-extrabold transition-colors ${
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2.5 text-xs font-bold transition-colors ${
         active
-          ? 'bg-brand-500 text-white'
-          : 'bg-white/70 text-brand-900 ring-1 ring-brand-900/8 hover:bg-white'
+          ? 'bg-brand-900 text-white'
+          : 'bg-white text-ink-500 ring-1 ring-brand-900/[0.08] hover:text-brand-900'
       }`}
     >
       <span>{children}</span>
       {count > 0 && (
-        <span
-          className={`text-[9px] font-black tabular-nums ${
-            active ? 'text-white/65' : 'text-ink-500/55'
-          }`}
-        >
+        <span className={active ? 'text-[9px] text-white/60' : 'text-[9px] text-ink-500/45'}>
           {count}
         </span>
       )}
@@ -484,7 +471,7 @@ function TeamFilter({
       className={`shrink-0 rounded-full px-3 py-2 text-[10px] font-bold transition-colors ${
         active
           ? 'bg-brand-900 text-white'
-          : 'bg-white/65 text-ink-500 ring-1 ring-brand-900/5 hover:bg-white hover:text-brand-900'
+          : 'text-ink-500 hover:bg-white hover:text-brand-900'
       }`}
     >
       {children}
