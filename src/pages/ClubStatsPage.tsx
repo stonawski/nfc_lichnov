@@ -10,7 +10,7 @@ import {
   Trophy,
   Users,
 } from 'lucide-react'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   fetchPublicClubStats,
   getBundledClubStats,
@@ -211,62 +211,112 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="data-fade-in bg-white px-5 py-16 md:px-8 md:py-24">
+      <section className="data-fade-in overflow-hidden bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
-          <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
-            <SectionIntro
-              eyebrow="Minuty pravdy"
-              title="Postupy, sestupy a zlomové sezony."
-              text="U každé historické sezony lze v administraci označit postup nebo sestup a následující soutěž. Tato časová osa se z těchto údajů skládá automaticky."
-            />
+          <div className="grid gap-7 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="max-w-3xl">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
+                Minuty pravdy
+              </div>
+              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] text-white md:text-5xl">
+                Postupy, sestupy a zlomové sezony.
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-white/55 sm:text-base">
+                Každý přechod mezi soutěžemi je jeden bod v klubové cestě. Posuň
+                timeline do strany a projdi si sezony, ve kterých se měnila úroveň soutěže.
+              </p>
+            </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="flex gap-2">
+              <div className="rounded-[18px] border border-white/10 bg-white/[0.06] px-4 py-3">
+                <div className="text-2xl font-black text-white">{promotionCount}</div>
+                <div className="text-[8px] font-bold uppercase tracking-[0.13em] text-white/40">
+                  postupů
+                </div>
+              </div>
+              <div className="rounded-[18px] border border-white/10 bg-white/[0.06] px-4 py-3">
+                <div className="text-2xl font-black text-white">{relegationCount}</div>
+                <div className="text-[8px] font-bold uppercase tracking-[0.13em] text-white/40">
+                  sestupů
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <MilestoneRail>
               {milestones.map((season) => {
                 const promotion = season.outcome === 'promotion'
 
                 return (
                   <article
                     key={season.ordinal}
-                    className="rounded-[26px] border border-sand-200 bg-[#fbfaf6] p-5"
+                    className={`w-[82vw] max-w-[380px] shrink-0 overflow-hidden rounded-[28px] border bg-[#fbfaf6] text-brand-900 sm:w-[350px] ${
+                      promotion
+                        ? 'border-brand-500/25'
+                        : 'border-white/10'
+                    }`}
                   >
-                    <div className="flex items-start justify-between gap-5">
-                      <div>
+                    <div
+                      className={`h-1.5 ${
+                        promotion ? 'bg-brand-500' : 'bg-sand-200'
+                      }`}
+                    />
+
+                    <div className="p-5 sm:p-6">
+                      <div className="flex items-start justify-between gap-5">
+                        <div>
+                          <div
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
+                              promotion
+                                ? 'bg-brand-50 text-brand-700'
+                                : 'bg-sand-200 text-brand-900'
+                            }`}
+                          >
+                            {promotion ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                            {promotion ? 'Postup' : 'Sestup'}
+                          </div>
+                          <div className="mt-5 text-3xl font-black tracking-[-0.05em]">
+                            {season.season}
+                          </div>
+                        </div>
+
                         <div
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
+                          className={`grid h-10 w-10 place-items-center rounded-[14px] ${
                             promotion
                               ? 'bg-brand-50 text-brand-700'
                               : 'bg-sand-200 text-brand-900'
                           }`}
                         >
-                          {promotion ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-                          {promotion ? 'Postup' : 'Sestup'}
-                        </div>
-                        <div className="mt-4 text-2xl font-black tracking-[-0.045em] text-brand-900">
-                          {season.season}
+                          {promotion ? <Trophy size={18} /> : <ArrowDown size={18} />}
                         </div>
                       </div>
-                      {promotion ? (
-                        <Trophy size={19} className="text-brand-500" />
-                      ) : (
-                        <ArrowDown size={20} className="text-brand-900" />
-                      )}
-                    </div>
 
-                    <div className="mt-5 text-sm font-bold text-brand-900">
-                      {season.competition}
-                      <span className="mx-2 text-ink-500">→</span>
-                      {season.nextCompetition}
-                    </div>
+                      <div className="mt-6">
+                        <div className="text-[9px] font-bold uppercase tracking-[0.13em] text-ink-500">
+                          Změna soutěže
+                        </div>
+                        <div className="mt-2 text-sm font-extrabold leading-6">
+                          {season.competition}
+                        </div>
+                        <div className="my-2 h-px w-8 bg-brand-500/45" />
+                        <div className="text-sm font-extrabold leading-6">
+                          {season.nextCompetition}
+                        </div>
+                      </div>
 
-                    <div className="mt-4 grid grid-cols-3 gap-2 border-t border-sand-200 pt-4">
-                      <MiniStat value={`${season.position}.`} label="místo" />
-                      <MiniStat value={season.score} label="skóre" />
-                      <MiniStat value={String(season.points)} label="body" />
+                      <div className="mt-6 grid grid-cols-3 gap-2 border-t border-sand-200 pt-4">
+                        <MiniStat value={`${season.position}.`} label="místo" />
+                        <MiniStat value={season.score} label="skóre" />
+                        <MiniStat value={String(season.points)} label="body" />
+                      </div>
                     </div>
                   </article>
                 )
               })}
-            </div>
+          </MilestoneRail>
+
+          <div className="mt-3 text-[10px] font-semibold text-white/35">
+            Táhni myší nebo swipni prstem pro další zlomové sezony.
           </div>
         </div>
       </section>
@@ -416,6 +466,7 @@ function StatsHero({
 
         <DataFade className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3">
           <RecordCard
+            tone="dark"
             icon={<Users size={20} />}
             eyebrow="Nejvíce zápasů"
             value={String(appearanceLeader.matches)}
@@ -423,6 +474,7 @@ function StatsHero({
             detail={`${appearanceLeader.goals} vstřelených branek`}
           />
           <RecordCard
+            tone="accent"
             icon={<Goal size={20} />}
             eyebrow="Nejlepší střelec"
             value={String(scoringLeader.goals)}
@@ -541,32 +593,143 @@ function RankingTab({
   )
 }
 
+function MilestoneRail({ children }: { children: ReactNode }) {
+  const railRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({
+    active: false,
+    startX: 0,
+    scrollLeft: 0,
+    nextScrollLeft: 0,
+    frame: 0 as number | 0,
+  })
+
+  const applyDragFrame = () => {
+    const rail = railRef.current
+    if (!rail) return
+
+    rail.scrollLeft = dragRef.current.nextScrollLeft
+    dragRef.current.frame = 0
+  }
+
+  return (
+    <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2">
+      <div
+        ref={railRef}
+        className="cursor-grab select-none overflow-x-auto overscroll-x-contain pb-4 pl-0 pr-5 active:cursor-grabbing [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden md:pr-8"
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse' || event.button !== 0) return
+          const rail = railRef.current
+          if (!rail) return
+
+          dragRef.current.active = true
+          dragRef.current.startX = event.clientX
+          dragRef.current.scrollLeft = rail.scrollLeft
+          dragRef.current.nextScrollLeft = rail.scrollLeft
+          rail.setPointerCapture(event.pointerId)
+        }}
+        onPointerMove={(event) => {
+          if (!dragRef.current.active || event.pointerType !== 'mouse') return
+
+          const delta = event.clientX - dragRef.current.startX
+          dragRef.current.nextScrollLeft =
+            dragRef.current.scrollLeft - delta
+
+          if (!dragRef.current.frame) {
+            dragRef.current.frame = window.requestAnimationFrame(applyDragFrame)
+          }
+        }}
+        onPointerUp={(event) => {
+          if (event.pointerType !== 'mouse') return
+
+          dragRef.current.active = false
+          if (dragRef.current.frame) {
+            window.cancelAnimationFrame(dragRef.current.frame)
+            dragRef.current.frame = 0
+            applyDragFrame()
+          }
+
+          const rail = railRef.current
+          if (rail?.hasPointerCapture(event.pointerId)) {
+            rail.releasePointerCapture(event.pointerId)
+          }
+        }}
+        onPointerCancel={() => {
+          dragRef.current.active = false
+          if (dragRef.current.frame) {
+            window.cancelAnimationFrame(dragRef.current.frame)
+            dragRef.current.frame = 0
+          }
+        }}
+        onDragStart={(event) => event.preventDefault()}
+      >
+        <div className="flex w-max gap-4">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function RecordCard({
   icon,
   eyebrow,
   value,
   label,
   detail,
+  tone = 'light',
 }: {
   icon: ReactNode
   eyebrow: string
   value: string
   label: string
   detail: string
+  tone?: 'light' | 'dark' | 'accent'
 }) {
+  const dark = tone !== 'light'
+
   return (
-    <article className="rounded-[32px] border border-white/70 bg-white/[0.88] p-6 shadow-[0_18px_60px_rgba(18,48,36,.08)] backdrop-blur-xl sm:p-7">
+    <article
+      className={`rounded-[32px] p-6 shadow-[0_18px_60px_rgba(18,48,36,.08)] backdrop-blur-xl sm:p-7 ${
+        tone === 'dark'
+          ? 'border border-brand-900 bg-brand-900'
+          : tone === 'accent'
+            ? 'border border-brand-500 bg-brand-500'
+            : 'border border-white/70 bg-white/[0.88]'
+      }`}
+    >
       <div className="flex items-center justify-between gap-4">
-        <div className="text-[10px] font-bold uppercase tracking-[0.17em] text-ink-500">
+        <div
+          className={`text-[10px] font-bold uppercase tracking-[0.17em] ${
+            dark ? 'text-white/55' : 'text-ink-500'
+          }`}
+        >
           {eyebrow}
         </div>
-        <div className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-50 text-brand-700">
+        <div
+          className={`grid h-10 w-10 place-items-center rounded-2xl ${
+            dark ? 'bg-white/10 text-white' : 'bg-brand-50 text-brand-700'
+          }`}
+        >
           {icon}
         </div>
       </div>
-      <div className="mt-9 text-5xl font-black tracking-[-0.065em] text-brand-900">{value}</div>
-      <div className="mt-2 text-xl font-extrabold tracking-[-0.035em] text-brand-900">{label}</div>
-      <div className="mt-1 text-sm text-ink-500">{detail}</div>
+      <div
+        className={`mt-9 text-5xl font-black tracking-[-0.065em] ${
+          dark ? 'text-white' : 'text-brand-900'
+        }`}
+      >
+        {value}
+      </div>
+      <div
+        className={`mt-2 text-xl font-extrabold tracking-[-0.035em] ${
+          dark ? 'text-white' : 'text-brand-900'
+        }`}
+      >
+        {label}
+      </div>
+      <div className={`mt-1 text-sm ${dark ? 'text-white/60' : 'text-ink-500'}`}>
+        {detail}
+      </div>
     </article>
   )
 }
