@@ -273,12 +273,12 @@ export function ArealPage() {
     normalizeStaticText(gallery.title).includes('areal'),
   )
   const galleryHref = arealGallery
-    ? `/galerie/${arealGallery.slug || arealGallery.id}`
+    ? `/galerie?album=${encodeURIComponent(arealGallery.slug || arealGallery.id)}`
     : '/galerie'
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-18 md:pt-[144px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto w-full max-w-[1240px] py-8 md:py-12">
@@ -454,7 +454,7 @@ export function ContactPage() {
 
   return (
     <main>
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-18 md:pt-[144px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto w-full max-w-[1240px] py-8 md:py-12">
@@ -623,6 +623,12 @@ export function ContactPage() {
               <div>
                 <div className="text-xs text-white/40">Tajemník · René Stonawski</div>
                 <div className="mt-1 text-lg font-extrabold">+420 604 277 488</div>
+                <a
+                  href="mailto:r.stonawski@gmail.com"
+                  className="mt-1 inline-block text-sm text-white/55 transition-colors hover:text-white"
+                >
+                  r.stonawski@gmail.com
+                </a>
               </div>
               <div className="border-t border-white/10 pt-5 text-sm leading-6 text-white/50">
                 Pro konkrétní tým nebo trénink použij stránku dané kategorie, kde najdeš realizační tým.
