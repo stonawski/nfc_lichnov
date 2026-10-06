@@ -114,43 +114,52 @@ export function NewsPage() {
             <PinnedNewsCard article={pinned} />
           </div>
 
-          <div className="mt-8 rounded-[24px] border border-white/80 bg-white/[0.84] px-5 py-5 shadow-[0_16px_42px_rgba(24,53,42,.06)] backdrop-blur-md sm:px-6">
-            <div className="grid gap-5 lg:grid-cols-[minmax(260px,.72fr)_1.28fr] lg:items-start">
-              <label className="relative block">
-                <span className="sr-only">Hledat v aktualitách</span>
-                <Search
-                  size={17}
-                  className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-ink-500"
-                />
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Hledat v aktualitách"
-                  className="h-11 w-full border-b border-brand-900/15 bg-transparent pl-7 pr-8 text-sm font-semibold text-brand-900 outline-none transition-colors placeholder:font-medium placeholder:text-ink-500/60 focus:border-brand-500"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => setSearch('')}
-                    className="absolute right-0 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-ink-500 transition-colors hover:bg-white hover:text-brand-900"
-                    aria-label="Vymazat hledání"
-                  >
-                    <X size={14} />
-                  </button>
-                )}
+          <div className="mt-8 overflow-hidden rounded-[30px] border border-brand-900/10 bg-[#f7f3e8] shadow-[0_18px_46px_rgba(24,53,42,.08)]">
+            <div className="grid lg:grid-cols-[minmax(300px,.78fr)_1.22fr]">
+              <label className="relative flex min-h-[132px] flex-col justify-between bg-brand-900 px-6 py-5 text-white sm:px-7">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white/45">
+                    Hledat v deníku
+                  </span>
+                  <Search size={17} className="text-brand-500" />
+                </div>
+
+                <div className="relative mt-5">
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Název, téma, turnaj…"
+                    className="w-full border-b border-white/18 bg-transparent pb-3 pr-8 text-lg font-extrabold tracking-[-0.025em] text-white outline-none transition-colors placeholder:font-semibold placeholder:text-white/35 focus:border-brand-500"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch('')}
+                      className="absolute right-0 top-0 grid h-7 w-7 place-items-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+                      aria-label="Vymazat hledání"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
               </label>
 
-              <div className="min-w-0">
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-sm font-extrabold text-brand-900">
-                    Druh zprávy
+              <div className="px-6 py-5 sm:px-7">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
+                      Druh zprávy
+                    </div>
+                    <div className="mt-1 text-sm font-semibold text-ink-500">
+                      Vyber si, co chceš sledovat
+                    </div>
                   </div>
-                  <div className="text-[11px] font-semibold text-ink-500">
+                  <div className="rounded-full bg-white/75 px-3 py-1.5 text-[10px] font-bold text-brand-900 ring-1 ring-brand-900/5">
                     {filtered.length} {articleCountLabel(filtered.length)}
                   </div>
                 </div>
 
-                <div className="mt-3 flex gap-x-5 gap-y-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <FilterButton
                     active={category === 'all'}
                     onClick={() => setCategory('all')}
@@ -172,13 +181,13 @@ export function NewsPage() {
               </div>
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 border-t border-brand-900/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-t border-brand-900/8 bg-brand-50/55 px-6 py-4 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 items-center gap-4">
-                <div className="shrink-0 text-sm font-extrabold text-brand-900">
+                <div className="shrink-0 text-[9px] font-black uppercase tracking-[0.18em] text-brand-700">
                   Tým
                 </div>
 
-                <div className="flex min-w-0 gap-x-4 gap-y-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <TeamFilter
                     active={teamId === 'all'}
                     onClick={() => setTeamId('all')}
@@ -201,9 +210,9 @@ export function NewsPage() {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-xs font-bold text-brand-700 transition-colors hover:text-brand-500 sm:self-auto"
+                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-[10px] font-black uppercase tracking-[0.08em] text-brand-700 transition-colors hover:text-brand-500 lg:self-auto"
                 >
-                  <X size={13} />
+                  <X size={12} />
                   Zrušit filtry
                 </button>
               )}
@@ -438,23 +447,22 @@ function FilterButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`group relative shrink-0 pb-2 text-sm font-semibold transition-colors ${
-        active ? 'text-brand-900' : 'text-ink-500 hover:text-brand-900'
+      className={`inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-xs font-extrabold transition-colors ${
+        active
+          ? 'bg-brand-500 text-white'
+          : 'bg-white/70 text-brand-900 ring-1 ring-brand-900/8 hover:bg-white'
       }`}
     >
       <span>{children}</span>
-      <span
-        className={`ml-1.5 text-[10px] font-bold tabular-nums ${
-          active ? 'text-brand-500' : 'text-ink-500/55'
-        }`}
-      >
-        {count}
-      </span>
-      <span
-        className={`absolute inset-x-0 -bottom-px h-0.5 rounded-full transition-opacity ${
-          active ? 'bg-brand-500 opacity-100' : 'bg-brand-500 opacity-0 group-hover:opacity-35'
-        }`}
-      />
+      {count > 0 && (
+        <span
+          className={`text-[9px] font-black tabular-nums ${
+            active ? 'text-white/65' : 'text-ink-500/55'
+          }`}
+        >
+          {count}
+        </span>
+      )}
     </button>
   )
 }
@@ -473,10 +481,10 @@ function TeamFilter({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`shrink-0 text-xs font-semibold transition-colors ${
+      className={`shrink-0 rounded-full px-3 py-2 text-[10px] font-bold transition-colors ${
         active
-          ? 'text-brand-900 underline decoration-brand-500 decoration-2 underline-offset-4'
-          : 'text-ink-500 hover:text-brand-900'
+          ? 'bg-brand-900 text-white'
+          : 'bg-white/65 text-ink-500 ring-1 ring-brand-900/5 hover:bg-white hover:text-brand-900'
       }`}
     >
       {children}
