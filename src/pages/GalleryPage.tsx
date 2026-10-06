@@ -3,6 +3,8 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Images,
@@ -216,9 +218,6 @@ export function GalleryPage() {
                 >
                   {visibleGalleries.map((gallery, index) => {
                     const images = imagesByGallery.get(gallery.id) ?? []
-                    const firstImage = images.find((image) => galleryImageUrl(image))
-                    const cover =
-                      gallery.cover_image || (firstImage ? galleryImageUrl(firstImage) : null)
                     const featuredAlbum = index === 0 && !hasFilters
                     const span = featuredAlbum
                       ? 'lg:col-span-7 lg:row-span-2'
@@ -232,8 +231,7 @@ export function GalleryPage() {
                       <GalleryCard
                         key={gallery.id}
                         gallery={gallery}
-                        cover={cover}
-                        imageCount={images.length}
+                        images={images}
                         featured={featuredAlbum}
                         className={span}
                       />
@@ -374,50 +372,40 @@ function GalleryHeroVisual({
     )
   }
 
+  const previewUrls = albumPreviewUrls(gallery, images)
+
   return (
     <Link
       to={`/galerie/${gallery.slug || gallery.id}`}
-      className="group grid min-h-[390px] grid-cols-[1.38fr_.62fr] gap-2 overflow-hidden rounded-[36px] bg-brand-900 p-2 shadow-[0_24px_70px_rgba(24,53,42,.14)]"
+      className="group relative block min-h-[390px] overflow-hidden rounded-[36px] bg-brand-900 p-2 shadow-[0_24px_70px_rgba(24,53,42,.14)]"
     >
-      <div className="relative overflow-hidden rounded-[29px]">
-        <img
-          src={fallback}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.02]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-900/90 via-brand-900/10 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
-          <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/50">
-            Nejnovější album
-          </div>
-          <h2 className="mt-2 text-2xl font-black leading-[1] tracking-[-0.045em] sm:text-3xl">
-            {gallery.title}
-          </h2>
-          <div className="mt-3 flex items-center gap-3 text-[10px] font-semibold text-white/55">
-            <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
-            <span>·</span>
-            <span>{images.length} {photoCountLabel(images.length)}</span>
-          </div>
-        </div>
-      </div>
+      <AlbumAccordionPreview
+        urls={previewUrls}
+        className="h-[374px] rounded-[29px]"
+      />
 
-      <div className="grid gap-2">
-        {[urls[1] || fallback, urls[2] || fallback].map((url, index) => (
-          <div key={`${url}-${index}`} className="relative min-h-0 overflow-hidden rounded-[24px]">
-            <img
-              src={url}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.02]"
-            />
-            {index === 1 && (
-              <div className="absolute inset-0 grid place-items-center bg-brand-900/36">
-                <div className="grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-brand-900/35 text-white backdrop-blur">
-                  <ArrowUpRight size={18} />
-                </div>
-              </div>
-            )}
+      <div className="pointer-events-none absolute inset-x-2 bottom-2 rounded-b-[29px] bg-gradient-to-t from-brand-900 via-brand-900/72 to-transparent px-6 pb-6 pt-20 text-white sm:px-7">
+        <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/50">
+          Nejnovější album
+        </div>
+        <div className="mt-2 flex items-end justify-between gap-5">
+          <div>
+            <h2 className="text-2xl font-black leading-[1] tracking-[-0.045em] sm:text-3xl">
+              {gallery.title}
+            </h2>
+            <div className="mt-3 flex items-center gap-3 text-[10px] font-semibold text-white/55">
+              <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
+              <span>·</span>
+              <span>
+                {images.length} {photoCountLabel(images.length)}
+              </span>
+            </div>
           </div>
-        ))}
+
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur">
+            <ArrowUpRight size={18} />
+          </span>
+        </div>
       </div>
     </Link>
   )
@@ -453,23 +441,53 @@ function GallerySelect({
   onChange: (value: string) => void
   options: Array<{ value: string; label: string }>
 }) {
+  const detailsRef = useRef<HTMLDetailsElement>(null)
+  const selected = options.find((option) => option.value === value) ?? options[0]
+
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
+    <div className="relative">
+      <div className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
         {label}
-      </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-10 min-w-[132px] rounded-[13px] border border-brand-900/10 bg-[#fbfaf6] px-3 text-xs font-bold text-brand-900 outline-none transition-colors focus:border-brand-500/35"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+      </div>
+
+      <details ref={detailsRef} className="group relative">
+        <summary className="flex h-10 min-w-[142px] cursor-pointer list-none items-center justify-between gap-3 rounded-[14px] border border-brand-900/10 bg-[#fbfaf6] px-3.5 text-xs font-bold text-brand-900 outline-none transition-colors hover:border-brand-500/25 hover:bg-white focus-visible:ring-2 focus-visible:ring-brand-500/30 [&::-webkit-details-marker]:hidden">
+          <span>{selected?.label}</span>
+          <ChevronDown
+            size={14}
+            className="shrink-0 text-brand-500 transition-transform duration-200 group-open:rotate-180"
+          />
+        </summary>
+
+        <div className="absolute right-0 z-30 mt-2 max-h-64 min-w-[200px] overflow-y-auto rounded-[18px] border border-brand-900/10 bg-[#fbfaf6] p-1.5 shadow-[0_18px_45px_rgba(24,53,42,.14)]">
+          {options.map((option) => {
+            const active = option.value === value
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value)
+                  detailsRef.current?.removeAttribute('open')
+                }}
+                className={`flex w-full items-center justify-between gap-4 rounded-[13px] px-3 py-2.5 text-left text-xs font-bold transition-colors ${
+                  active
+                    ? 'bg-brand-900 text-white'
+                    : 'text-ink-500 hover:bg-brand-50 hover:text-brand-900'
+                }`}
+              >
+                <span>{option.label}</span>
+                <Check
+                  size={13}
+                  className={active ? 'text-brand-500' : 'opacity-0'}
+                />
+              </button>
+            )
+          })}
+        </div>
+      </details>
+    </div>
   )
 }
 
@@ -707,75 +725,111 @@ export function GalleryDetailPage() {
 
 function GalleryCard({
   gallery,
-  cover,
-  imageCount,
+  images,
   featured,
   className,
 }: {
   gallery: Gallery
-  cover: string | null
-  imageCount: number
+  images: GalleryImage[]
   featured: boolean
   className: string
 }) {
+  const previewUrls = albumPreviewUrls(gallery, images)
+
   return (
     <Link
       to={`/galerie/${gallery.slug || gallery.id}`}
-      className={`group relative min-h-[300px] overflow-hidden rounded-[34px] bg-brand-900 text-white shadow-soft transition duration-500 hover:-translate-y-1 ${featured ? 'lg:min-h-[630px]' : 'lg:min-h-[305px]'} ${className}`}
+      className={`group block overflow-hidden rounded-[30px] border border-brand-900/[0.08] bg-[#fbfaf6] shadow-[0_12px_34px_rgba(24,53,42,.05)] transition-shadow hover:shadow-[0_20px_46px_rgba(24,53,42,.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+        featured ? 'lg:row-span-2' : ''
+      } ${className}`}
     >
-      {cover ? (
-        <img
-          src={cover}
-          alt=""
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-        />
-      ) : (
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-65"
-        />
-      )}
+      <AlbumAccordionPreview
+        urls={previewUrls}
+        className={featured ? 'h-[340px] sm:h-[410px] lg:h-[445px]' : 'h-[220px] sm:h-[245px]'}
+      />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/28 to-transparent" />
-
-      <div className="relative flex h-full min-h-[300px] flex-col justify-between p-6 sm:p-7 lg:min-h-[inherit]">
-        <div className="flex items-start justify-between gap-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-white/75 backdrop-blur">
-            <Images size={13} />
-            {imageCount} {imageCount === 1 ? 'fotografie' : 'fotografií'}
+      <div className={featured ? 'p-6 sm:p-7' : 'p-5 sm:p-6'}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-ink-500">
+            {(gallery.event_date || gallery.created_at) && (
+              <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
+            )}
+            <span className="text-brand-500">·</span>
+            <span>
+              {images.length} {photoCountLabel(images.length)}
+            </span>
           </div>
 
-          <ArrowUpRight
-            size={19}
-            className="text-white/65 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-white"
-          />
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-brand-900/10 text-brand-900 transition-colors group-hover:border-brand-500/25 group-hover:bg-brand-50 group-hover:text-brand-500">
+            <ArrowUpRight size={15} />
+          </span>
         </div>
 
-        <div>
-          {(gallery.event_date || gallery.created_at) && (
-            <div className="text-xs font-semibold text-white/55">
-              {formatDate(gallery.event_date || gallery.created_at)}
-            </div>
-          )}
+        <h3
+          className={`mt-4 font-black leading-[1] tracking-[-0.05em] text-brand-900 ${
+            featured ? 'text-3xl sm:text-4xl' : 'text-2xl'
+          }`}
+        >
+          {gallery.title || 'Fotogalerie NFC Lichnov'}
+        </h3>
 
-          <h2
-            className={`mt-2 max-w-2xl font-extrabold leading-[0.98] tracking-[-0.05em] ${featured ? 'text-4xl sm:text-5xl' : 'text-3xl'}`}
-          >
-            {gallery.title || 'Fotogalerie NFC Lichnov'}
-          </h2>
-
-          {featured && gallery.description && (
-            <p className="mt-4 max-w-xl text-sm leading-6 text-white/65">
-              {gallery.description}
-            </p>
-          )}
-        </div>
+        {featured && gallery.description && (
+          <p className="mt-4 max-w-xl text-sm leading-6 text-ink-500">
+            {gallery.description}
+          </p>
+        )}
       </div>
     </Link>
   )
+}
+
+function AlbumAccordionPreview({
+  urls,
+  className,
+}: {
+  urls: string[]
+  className: string
+}) {
+  return (
+    <div className={`flex gap-1.5 overflow-hidden bg-brand-900 p-1.5 ${className}`}>
+      {urls.map((url, index) => (
+        <div
+          key={`${url}-${index}`}
+          className="group/photo relative min-w-0 flex-1 overflow-hidden rounded-[20px] transition-all duration-300 ease-out sm:hover:flex-[3.25]"
+        >
+          <img
+            src={url}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/photo:scale-[1.015]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-900/20 via-transparent to-transparent" />
+          {urls.length > 1 && (
+            <span className="absolute left-3 top-3 rounded-full bg-brand-900/45 px-2 py-1 text-[9px] font-black tabular-nums text-white/80 opacity-0 backdrop-blur transition-opacity duration-200 group-hover/photo:opacity-100">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
+  const urls: string[] = []
+  const seen = new Set<string>()
+
+  const add = (value: string | null | undefined) => {
+    if (!value || seen.has(value)) return
+    seen.add(value)
+    urls.push(value)
+  }
+
+  add(gallery.cover_image)
+  images.forEach((image) => add(galleryImageUrl(image)))
+
+  if (!urls.length) add('/hero-lichnov-field.webp')
+  return urls.slice(0, 4)
 }
 
 function Lightbox({
