@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
@@ -925,9 +926,9 @@ function AlbumOverlay({
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [lightboxOpen, onClose])
 
-  return (
+  return createPortal(
     <div
-      className="lightbox-enter fixed inset-0 z-[70] flex items-center justify-center bg-brand-900/68 p-3 backdrop-blur-md sm:p-5 lg:p-7"
+      className="lightbox-enter fixed inset-0 z-[120] flex items-center justify-center bg-brand-900/68 p-3 backdrop-blur-md sm:p-5 lg:p-7"
       role="dialog"
       aria-modal="true"
       aria-labelledby="album-overlay-title"
@@ -1026,7 +1027,8 @@ function AlbumOverlay({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -1082,9 +1084,9 @@ function Lightbox({
 
   if (!url) return null
 
-  return (
+  return createPortal(
     <div
-      className={`${closing ? 'lightbox-exit' : 'lightbox-enter'} fixed inset-0 z-[80] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6`}
+      className={`${closing ? 'lightbox-exit' : 'lightbox-enter'} fixed inset-0 z-[130] grid place-items-center bg-brand-900/95 p-3 backdrop-blur-md sm:p-6`}
       role="dialog"
       aria-modal="true"
       aria-label="Náhled fotografie"
@@ -1146,6 +1148,7 @@ function Lightbox({
           {image.caption && <span>{image.caption}</span>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
