@@ -271,17 +271,17 @@ export function ClubStatsPage() {
         </div>
       </section>
 
-      <section className="data-fade-in bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
+      <section className="data-fade-in bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-7 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45 sm:text-xs">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 {firstSeason} — {lastSeason}
               </div>
-              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] md:text-5xl">
+              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] text-brand-900 md:text-5xl">
                 Celá soutěžní historie v jedné tabulce.
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-7 text-white/60 sm:text-base">
+              <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
                 Zápasy, bilance, skóre, body, soutěž a konečné umístění podle
                 historického přehledu „Minuty pravdy“. Nedokončené ročníky zůstávají
                 označené přímo v tabulce.
@@ -290,13 +290,13 @@ export function ClubStatsPage() {
                 href="https://nfclichnov.wbs.cz/Minuty-pravdy.html"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-[14px] border border-white/15 bg-white/[0.06] px-4 py-2.5 text-sm font-bold text-white/80 transition hover:bg-white/[0.12] hover:text-white"
+                className="mt-6 inline-flex items-center gap-2 rounded-[14px] border border-sand-200 bg-white px-4 py-2.5 text-sm font-bold text-brand-900 transition hover:-translate-y-0.5 hover:border-brand-500/20 hover:shadow-soft"
               >
                 Otevřít původní přehled <ArrowUpRight size={14} />
               </a>
             </div>
 
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-5">
+            <div className="rounded-[28px] bg-brand-900 p-5 text-white shadow-soft">
               <div className="grid grid-cols-3 gap-4">
                 <DarkStat value={String(seasons.length)} label="sezon" />
                 <DarkStat value={String(promotionCount)} label="postupů" />

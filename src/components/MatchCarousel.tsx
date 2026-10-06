@@ -1,11 +1,17 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 import { useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react'
-import { formatMatchDate, formatMatchDay, formatMatchTime, matchScore } from '../lib/format'
+import { formatMatchDate, formatMatchDay, formatMatchTime, matchScore, matchVenueMapUrl } from '../lib/format'
 import type { TeamMatchSummary } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 import { EmptyState } from './LoadingState'
 
-export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
+export function MatchCarousel({
+  items,
+  venueLinks = false,
+}: {
+  items: TeamMatchSummary[]
+  venueLinks?: boolean
+}) {
   const [index, setIndex] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
@@ -126,10 +132,22 @@ export function MatchCarousel({ items }: { items: TeamMatchSummary[] }) {
               <ClubSide name={active.match.away_team_name} logo={active.match.away_team_logo} align="left" />
             </div>
 
-            <div className="mt-8 border-t border-sand-200 pt-4 text-center text-xs font-medium text-ink-500">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t border-sand-200 pt-4 text-center text-xs font-medium text-ink-500">
               <span>{formatMatchDate(active.match.playing_at)}</span>
-              {active.match.competition_name && <span> · {active.match.competition_name}</span>}
-              {active.match.round && <span> · {active.match.round}</span>}
+              {active.match.competition_name && <span>· {active.match.competition_name}</span>}
+              {active.match.round && <span>· {active.match.round}</span>}
+              {venueLinks && active.kind === 'upcoming' && (
+                <a
+                  href={matchVenueMapUrl(active.match)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 font-bold text-brand-700 transition-colors hover:text-brand-500"
+                  title={`Otevřít hřiště domácího týmu ${active.match.home_team_name} v Google Maps`}
+                >
+                  <MapPin size={13} />
+                  {active.match.pitch_name || `Hřiště — ${active.match.home_team_name}`}
+                </a>
+              )}
             </div>
           </>
         ) : (
