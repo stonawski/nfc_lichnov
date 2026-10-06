@@ -5,8 +5,6 @@ import {
   ArrowUpRight,
   CalendarDays,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Goal,
   Search,
   Trophy,
@@ -252,7 +250,7 @@ export function ClubStatsPage() {
                 return (
                   <article
                     key={season.ordinal}
-                    className={`w-[82vw] max-w-[380px] shrink-0 snap-start overflow-hidden rounded-[28px] border bg-[#fbfaf6] text-brand-900 sm:w-[350px] ${
+                    className={`w-[82vw] max-w-[380px] shrink-0 overflow-hidden rounded-[28px] border bg-[#fbfaf6] text-brand-900 sm:w-[350px] ${
                       promotion
                         ? 'border-brand-500/25'
                         : 'border-white/10'
@@ -318,7 +316,7 @@ export function ClubStatsPage() {
           </MilestoneRail>
 
           <div className="mt-3 text-[10px] font-semibold text-white/35">
-            Táhni myší, swipni nebo použij šipky pro další zlomové sezony.
+            Táhni myší nebo swipni prstem pro další zlomové sezony.
           </div>
         </div>
       </section>
@@ -601,69 +599,70 @@ function MilestoneRail({ children }: { children: ReactNode }) {
     active: false,
     startX: 0,
     scrollLeft: 0,
+    nextScrollLeft: 0,
+    frame: 0 as number | 0,
   })
 
-  const scrollByCard = (direction: number) => {
-    railRef.current?.scrollBy({
-      left: direction * 370,
-      behavior: 'smooth',
-    })
+  const applyDragFrame = () => {
+    const rail = railRef.current
+    if (!rail) return
+
+    rail.scrollLeft = dragRef.current.nextScrollLeft
+    dragRef.current.frame = 0
   }
 
   return (
-    <div className="mt-10">
-      <div className="mb-3 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={() => scrollByCard(-1)}
-          aria-label="Předchozí zlomové sezony"
-          className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-white transition-colors hover:bg-white/12"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByCard(1)}
-          aria-label="Další zlomové sezony"
-          className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-white transition-colors hover:bg-white/12"
-        >
-          <ChevronRight size={18} />
-        </button>
-      </div>
-
+    <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2">
       <div
         ref={railRef}
-        className="-mx-5 cursor-grab overflow-x-auto scroll-smooth px-5 pb-3 active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-8 md:px-8"
+        className="cursor-grab touch-pan-x select-none overflow-x-auto overscroll-x-contain scroll-smooth pb-4 pl-5 pr-5 active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:pl-8 md:pr-8 xl:pl-[calc((100vw-1240px)/2)] xl:pr-[calc((100vw-1240px)/2)]"
         onPointerDown={(event) => {
           if (event.pointerType !== 'mouse' || event.button !== 0) return
           const rail = railRef.current
           if (!rail) return
 
-          dragRef.current = {
-            active: true,
-            startX: event.clientX,
-            scrollLeft: rail.scrollLeft,
-          }
+          dragRef.current.active = true
+          dragRef.current.startX = event.clientX
+          dragRef.current.scrollLeft = rail.scrollLeft
+          dragRef.current.nextScrollLeft = rail.scrollLeft
           rail.setPointerCapture(event.pointerId)
         }}
         onPointerMove={(event) => {
           if (!dragRef.current.active || event.pointerType !== 'mouse') return
-          const rail = railRef.current
-          if (!rail) return
 
           const delta = event.clientX - dragRef.current.startX
-          rail.scrollLeft = dragRef.current.scrollLeft - delta
+          dragRef.current.nextScrollLeft =
+            dragRef.current.scrollLeft - delta
+
+          if (!dragRef.current.frame) {
+            dragRef.current.frame = window.requestAnimationFrame(applyDragFrame)
+          }
         }}
         onPointerUp={(event) => {
           if (event.pointerType !== 'mouse') return
+
           dragRef.current.active = false
-          railRef.current?.releasePointerCapture(event.pointerId)
+          if (dragRef.current.frame) {
+            window.cancelAnimationFrame(dragRef.current.frame)
+            dragRef.current.frame = 0
+            applyDragFrame()
+          }
+
+          const rail = railRef.current
+          if (rail?.hasPointerCapture(event.pointerId)) {
+            rail.releasePointerCapture(event.pointerId)
+          }
         }}
         onPointerCancel={() => {
           dragRef.current.active = false
+          if (dragRef.current.frame) {
+            window.cancelAnimationFrame(dragRef.current.frame)
+            dragRef.current.frame = 0
+          }
         }}
+        onDragStart={(event) => event.preventDefault()}
       >
-        <div className="flex w-max snap-x snap-mandatory gap-4">
+        <div className="flex w-max gap-4">
           {children}
         </div>
       </div>
