@@ -80,10 +80,10 @@ export function NewsPage() {
 
   return (
     <main>
-      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-12 pt-[120px] sm:-mt-[88px] sm:pt-[132px] md:px-8 md:pb-16 md:pt-[140px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-10 pt-[120px] sm:-mt-[88px] sm:pt-[132px] md:px-8 md:pb-12 md:pt-[140px]">
         <HeroFieldBackdrop />
 
-        <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
+        <div className="relative mx-auto w-full max-w-[1240px]">
           <div className="grid gap-7 lg:grid-cols-[minmax(0,.78fr)_minmax(440px,1.22fr)] lg:items-end">
             <div className="max-w-[680px] py-4">
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
@@ -114,7 +114,7 @@ export function NewsPage() {
             <PinnedNewsCard article={pinned} />
           </div>
 
-          <div className="mt-8 border-y border-brand-900/10 bg-white/70 py-5">
+          <div className="mt-8 rounded-[24px] border border-white/80 bg-white/[0.84] px-5 py-5 shadow-[0_16px_42px_rgba(24,53,42,.06)] backdrop-blur-md sm:px-6">
             <div className="grid gap-5 lg:grid-cols-[minmax(260px,.72fr)_1.28fr] lg:items-start">
               <label className="relative block">
                 <span className="sr-only">Hledat v aktualitách</span>
@@ -212,7 +212,7 @@ export function NewsPage() {
         </div>
       </section>
 
-      <section className="bg-sand-100 px-5 py-14 md:px-8 md:py-20">
+      <section className="bg-sand-100 px-5 pb-14 pt-12 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px]">
           {query.isLoading || teamsQuery.isLoading ? (
             <LoadingState rows={5} />
