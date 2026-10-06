@@ -809,7 +809,7 @@ function HeroFact({ value, label }: { value: string; label: string }) {
 
 function ArealHeroStat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="border-b border-white/10 p-5 last:border-b-0 sm:border-b sm:border-r sm:p-6 sm:nth-[2n]:border-r-0 sm:nth-[n+3]:border-b-0">
+    <div className="border-b border-white/10 p-5 last:border-b-0 sm:border-b sm:border-r sm:p-6 sm:[&:nth-child(2n)]:border-r-0 sm:[&:nth-child(n+3)]:border-b-0">
       <div className="text-2xl font-black tracking-[-0.05em] text-white">
         {value}
       </div>
