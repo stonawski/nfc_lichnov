@@ -5,12 +5,14 @@ import {
   ArrowUpRight,
   CalendarDays,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Goal,
   Search,
   Trophy,
   Users,
 } from 'lucide-react'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   fetchPublicClubStats,
   getBundledClubStats,
@@ -243,8 +245,7 @@ export function ClubStatsPage() {
             </div>
           </div>
 
-          <div className="-mx-5 mt-10 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-8 md:px-8">
-            <div className="flex w-max snap-x snap-mandatory gap-4">
+          <MilestoneRail>
               {milestones.map((season) => {
                 const promotion = season.outcome === 'promotion'
 
@@ -314,11 +315,10 @@ export function ClubStatsPage() {
                   </article>
                 )
               })}
-            </div>
-          </div>
+          </MilestoneRail>
 
           <div className="mt-3 text-[10px] font-semibold text-white/35">
-            Posuň do strany pro další zlomové sezony.
+            Táhni myší, swipni nebo použij šipky pro další zlomové sezony.
           </div>
         </div>
       </section>
@@ -592,6 +592,82 @@ function RankingTab({
     >
       {children}
     </button>
+  )
+}
+
+function MilestoneRail({ children }: { children: ReactNode }) {
+  const railRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({
+    active: false,
+    startX: 0,
+    scrollLeft: 0,
+  })
+
+  const scrollByCard = (direction: number) => {
+    railRef.current?.scrollBy({
+      left: direction * 370,
+      behavior: 'smooth',
+    })
+  }
+
+  return (
+    <div className="mt-10">
+      <div className="mb-3 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => scrollByCard(-1)}
+          aria-label="Předchozí zlomové sezony"
+          className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-white transition-colors hover:bg-white/12"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByCard(1)}
+          aria-label="Další zlomové sezony"
+          className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-white transition-colors hover:bg-white/12"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      <div
+        ref={railRef}
+        className="-mx-5 cursor-grab overflow-x-auto scroll-smooth px-5 pb-3 active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-8 md:px-8"
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse' || event.button !== 0) return
+          const rail = railRef.current
+          if (!rail) return
+
+          dragRef.current = {
+            active: true,
+            startX: event.clientX,
+            scrollLeft: rail.scrollLeft,
+          }
+          rail.setPointerCapture(event.pointerId)
+        }}
+        onPointerMove={(event) => {
+          if (!dragRef.current.active || event.pointerType !== 'mouse') return
+          const rail = railRef.current
+          if (!rail) return
+
+          const delta = event.clientX - dragRef.current.startX
+          rail.scrollLeft = dragRef.current.scrollLeft - delta
+        }}
+        onPointerUp={(event) => {
+          if (event.pointerType !== 'mouse') return
+          dragRef.current.active = false
+          railRef.current?.releasePointerCapture(event.pointerId)
+        }}
+        onPointerCancel={() => {
+          dragRef.current.active = false
+        }}
+      >
+        <div className="flex w-max snap-x snap-mandatory gap-4">
+          {children}
+        </div>
+      </div>
+    </div>
   )
 }
 
