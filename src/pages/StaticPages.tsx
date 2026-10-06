@@ -576,14 +576,14 @@ export function ContactPage() {
         </div>
       </section>
 
-      <section className="bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
+      <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="max-w-2xl">
-            <SectionEyebrow light>Kam se obrátit</SectionEyebrow>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] text-white md:text-5xl">
+            <SectionEyebrow>Kam se obrátit</SectionEyebrow>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] text-brand-900 md:text-5xl">
               Správný kontakt bez hledání.
             </h2>
-            <p className="mt-5 text-sm leading-7 text-white/55 sm:text-base">
+            <p className="mt-5 text-sm leading-7 text-ink-500 sm:text-base">
               Ne každý dotaz musí jít přes stejné místo. Vyber si oblast a pokračuj rovnou tam, kde ji klub řeší.
             </p>
           </div>
@@ -591,24 +591,24 @@ export function ContactPage() {
           <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {contactRoutes.map((item) => {
               const className =
-                'group flex min-h-[220px] flex-col justify-between rounded-[28px] border border-white/10 bg-white/[0.055] p-5 transition-colors hover:border-brand-500/30 hover:bg-white/[0.085]'
+                'group flex min-h-[220px] flex-col justify-between rounded-[28px] border border-sand-200 bg-white p-5 transition-colors hover:border-brand-500/20 hover:bg-brand-50/25'
 
               const content = (
                 <>
                   <div className="flex items-start justify-between gap-4">
-                    <div className="grid h-10 w-10 place-items-center rounded-[14px] bg-white/10 text-brand-500">
+                    <div className="grid h-10 w-10 place-items-center rounded-[14px] bg-brand-50 text-brand-700">
                       {item.icon}
                     </div>
-                    <ArrowUpRight size={16} className="text-white/35 transition-colors group-hover:text-brand-500" />
+                    <ArrowUpRight size={16} className="text-ink-500 transition-colors group-hover:text-brand-500" />
                   </div>
                   <div>
                     <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
                       {item.eyebrow}
                     </div>
-                    <div className="mt-2 text-xl font-extrabold tracking-[-0.035em] text-white">
+                    <div className="mt-2 text-xl font-extrabold tracking-[-0.035em] text-brand-900">
                       {item.title}
                     </div>
-                    <p className="mt-3 text-xs leading-5 text-white/50">{item.text}</p>
+                    <p className="mt-3 text-xs leading-5 text-ink-500">{item.text}</p>
                   </div>
                 </>
               )
@@ -624,43 +624,43 @@ export function ContactPage() {
               )
             })}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-14 border-t border-white/10 pt-10">
-            <div className="grid gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-end">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                  Chceš se přidat?
-                </div>
-                <h3 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
-                  Přijď se podívat na trénink.
-                </h3>
-                <p className="mt-4 max-w-lg text-sm leading-7 text-white/55">
-                  Níže jsou pravidelné tréninkové dny. U kategorií bez uvedeného času si aktuální hodinu ověř u realizačního týmu.
-                </p>
-                <Link
-                  to="/tymy"
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-brand-500"
-                >
-                  Kontakty na týmy <ArrowRight size={14} />
-                </Link>
-              </div>
-
-              <div className="grid gap-px overflow-hidden rounded-[26px] border border-white/10 bg-white/10 sm:grid-cols-2">
-                {trainingTimes.map((training) => (
-                  <div key={training.team} className="bg-brand-900 p-5 sm:p-6">
-                    <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
-                      {training.team}
-                    </div>
-                    <div className="mt-3 text-lg font-extrabold text-white">
-                      {training.days}
-                    </div>
-                    <div className="mt-1 text-sm font-semibold text-white/45">
-                      {training.time ? training.time : 'čas dle realizačního týmu'}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      <section className="bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
+        <div className="mx-auto grid max-w-[1240px] gap-9 lg:grid-cols-[.62fr_1.38fr] lg:items-end">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+              Chceš se přidat?
             </div>
+            <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] text-white md:text-5xl">
+              Přijď se podívat na trénink.
+            </h2>
+            <p className="mt-5 max-w-lg text-sm leading-7 text-white/55 sm:text-base">
+              Níže jsou pravidelné tréninkové dny. U kategorií bez uvedeného času si aktuální hodinu ověř u realizačního týmu.
+            </p>
+            <Link
+              to="/tymy"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-brand-500"
+            >
+              Kontakty na týmy <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid gap-px overflow-hidden rounded-[26px] border border-white/10 bg-white/10 sm:grid-cols-2">
+            {trainingTimes.map((training) => (
+              <div key={training.team} className="bg-brand-900 p-5 sm:p-6">
+                <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
+                  {training.team}
+                </div>
+                <div className="mt-3 text-lg font-extrabold text-white">
+                  {training.days}
+                </div>
+                <div className="mt-1 text-sm font-semibold text-white/45">
+                  {training.time ? training.time : 'čas dle realizačního týmu'}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
