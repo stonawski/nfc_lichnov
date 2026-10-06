@@ -615,7 +615,7 @@ function MilestoneRail({ children }: { children: ReactNode }) {
     <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2">
       <div
         ref={railRef}
-        className="cursor-grab touch-pan-x select-none overflow-x-auto overscroll-x-contain scroll-smooth pb-4 pl-5 pr-5 active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:pl-8 md:pr-8 xl:pl-[calc((100vw-1240px)/2)] xl:pr-[calc((100vw-1240px)/2)]"
+        className="cursor-grab select-none overflow-x-auto overscroll-x-contain pb-4 [-webkit-overflow-scrolling:touch] pl-5 pr-5 active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:pl-8 md:pr-8 xl:pl-[calc((100vw-1240px)/2)] xl:pr-[calc((100vw-1240px)/2)]"
         onPointerDown={(event) => {
           if (event.pointerType !== 'mouse' || event.button !== 0) return
           const rail = railRef.current
