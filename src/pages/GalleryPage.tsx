@@ -59,7 +59,13 @@ export function GalleryPage() {
 
   const galleries = galleriesQuery.data ?? []
   const teams = teamsQuery.data ?? []
-  const featured = galleries[0] ?? null
+  const featured = useMemo(
+    () =>
+      [...galleries].sort(
+        (a, b) => galleryTimestamp(b) - galleryTimestamp(a),
+      )[0] ?? null,
+    [galleries],
+  )
   const loading =
     galleriesQuery.isLoading || imagesQuery.isLoading || teamsQuery.isLoading
 
@@ -137,7 +143,7 @@ export function GalleryPage() {
         </div>
       </section>
 
-      <section className="bg-sand-100 px-5 py-14 md:px-8 md:py-20">
+      <section id="gallery-albums" className="scroll-mt-24 bg-sand-100 px-5 py-14 md:px-8 md:py-20">
         <div className="mx-auto max-w-[1240px]">
           <div className="flex flex-col gap-6 border-b border-brand-900/10 pb-7 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -290,7 +296,11 @@ export function GalleryPage() {
                       type="button"
                       onClick={() => {
                         setYear(item)
-                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                        window.requestAnimationFrame(() => {
+                          document
+                            .getElementById('gallery-albums')
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        })
                       }}
                       className="group flex min-h-[126px] items-end justify-between rounded-[24px] border border-sand-200 bg-[#fbfaf6] p-5 text-left transition-colors hover:border-brand-500/25 hover:bg-brand-50/40"
                     >
