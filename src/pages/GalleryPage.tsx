@@ -377,14 +377,14 @@ function GalleryHeroVisual({
   return (
     <Link
       to={`/galerie/${gallery.slug || gallery.id}`}
-      className="group relative block min-h-[390px] overflow-hidden rounded-[36px] bg-brand-900 p-2 shadow-[0_24px_70px_rgba(24,53,42,.14)]"
+      className="group relative block min-h-[390px] overflow-hidden shadow-[0_24px_70px_rgba(24,53,42,.14)]"
     >
       <AlbumAccordionPreview
         urls={previewUrls}
-        className="h-[374px] rounded-[29px]"
+        className="h-[390px]"
       />
 
-      <div className="pointer-events-none absolute inset-x-2 bottom-2 rounded-b-[29px] bg-gradient-to-t from-brand-900 via-brand-900/72 to-transparent px-6 pb-6 pt-20 text-white sm:px-7">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-900 via-brand-900/72 to-transparent px-6 pb-6 pt-20 text-white sm:px-7">
         <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/50">
           Nejnovější album
         </div>
@@ -402,7 +402,7 @@ function GalleryHeroVisual({
             </div>
           </div>
 
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur">
+          <span className="grid h-11 w-11 shrink-0 place-items-center border border-white/20 bg-white/10 text-white backdrop-blur">
             <ArrowUpRight size={18} />
           </span>
         </div>
@@ -739,45 +739,47 @@ function GalleryCard({
   return (
     <Link
       to={`/galerie/${gallery.slug || gallery.id}`}
-      className={`group block overflow-hidden rounded-[30px] border border-brand-900/[0.08] bg-[#fbfaf6] shadow-[0_12px_34px_rgba(24,53,42,.05)] transition-shadow hover:shadow-[0_20px_46px_rgba(24,53,42,.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+      className={`group relative block overflow-hidden bg-brand-900 shadow-[0_12px_34px_rgba(24,53,42,.05)] transition-shadow hover:shadow-[0_20px_46px_rgba(24,53,42,.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
         featured ? 'lg:row-span-2' : ''
       } ${className}`}
     >
       <AlbumAccordionPreview
         urls={previewUrls}
-        className={featured ? 'h-[340px] sm:h-[410px] lg:h-[445px]' : 'h-[220px] sm:h-[245px]'}
+        className={featured ? 'h-[440px] sm:h-[520px] lg:h-[590px]' : 'h-[300px] sm:h-[330px]'}
       />
 
-      <div className={featured ? 'p-6 sm:p-7' : 'p-5 sm:p-6'}>
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-ink-500">
-            {(gallery.event_date || gallery.created_at) && (
-              <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-900 via-brand-900/82 to-transparent px-5 pb-5 pt-20 text-white sm:px-6 sm:pb-6">
+        <div className="flex items-end justify-between gap-5">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/55">
+              {(gallery.event_date || gallery.created_at) && (
+                <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
+              )}
+              <span className="text-brand-500">·</span>
+              <span>
+                {images.length} {photoCountLabel(images.length)}
+              </span>
+            </div>
+
+            <h3
+              className={`mt-2 max-w-2xl font-black leading-[1] tracking-[-0.05em] ${
+                featured ? 'text-3xl sm:text-4xl' : 'text-2xl'
+              }`}
+            >
+              {gallery.title || 'Fotogalerie NFC Lichnov'}
+            </h3>
+
+            {featured && gallery.description && (
+              <p className="mt-3 line-clamp-2 max-w-xl text-sm leading-6 text-white/65">
+                {gallery.description}
+              </p>
             )}
-            <span className="text-brand-500">·</span>
-            <span>
-              {images.length} {photoCountLabel(images.length)}
-            </span>
           </div>
 
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-brand-900/10 text-brand-900 transition-colors group-hover:border-brand-500/25 group-hover:bg-brand-50 group-hover:text-brand-500">
-            <ArrowUpRight size={15} />
+          <span className="grid h-10 w-10 shrink-0 place-items-center border border-white/20 bg-white/10 text-white backdrop-blur transition-colors group-hover:bg-white/16">
+            <ArrowUpRight size={16} />
           </span>
         </div>
-
-        <h3
-          className={`mt-4 font-black leading-[1] tracking-[-0.05em] text-brand-900 ${
-            featured ? 'text-3xl sm:text-4xl' : 'text-2xl'
-          }`}
-        >
-          {gallery.title || 'Fotogalerie NFC Lichnov'}
-        </h3>
-
-        {featured && gallery.description && (
-          <p className="mt-4 max-w-xl text-sm leading-6 text-ink-500">
-            {gallery.description}
-          </p>
-        )}
       </div>
     </Link>
   )
@@ -791,11 +793,11 @@ function AlbumAccordionPreview({
   className: string
 }) {
   return (
-    <div className={`flex gap-1.5 overflow-hidden bg-brand-900 p-1.5 ${className}`}>
+    <div className={`flex overflow-hidden ${className}`}>
       {urls.map((url, index) => (
         <div
           key={`${url}-${index}`}
-          className="group/photo relative min-w-0 flex-1 overflow-hidden rounded-[20px] transition-all duration-300 ease-out sm:hover:flex-[3.25]"
+          className="group/photo relative min-w-0 flex-1 overflow-hidden transition-all duration-300 ease-out sm:hover:flex-[3.25]"
         >
           <img
             src={url}
@@ -803,9 +805,9 @@ function AlbumAccordionPreview({
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/photo:scale-[1.015]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-900/20 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-900/18 via-transparent to-transparent" />
           {urls.length > 1 && (
-            <span className="absolute left-3 top-3 rounded-full bg-brand-900/45 px-2 py-1 text-[9px] font-black tabular-nums text-white/80 opacity-0 backdrop-blur transition-opacity duration-200 group-hover/photo:opacity-100">
+            <span className="absolute left-3 top-3 bg-brand-900/45 px-2 py-1 text-[9px] font-black tabular-nums text-white/80 opacity-0 backdrop-blur transition-opacity duration-200 group-hover/photo:opacity-100">
               {String(index + 1).padStart(2, '0')}
             </span>
           )}
