@@ -381,6 +381,19 @@ img {
   animation: carousel-content-enter 520ms var(--motion-ease) both;
 }
 
+.album-overlay-backdrop {
+  animation: album-overlay-backdrop-enter 220ms var(--motion-ease-soft) both;
+}
+
+.album-overlay-panel {
+  animation: album-overlay-panel-enter 320ms var(--motion-ease) both;
+  will-change: opacity, transform;
+}
+
+.album-grid-enter {
+  animation: album-grid-enter 260ms var(--motion-ease-soft) both;
+}
+
 .lightbox-enter {
   animation: lightbox-enter 420ms var(--motion-ease) both;
 }
@@ -467,6 +480,28 @@ img {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes album-overlay-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes album-overlay-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes album-grid-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes lightbox-enter {
