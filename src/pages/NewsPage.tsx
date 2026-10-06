@@ -208,7 +208,7 @@ export function NewsPage() {
                 </button>
               )}
             </div>
-          </div>          </div>
+          </div>
         </div>
       </section>
 
