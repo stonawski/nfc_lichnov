@@ -155,7 +155,7 @@ export function MatchDetailPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-10 md:px-8 md:py-12">
+      <section className="relative bg-transparent px-5 py-10 md:px-8 md:py-12">
         <div className="mx-auto grid max-w-[1180px] gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
           <div className="overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
             <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
