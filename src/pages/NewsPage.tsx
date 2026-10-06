@@ -151,7 +151,7 @@ export function NewsPage() {
                   </span>
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="-my-1 flex gap-2 overflow-x-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <FilterButton
                     active={category === 'all'}
                     onClick={() => setCategory('all')}
@@ -441,7 +441,7 @@ function FilterButton({
       className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2.5 text-xs font-bold transition-colors ${
         active
           ? 'bg-brand-900 text-white'
-          : 'bg-white text-ink-500 ring-1 ring-brand-900/[0.08] hover:text-brand-900'
+          : 'border border-brand-900/[0.08] bg-white text-ink-500 hover:text-brand-900'
       }`}
     >
       <span>{children}</span>
