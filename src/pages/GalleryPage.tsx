@@ -355,6 +355,7 @@ export function GalleryPage() {
           images={openGalleryImages}
           onClose={closeAlbum}
           onOpenImage={setOpenImageIndex}
+          lightboxOpen={openImageIndex != null}
         />
       )}
 
@@ -899,11 +900,13 @@ function AlbumOverlay({
   images,
   onClose,
   onOpenImage,
+  lightboxOpen,
 }: {
   gallery: Gallery
   images: GalleryImage[]
   onClose: () => void
   onOpenImage: (index: number) => void
+  lightboxOpen: boolean
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -912,13 +915,15 @@ function AlbumOverlay({
   }, [])
 
   useEffect(() => {
+    if (lightboxOpen) return
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
+  }, [lightboxOpen, onClose])
 
   return (
     <div
