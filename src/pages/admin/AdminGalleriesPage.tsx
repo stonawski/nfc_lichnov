@@ -21,6 +21,7 @@ import {
   fetchAdminGalleryImages,
   setGalleryPublished,
 } from '../../lib/adminData'
+import { fetchTeams } from '../../lib/data'
 import { formatDate } from '../../lib/format'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
 
@@ -303,8 +304,15 @@ function CreateGalleryDialog({ onClose }: { onClose: () => void }) {
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
   const [eventDate, setEventDate] = useState('')
+  const [teamId, setTeamId] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
   const queryClient = useQueryClient()
+
+  const teamsQuery = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    retry: false,
+  })
 
   const suggestedSlug = useMemo(() => slugify(title), [title])
 
@@ -329,6 +337,7 @@ function CreateGalleryDialog({ onClose }: { onClose: () => void }) {
       slug: slug || suggestedSlug,
       description,
       event_date: eventDate,
+      team_id: teamId || null,
     })
   }
 
@@ -382,14 +391,32 @@ function CreateGalleryDialog({ onClose }: { onClose: () => void }) {
             />
           </Field>
 
-          <Field label="Datum akce">
-            <input
-              type="date"
-              value={eventDate}
-              onChange={(event) => setEventDate(event.target.value)}
-              className="admin-input"
-            />
-          </Field>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Datum akce">
+              <input
+                type="date"
+                value={eventDate}
+                onChange={(event) => setEventDate(event.target.value)}
+                className="admin-input"
+              />
+            </Field>
+
+            <Field label="Tým">
+              <select
+                value={teamId}
+                onChange={(event) => setTeamId(event.target.value)}
+                className="admin-input"
+                disabled={teamsQuery.isLoading}
+              >
+                <option value="">Celý klub / bez týmu</option>
+                {(teamsQuery.data ?? []).map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.short_name || team.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
 
           <Field label="Popis">
             <textarea
