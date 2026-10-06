@@ -921,7 +921,7 @@ function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
   return urls.slice(0, 4)
 }
 
-function AlbumOverlay({
+export function AlbumOverlay({
   gallery,
   images,
   onClose,
@@ -1076,7 +1076,7 @@ function AlbumOverlay({
   )
 }
 
-function Lightbox({
+export function Lightbox({
   image,
   index,
   count,
