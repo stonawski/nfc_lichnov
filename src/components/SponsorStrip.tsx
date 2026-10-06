@@ -33,28 +33,10 @@ const PARTNERS = [
 export function SponsorStrip() {
   return (
     <section
-      className="border-t border-brand-900/[0.08] bg-[#f7f3e8] py-8 sm:py-10"
-      aria-labelledby="sponsor-strip-heading"
+      className="border-t border-brand-900/[0.07] bg-white py-5 sm:py-6"
+      aria-label="Partneři NFC Lichnov"
     >
-      <div className="mx-auto flex max-w-[1460px] items-end justify-between gap-6 px-5 sm:px-8 lg:px-10">
-        <div>
-          <div className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-500">
-            Děkujeme za podporu
-          </div>
-          <h2
-            id="sponsor-strip-heading"
-            className="mt-1 text-xl font-black tracking-[-0.04em] text-brand-900 sm:text-2xl"
-          >
-            Partneři NFC Lichnov
-          </h2>
-        </div>
-
-        <div className="hidden text-right text-[10px] font-semibold text-ink-500 sm:block">
-          Klub drží pohromadě i díky nim.
-        </div>
-      </div>
-
-      <div className="sponsor-marquee mt-6 overflow-hidden">
+      <div className="sponsor-marquee overflow-hidden">
         <div className="sponsor-track flex w-max">
           <SponsorGroup />
           <SponsorGroup duplicate />
@@ -89,7 +71,7 @@ function SponsorItem({
   duplicate: boolean
 }) {
   const content = (
-    <div className="flex h-[92px] w-[210px] shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-brand-900/[0.08] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(24,53,42,.035)] sm:h-[108px] sm:w-[255px] sm:px-5 sm:py-4">
+    <div className="flex h-[86px] w-[210px] shrink-0 items-center justify-center overflow-hidden px-5 py-3 sm:h-[98px] sm:w-[250px] sm:px-6">
       {partner.image ? (
         <img
           src={partner.image}
@@ -112,19 +94,20 @@ function SponsorItem({
     </div>
   )
 
-  if (!duplicate && 'href' in partner && partner.href) {
+  if ('href' in partner && partner.href) {
     return (
       <a
         href={partner.href}
         target="_blank"
         rel="noreferrer"
-        aria-label={partner.name}
-        className="shrink-0 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        aria-label={duplicate ? undefined : partner.name}
+        tabIndex={duplicate ? -1 : undefined}
+        className="shrink-0 transition-opacity hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         {content}
       </a>
     )
   }
 
-  return <div className="shrink-0" title={partner.name}>{content}</div>
+  return <div className="shrink-0" title={duplicate ? undefined : partner.name}>{content}</div>
 }
