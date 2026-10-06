@@ -71,7 +71,11 @@ function SponsorGroup({ duplicate = false }: { duplicate?: boolean }) {
       aria-hidden={duplicate || undefined}
     >
       {PARTNERS.map((partner) => (
-        <SponsorItem key={`${partner.name}-${duplicate ? 'duplicate' : 'primary'}`} partner={partner} />
+        <SponsorItem
+          key={`${partner.name}-${duplicate ? 'duplicate' : 'primary'}`}
+          partner={partner}
+          duplicate={duplicate}
+        />
       ))}
     </div>
   )
@@ -79,8 +83,10 @@ function SponsorGroup({ duplicate = false }: { duplicate?: boolean }) {
 
 function SponsorItem({
   partner,
+  duplicate,
 }: {
   partner: (typeof PARTNERS)[number]
+  duplicate: boolean
 }) {
   const content = (
     <div className="flex h-[92px] w-[210px] shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-brand-900/[0.08] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(24,53,42,.035)] sm:h-[108px] sm:w-[255px] sm:px-5 sm:py-4">
@@ -106,7 +112,7 @@ function SponsorItem({
     </div>
   )
 
-  if ('href' in partner && partner.href) {
+  if (!duplicate && 'href' in partner && partner.href) {
     return (
       <a
         href={partner.href}
