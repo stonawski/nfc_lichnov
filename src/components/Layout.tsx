@@ -10,6 +10,7 @@ import { Navigation } from './Navigation'
 import { PageMotion } from './PageMotion'
 import { PublicRouteSeo } from './PublicRouteSeo'
 import { PublicRouteWarmup } from './PublicRouteWarmup'
+import { SponsorStrip } from './SponsorStrip'
 
 function heroBackdropForPath(pathname: string): {
   visible: boolean
@@ -69,6 +70,7 @@ export function Layout() {
           <Outlet />
         </PageMotion>
       </div>
+      <SponsorStrip />
       <Footer />
     </div>
   )
