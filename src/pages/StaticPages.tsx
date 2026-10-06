@@ -15,10 +15,11 @@ import {
   Trophy,
   Users,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
-import { fetchGalleries } from '../lib/data'
+import { AlbumOverlay, Lightbox } from './GalleryPage'
+import { fetchGalleries, fetchGalleryImages } from '../lib/data'
 
 const CLUB_ADDRESS = 'Lichnov 286, 742 75 Lichnov'
 const CLUB_GPS = '49.5681739,18.1676489'
@@ -263,6 +264,9 @@ export function HistoryPage() {
 }
 
 export function ArealPage() {
+  const [albumOpen, setAlbumOpen] = useState(false)
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
+
   const galleriesQuery = useQuery({
     queryKey: ['galleries'],
     queryFn: fetchGalleries,
@@ -272,9 +276,42 @@ export function ArealPage() {
   const arealGallery = (galleriesQuery.data ?? []).find((gallery) =>
     normalizeStaticText(gallery.title).includes('areal'),
   )
-  const galleryHref = arealGallery
-    ? `/galerie?album=${encodeURIComponent(arealGallery.slug || arealGallery.id)}`
-    : '/galerie'
+
+  const imagesQuery = useQuery({
+    queryKey: ['gallery-images', arealGallery?.id],
+    queryFn: () => fetchGalleryImages(arealGallery!.id),
+    enabled: Boolean(arealGallery?.id),
+    retry: false,
+    staleTime: 5 * 60_000,
+  })
+
+  const arealImages = imagesQuery.data ?? []
+  const activeImage =
+    activeImageIndex == null ? null : arealImages[activeImageIndex] ?? null
+
+  useEffect(() => {
+    if (!albumOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    const previousPaddingRight = document.body.style.paddingRight
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`
+    }
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.body.style.paddingRight = previousPaddingRight
+    }
+  }, [albumOpen])
+
+  const closeAlbum = () => {
+    setActiveImageIndex(null)
+    setAlbumOpen(false)
+  }
 
   return (
     <main>
@@ -286,14 +323,14 @@ export function ArealPage() {
             <div className="max-w-[720px]">
               <SectionEyebrow>Sportovní areál</SectionEyebrow>
               <h1 className="mt-4 text-[clamp(3.1rem,7vw,6.4rem)] font-black leading-[.88] tracking-[-0.072em] text-brand-900">
-                NFC Lichnov aréna.
+                Stadion NFC Lichnov.
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
                 Domácí hřiště klubu, tribuna pro fanoušky a zázemí, které se v Lichnově buduje už desítky let.
               </p>
             </div>
 
-            <div className="grid gap-px overflow-hidden rounded-[28px] border border-brand-900/10 bg-brand-900/10 sm:grid-cols-2">
+            <div className="grid overflow-hidden rounded-[28px] bg-brand-900 text-white shadow-[0_18px_50px_rgba(24,53,42,.12)] sm:grid-cols-2">
               <ArealHeroStat value="1 000" label="kapacita stadionu" />
               <ArealHeroStat value="cca 200" label="krytých míst" />
               <ArealHeroStat value="98 × 66 m" label="hlavní hřiště" />
@@ -310,7 +347,7 @@ export function ArealPage() {
             ].map((item) => (
               <span
                 key={item}
-                className="rounded-full border border-white/80 bg-white/70 px-3.5 py-2 text-[10px] font-bold text-brand-900 backdrop-blur"
+                className="rounded-full border border-brand-900/10 bg-white/70 px-3.5 py-2 text-[10px] font-bold text-brand-900 backdrop-blur"
               >
                 {item}
               </span>
@@ -344,34 +381,47 @@ export function ArealPage() {
 
       <section className="bg-white px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
-          <div className="grid overflow-hidden rounded-[38px] bg-brand-900 lg:grid-cols-[1.15fr_.85fr]">
+          <div className="grid overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] lg:grid-cols-[1.15fr_.85fr]">
             <div className="relative min-h-[360px] overflow-hidden">
               <img
                 src={arealGallery?.cover_image || '/hero-lichnov-field.webp'}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-brand-900/25 via-transparent to-brand-900/20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-brand-900/12 via-transparent to-brand-900/10" />
             </div>
 
-            <div className="flex flex-col justify-center p-7 text-white sm:p-10 lg:p-12">
-              <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+            <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+              <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
                 <Images size={14} />
                 Fotky z areálu
               </div>
-              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em]">
-                Projdi si areál i obrazem.
+              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] text-brand-900">
+                Projdi si stadion i obrazem.
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-7 text-white/60">
+              <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500">
                 V galerii najdeš fotografie hlavní plochy, tribuny i okolí stadionu.
-                Album Areál můžeš otevřít samostatně a projít si všechny snímky.
+                Album Areál můžeš otevřít přímo tady bez opuštění stránky.
               </p>
-              <Link
-                to={galleryHref}
-                className="mt-7 inline-flex w-fit items-center gap-2 rounded-[15px] bg-white px-4 py-2.5 text-sm font-bold text-brand-900 transition-colors hover:bg-brand-50"
-              >
-                {arealGallery ? 'Otevřít album Areál' : 'Otevřít galerii'} <ArrowRight size={14} />
-              </Link>
+
+              {arealGallery ? (
+                <button
+                  type="button"
+                  onClick={() => setAlbumOpen(true)}
+                  disabled={imagesQuery.isLoading}
+                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-[15px] bg-brand-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {imagesQuery.isLoading ? 'Načítám fotky…' : 'Otevřít album Areál'}
+                  <ArrowRight size={14} />
+                </button>
+              ) : (
+                <Link
+                  to="/galerie"
+                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-[15px] bg-brand-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700"
+                >
+                  Otevřít galerii <ArrowRight size={14} />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -412,6 +462,33 @@ export function ArealPage() {
           </div>
         </div>
       </section>
+
+      {albumOpen && arealGallery && (
+        <AlbumOverlay
+          gallery={arealGallery}
+          images={arealImages}
+          onClose={closeAlbum}
+          onOpenImage={setActiveImageIndex}
+          lightboxOpen={activeImageIndex != null}
+        />
+      )}
+
+      {albumOpen && activeImage && activeImageIndex != null && (
+        <Lightbox
+          image={activeImage}
+          index={activeImageIndex}
+          count={arealImages.length}
+          onClose={() => setActiveImageIndex(null)}
+          onPrevious={() =>
+            setActiveImageIndex(
+              (activeImageIndex - 1 + arealImages.length) % arealImages.length,
+            )
+          }
+          onNext={() =>
+            setActiveImageIndex((activeImageIndex + 1) % arealImages.length)
+          }
+        />
+      )}
     </main>
   )
 }
@@ -450,6 +527,13 @@ export function ContactPage() {
       icon: <MapPin size={19} />,
       external: false,
     },
+  ]
+
+  const trainingTimes = [
+    { team: 'Muži', days: 'Úterý · čtvrtek', time: '16:00' },
+    { team: 'Dorost', days: 'Úterý · čtvrtek', time: null },
+    { team: 'Žáci', days: 'Pondělí · středa', time: null },
+    { team: 'Přípravky', days: 'Pondělí · středa', time: null },
   ]
 
   return (
@@ -492,14 +576,14 @@ export function ContactPage() {
         </div>
       </section>
 
-      <section className="bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+      <section className="bg-brand-900 px-5 py-16 text-white md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px]">
           <div className="max-w-2xl">
-            <SectionEyebrow>Kam se obrátit</SectionEyebrow>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] text-brand-900 md:text-5xl">
+            <SectionEyebrow light>Kam se obrátit</SectionEyebrow>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] text-white md:text-5xl">
               Správný kontakt bez hledání.
             </h2>
-            <p className="mt-5 text-sm leading-7 text-ink-500 sm:text-base">
+            <p className="mt-5 text-sm leading-7 text-white/55 sm:text-base">
               Ne každý dotaz musí jít přes stejné místo. Vyber si oblast a pokračuj rovnou tam, kde ji klub řeší.
             </p>
           </div>
@@ -507,24 +591,24 @@ export function ContactPage() {
           <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {contactRoutes.map((item) => {
               const className =
-                'group flex min-h-[220px] flex-col justify-between rounded-[28px] border border-sand-200 bg-white p-5 transition-colors hover:border-brand-500/20 hover:bg-brand-50/25'
+                'group flex min-h-[220px] flex-col justify-between rounded-[28px] border border-white/10 bg-white/[0.055] p-5 transition-colors hover:border-brand-500/30 hover:bg-white/[0.085]'
 
               const content = (
                 <>
                   <div className="flex items-start justify-between gap-4">
-                    <div className="grid h-10 w-10 place-items-center rounded-[14px] bg-brand-50 text-brand-700">
+                    <div className="grid h-10 w-10 place-items-center rounded-[14px] bg-white/10 text-brand-500">
                       {item.icon}
                     </div>
-                    <ArrowUpRight size={16} className="text-ink-500 transition-colors group-hover:text-brand-500" />
+                    <ArrowUpRight size={16} className="text-white/35 transition-colors group-hover:text-brand-500" />
                   </div>
                   <div>
                     <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
                       {item.eyebrow}
                     </div>
-                    <div className="mt-2 text-xl font-extrabold tracking-[-0.035em] text-brand-900">
+                    <div className="mt-2 text-xl font-extrabold tracking-[-0.035em] text-white">
                       {item.title}
                     </div>
-                    <p className="mt-3 text-xs leading-5 text-ink-500">{item.text}</p>
+                    <p className="mt-3 text-xs leading-5 text-white/50">{item.text}</p>
                   </div>
                 </>
               )
@@ -539,6 +623,44 @@ export function ContactPage() {
                 </Link>
               )
             })}
+          </div>
+
+          <div className="mt-14 border-t border-white/10 pt-10">
+            <div className="grid gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-end">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                  Chceš se přidat?
+                </div>
+                <h3 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
+                  Přijď se podívat na trénink.
+                </h3>
+                <p className="mt-4 max-w-lg text-sm leading-7 text-white/55">
+                  Níže jsou pravidelné tréninkové dny. U kategorií bez uvedeného času si aktuální hodinu ověř u realizačního týmu.
+                </p>
+                <Link
+                  to="/tymy"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-brand-500"
+                >
+                  Kontakty na týmy <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              <div className="grid gap-px overflow-hidden rounded-[26px] border border-white/10 bg-white/10 sm:grid-cols-2">
+                {trainingTimes.map((training) => (
+                  <div key={training.team} className="bg-brand-900 p-5 sm:p-6">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-500">
+                      {training.team}
+                    </div>
+                    <div className="mt-3 text-lg font-extrabold text-white">
+                      {training.days}
+                    </div>
+                    <div className="mt-1 text-sm font-semibold text-white/45">
+                      {training.time ? training.time : 'čas dle realizačního týmu'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -687,11 +809,11 @@ function HeroFact({ value, label }: { value: string; label: string }) {
 
 function ArealHeroStat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="bg-white/76 p-5 backdrop-blur-sm sm:p-6">
-      <div className="text-2xl font-black tracking-[-0.05em] text-brand-900">
+    <div className="border-b border-white/10 p-5 last:border-b-0 sm:border-b sm:border-r sm:p-6 sm:nth-[2n]:border-r-0 sm:nth-[n+3]:border-b-0">
+      <div className="text-2xl font-black tracking-[-0.05em] text-white">
         {value}
       </div>
-      <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
+      <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white/45">
         {label}
       </div>
     </div>
