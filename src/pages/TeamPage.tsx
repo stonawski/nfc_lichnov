@@ -87,7 +87,8 @@ export function TeamPage() {
     (matchesQuery.isLoading ||
       standingsQuery.isLoading ||
       playersQuery.isLoading ||
-      staffQuery.isLoading)
+      staffQuery.isLoading ||
+      galleriesQuery.isLoading)
 
   if (teamQuery.isLoading || teamDataLoading) {
     return <PublicDataPageLoading sections={4} />
@@ -234,7 +235,7 @@ export function TeamPage() {
                     }
                   />
                   <HeroMetric
-                    label="Nejlepší střelec"
+                    label="Střelec sezony"
                     value={topScorer ? playerName(topScorer) : '—'}
                     detail={
                       topScorer
