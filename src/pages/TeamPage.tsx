@@ -3,9 +3,7 @@ import type { ReactNode } from 'react'
 import {
   ArrowRight,
   ArrowUpRight,
-  CalendarDays,
   ChevronRight,
-  Goal,
   Images,
   UsersRound,
 } from 'lucide-react'
@@ -26,7 +24,6 @@ import {
   fetchTeamBySlug,
 } from '../lib/data'
 import {
-  formatMatchDate,
   formatMatchDay,
   formatMatchTime,
   initials,
