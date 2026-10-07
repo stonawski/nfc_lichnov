@@ -670,12 +670,22 @@ function ShopProductCard({
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#f8f7f2_0%,#f1f0e9_100%)]" />
 
+      <div className="absolute left-5 right-5 top-5 grid h-[72%] place-items-center rounded-[18px] bg-white/55 px-8 text-center sm:left-6 sm:right-6 sm:top-6">
+        <div>
+          <ShoppingBag size={22} className="mx-auto text-brand-500/60" />
+          <div className="mt-3 text-sm font-extrabold leading-5 text-brand-900/45">
+            {product.title}
+          </div>
+        </div>
+      </div>
+
       <img
         src={product.image}
         alt={product.title}
         loading="lazy"
         draggable={false}
-        className="absolute inset-x-5 top-5 h-[72%] w-[calc(100%-2.5rem)] object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.018] sm:inset-x-6 sm:top-6 sm:w-[calc(100%-3rem)]"
+        referrerPolicy="no-referrer"
+        className="absolute left-5 right-5 top-5 h-[72%] object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.018] sm:left-6 sm:right-6 sm:top-6"
         onError={(event) => {
           const image = event.currentTarget;
           image.style.display = "none";
@@ -696,7 +706,7 @@ function ShopProductCard({
             {product.title}
           </div>
 
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition-colors group-hover:bg-white/18">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition-colors group-hover:bg-white/[0.18]">
             <ArrowUpRight size={14} />
           </span>
         </div>
