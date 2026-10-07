@@ -89,13 +89,6 @@ function TeamMediaCard({
   const effectiveImage = team.hero_image_url || galleryCover
   const resourceId = `team-${team.id}`
 
-  const setImageMutation = useMutation({
-    mutationFn: async (url: string | null) => setTeamHeroImage(team.id, url),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['teams'] })
-    },
-  })
-
   async function handleUploaded({
     publicUrl,
     objectKey,
@@ -159,6 +152,10 @@ function TeamMediaCard({
 
     await queryClient.invalidateQueries({ queryKey: ['teams'] })
   }
+
+  const removeMutation = useMutation({
+    mutationFn: removeImage,
+  })
 
   return (
     <article className="overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]">
@@ -226,10 +223,10 @@ function TeamMediaCard({
         {team.hero_image_url && (
           <button
             type="button"
-            disabled={setImageMutation.isPending}
+            disabled={removeMutation.isPending}
             onClick={() => {
               if (window.confirm('Opravdu chceš odstranit vlastní týmovou fotografii?')) {
-                void removeImage()
+                removeMutation.mutate()
               }
             }}
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
@@ -239,7 +236,7 @@ function TeamMediaCard({
           </button>
         )}
 
-        {setImageMutation.isError && (
+        {removeMutation.isError && (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-3 text-xs text-red-700">
             Fotografii se nepodařilo uložit. Ověř, že je aplikovaná migrace
             team_hero_image.
