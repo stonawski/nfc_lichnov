@@ -444,38 +444,17 @@ const FANSHOP_PRODUCTS = [
     href: "https://nfclichnov.kastomi.com/4356-teplakova-souprava-teplaky",
   },
   {
-    id: 3974,
-    title: "Větrovka NFC Lichnov",
-    price: "579 Kč",
-    image: "https://cdn.kastomi.com/files/3974-preview.png",
-    href: "https://nfclichnov.kastomi.com/3974-vetrovka-nfc-lichnov",
-  },
-  {
     id: 3985,
     title: "Polotričko s proužky",
     price: "464 Kč",
-    image: "https://cdn.kastomi.com/files/3985-preview.png",
+    image: "/shop/nfc-polo.jpg",
     href: "https://nfclichnov.kastomi.com/3985-polotricko-s-prouzky",
-  },
-  {
-    id: 3912,
-    title: "Tričko s malým logem",
-    price: "294 Kč",
-    image: "https://cdn.kastomi.com/files/3912-preview.png",
-    href: "https://nfclichnov.kastomi.com/3912-tricko-s-malym-logem",
-  },
-  {
-    id: 3979,
-    title: "Rolovací batoh NFC Lichnov",
-    price: "304 Kč",
-    image: "https://cdn.kastomi.com/files/3979-preview.png",
-    href: "https://nfclichnov.kastomi.com/3979-rolovaci-batoh-nfc-lichnov",
   },
   {
     id: 3894,
     title: "Pletená zimní šála",
     price: "295 Kč",
-    image: "https://cdn.kastomi.com/files/3894-preview.png",
+    image: "/shop/nfc-scarf.jpg",
     href: "https://nfclichnov.kastomi.com/3894-pletena-zimni-sala",
   },
 ] as const;
@@ -524,91 +503,104 @@ function FanshopShowcase() {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-12 sm:py-14 lg:py-16">
+    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-14 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <img
           src="/hero-lichnov-field.webp"
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover opacity-[0.085] grayscale"
+          className="h-full w-full object-cover opacity-[0.22] grayscale"
         />
-        <div className="absolute inset-0 bg-white/[0.82]" />
-        <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,.38)_0%,rgba(251,250,246,.18)_58%,rgba(244,248,243,.34)_100%)]" />
-        <div className="absolute left-[7%] top-0 whitespace-nowrap text-[clamp(6rem,17vw,16rem)] font-black leading-[.78] tracking-[-0.09em] text-brand-500/[0.085]">
-          FANSHOP
-        </div>
+        <div className="absolute inset-0 bg-white/[0.62]" />
+        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(255,255,255,.52)_0%,rgba(255,255,255,.30)_48%,rgba(245,249,246,.44)_100%)]" />
       </div>
 
-      <div className="relative">
-        <div className="mx-auto max-w-[1480px] px-5 md:px-8">
-          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="max-w-[650px]">
+      <div className="relative mx-auto max-w-[1480px] px-5 md:px-8">
+        <div className="pointer-events-none absolute -left-2 top-[-18px] whitespace-nowrap text-[clamp(6rem,15vw,14rem)] font-black leading-none tracking-[-0.09em] text-brand-500/[0.095]">
+          FANSHOP
+        </div>
+
+        <div className="relative grid gap-9 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[330px_minmax(0,1fr)] xl:gap-10">
+          <div className="flex min-h-[500px] flex-col justify-between py-2 lg:min-h-[490px]">
+            <div>
               <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 <ShoppingBag size={15} />
                 Klubový e-shop
               </div>
-              <h2 className="mt-3 text-[clamp(2.6rem,5vw,4.9rem)] font-black leading-[.9] tracking-[-0.065em] text-brand-900">
+
+              <h2 className="mt-4 max-w-[360px] text-[clamp(2.8rem,4.2vw,4.8rem)] font-black leading-[.9] tracking-[-0.065em] text-brand-900">
                 NFC nosíme i mimo hřiště.
               </h2>
+
+              <div className="mt-10 max-w-[280px]">
+                <div className="text-[9px] font-black uppercase tracking-[0.17em] text-brand-500">
+                  Fanoušci NFC
+                </div>
+                <p className="mt-3 text-xl font-extrabold leading-7 tracking-[-0.035em] text-brand-900">
+                  Klubové oblečení a doplňky pro hřiště i každý den.
+                </p>
+                <p className="mt-4 text-sm leading-6 text-ink-500">
+                  Vybrané produkty z aktuální nabídky Kastomi.
+                </p>
+              </div>
             </div>
 
             <a
               href="https://nfclichnov.kastomi.com/"
               target="_blank"
               rel="noreferrer"
-              className="hidden items-center gap-2 text-sm font-bold text-brand-900 transition-colors hover:text-brand-500 lg:inline-flex"
+              className="mt-8 inline-flex w-fit items-center gap-2 rounded-[14px] bg-brand-900 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-brand-700"
             >
-              Celý fanshop <ArrowUpRight size={15} />
+              Navštívit fanshop <ArrowRight size={14} />
             </a>
           </div>
-        </div>
 
-        <div
-          ref={railRef}
-          className="mt-8 cursor-grab select-none overflow-x-auto overscroll-x-contain pb-3 active:cursor-grabbing [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
-          onPointerDown={startDrag}
-          onPointerMove={moveDrag}
-          onPointerUp={stopDrag}
-          onPointerCancel={() => {
-            dragRef.current.active = false;
-          }}
-          onClickCapture={(event) => {
-            if (!dragRef.current.moved) return;
-            event.preventDefault();
-            event.stopPropagation();
-            dragRef.current.moved = false;
-          }}
-          onDragStart={(event) => event.preventDefault()}
-        >
-          <div className="flex w-max items-stretch gap-3 pl-5 pr-5 md:gap-4 md:pl-8 md:pr-8 xl:pl-[max(2rem,calc((100vw-1480px)/2+2rem))]">
-            <div className="flex w-[255px] shrink-0 flex-col justify-between py-3 pr-4 sm:w-[280px] sm:pr-6 lg:w-[300px]">
-              <div>
-                <div className="text-[9px] font-black uppercase tracking-[0.17em] text-brand-500">
-                  Fanoušci NFC
-                </div>
-                <p className="mt-4 text-xl font-extrabold leading-7 tracking-[-0.035em] text-brand-900 sm:text-2xl sm:leading-8">
-                  Klubové oblečení a doplňky pro hřiště i každý den.
-                </p>
-                <p className="mt-4 max-w-[260px] text-sm leading-6 text-ink-500">
-                  Vybrané produkty z aktuální nabídky Kastomi. Táhni do strany a projdi další kousky.
-                </p>
+          <div className="min-w-0">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
+                Vybrané produkty
               </div>
 
               <a
                 href="https://nfclichnov.kastomi.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-8 inline-flex w-fit items-center gap-2 rounded-[14px] bg-brand-900 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-brand-700"
+                className="inline-flex items-center gap-2 text-xs font-bold text-brand-900 transition-colors hover:text-brand-500"
               >
-                Navštívit fanshop <ArrowRight size={14} />
+                Celý fanshop <ArrowUpRight size={14} />
               </a>
             </div>
 
-            {FANSHOP_PRODUCTS.map((product) => (
-              <ShopProductCard key={product.id} product={product} />
-            ))}
+            <div className="overflow-hidden">
+              <div
+                ref={railRef}
+                className="cursor-grab select-none overflow-x-auto overscroll-x-contain pb-2 active:cursor-grabbing [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
+                onPointerDown={startDrag}
+                onPointerMove={moveDrag}
+                onPointerUp={stopDrag}
+                onPointerCancel={() => {
+                  dragRef.current.active = false;
+                }}
+                onClickCapture={(event) => {
+                  if (!dragRef.current.moved) return;
+                  event.preventDefault();
+                  event.stopPropagation();
+                  dragRef.current.moved = false;
+                }}
+                onDragStart={(event) => event.preventDefault()}
+              >
+                <div className="flex w-max gap-4 pr-1">
+                  {FANSHOP_PRODUCTS.map((product) => (
+                    <ShopProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </div>
+            </div>
 
-         </div>
+            <div className="mt-4 text-[10px] font-semibold text-ink-500/70">
+              Táhni myší nebo swipni pro další produkty.
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -626,7 +618,7 @@ function ShopProductCard({
       target="_blank"
       rel="noreferrer"
       aria-label={`Otevřít ${product.title} v e-shopu`}
-      className="group relative h-[455px] w-[300px] shrink-0 overflow-hidden rounded-[26px] border border-brand-900/[0.07] bg-[#f5f4ef] shadow-[0_16px_44px_rgba(24,53,42,.055)] sm:h-[490px] sm:w-[330px]"
+      className="group relative h-[440px] w-[270px] shrink-0 overflow-hidden rounded-[26px] border border-brand-900/[0.07] bg-[#f5f4ef] shadow-[0_16px_44px_rgba(24,53,42,.055)] sm:h-[470px] sm:w-[300px] xl:w-[315px]"
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#f8f7f2_0%,#f1f0e9_100%)]" />
 
