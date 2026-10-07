@@ -10,6 +10,20 @@ export type CreateGalleryInput = {
   team_id?: string | null
 }
 
+export async function setTeamHeroImage(
+  id: string,
+  heroImageUrl: string | null,
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc('set_team_hero_image', {
+    p_team_id: id,
+    p_hero_image_url: heroImageUrl,
+  })
+
+  if (error) throw error
+  return typeof data === 'string' ? data : null
+}
+
+
 const gallerySelect =
   'id,team_id,title,slug,description,cover_image,event_date,published,published_at,sort_order,created_at,updated_at'
 
