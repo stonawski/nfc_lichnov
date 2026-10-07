@@ -2,9 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import {
   ArrowRight,
+  ArrowUpRight,
   CalendarClock,
   CalendarDays,
   ChevronRight,
+  Goal,
+  Images,
   MapPin,
   Trophy,
   UsersRound,
@@ -19,6 +22,7 @@ import { Seo } from '../components/Seo'
 import { StandingsTable } from '../components/StandingsTable'
 import {
   fetchDisplayPlayersByTeam,
+  fetchGalleries,
   fetchMatchesByTeam,
   fetchStaffByTeam,
   fetchStandingsByTeam,
@@ -68,6 +72,12 @@ export function TeamPage() {
   const staffQuery = useQuery({
     queryKey: ['staff', team?.id],
     queryFn: () => fetchStaffByTeam(team!.id),
+    enabled: Boolean(team?.id),
+    retry: false,
+  })
+  const galleriesQuery = useQuery({
+    queryKey: ['galleries', 'team-hero', team?.id],
+    queryFn: fetchGalleries,
     enabled: Boolean(team?.id),
     retry: false,
   })
@@ -123,35 +133,63 @@ export function TeamPage() {
     /lichnov/i.test(row.team_name || row.club_name || ''),
   )
 
+  const players = playersQuery.data ?? []
+  const topScorer = [...players]
+    .filter((player) => (player.goals_count ?? 0) > 0)
+    .sort((a, b) => {
+      const goalDifference = (b.goals_count ?? 0) - (a.goals_count ?? 0)
+      if (goalDifference !== 0) return goalDifference
+      return (b.matches_count ?? 0) - (a.matches_count ?? 0)
+    })[0]
+
+  const teamGallery = (galleriesQuery.data ?? []).find(
+    (gallery) => gallery.team_id === team.id,
+  )
+  const teamHeroImage =
+    team.hero_image_url || teamGallery?.cover_image || '/hero-lichnov-field.webp'
+  const hasTeamPhoto = Boolean(team.hero_image_url || teamGallery?.cover_image)
+  const galleryHref = teamGallery
+    ? `/galerie?album=${encodeURIComponent(teamGallery.slug || teamGallery.id)}`
+    : null
+  const competitionName =
+    next?.competition_name || latest?.competition_name || null
+  const form = matches
+    .filter((match) => {
+      if (new Date(match.playing_at).getTime() > now) return false
+      const [home, away] = resolvedMatchScore(match)
+      return home != null && away != null
+    })
+    .sort((a, b) => +new Date(b.playing_at) - +new Date(a.playing_at))
+    .slice(0, 5)
+    .map((match) => teamMatchOutcome(match))
+    .filter((result): result is 'V' | 'R' | 'P' => result != null)
+
   return (
     <main className="data-fade-in">
       <Seo
         title={team.name}
         description={`${team.name} NFC Lichnov — zápasy, hráči, tabulka a realizační tým.`}
-        image={team.logo_url}
+        image={teamHeroImage || team.logo_url}
         canonicalPath={`/tymy/${team.slug}`}
       />
       <section className="site-hero-frame relative -mt-[84px] flex flex-col px-5 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-14 md:pt-[144px]">
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
-          <div className="relative overflow-hidden rounded-[42px] bg-brand-900 px-6 py-7 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)] sm:px-9 sm:py-10 lg:px-12 lg:py-12">
+          <div className="relative overflow-hidden rounded-[42px] bg-brand-900 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)]">
             <img
               src="/hero-lichnov-field.webp"
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-[68%_center] opacity-[0.16]"
+              className="absolute inset-0 h-full w-full object-cover opacity-[0.12]"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(95deg,#18352a_0%,rgba(24,53,42,.96)_45%,rgba(24,53,42,.72)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,146,63,.22)_0%,transparent_42%,rgba(255,255,255,.05)_100%)]" />
-            <div className="pointer-events-none absolute -bottom-9 -left-3 select-none text-[120px] font-black leading-none tracking-[-0.08em] text-white/[0.025] sm:text-[180px]">
-              NFC
-            </div>
+            <div className="absolute inset-0 bg-[linear-gradient(105deg,#18352a_0%,rgba(24,53,42,.96)_52%,rgba(24,53,42,.82)_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,146,63,.18),transparent_34%)]" />
 
-            <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(460px,.92fr)] lg:items-end">
-              <div>
+            <div className="relative grid gap-7 p-6 sm:p-8 lg:grid-cols-[.92fr_1.08fr] lg:gap-8 lg:p-10">
+              <div className="flex min-w-0 flex-col">
                 <div className="flex items-center gap-4">
-                  <div className="grid h-24 w-24 shrink-0 place-items-center rounded-[28px] bg-white shadow-xl ring-1 ring-white/30 sm:h-28 sm:w-28">
+                  <div className="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] bg-white shadow-xl ring-1 ring-white/30 sm:h-24 sm:w-24">
                     <ClubLogo src={team.logo_url} name={team.name} size="lg" />
                   </div>
 
@@ -168,63 +206,118 @@ export function TeamPage() {
                       <span className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/70">
                         Sezóna {team.season || 'aktuální'}
                       </span>
+                      {competitionName && (
+                        <span className="max-w-[260px] truncate rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/70">
+                          {competitionName}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <h1 className="mt-8 max-w-3xl text-5xl font-black leading-[0.9] tracking-[-0.065em] sm:text-6xl lg:text-7xl">
+                <h1 className="mt-7 max-w-2xl text-5xl font-black leading-[0.9] tracking-[-0.065em] sm:text-6xl lg:text-7xl">
                   {team.name}
                 </h1>
 
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {!playersQuery.isLoading && (
-                    <DataFade>
-                      <HeroStat
-                        label="Hráči"
-                        value={String(playersQuery.data?.length ?? 0)}
-                      />
-                    </DataFade>
-                  )}
-                  {!standingsQuery.isLoading && (
-                    <DataFade>
-                      <HeroStat
-                        label="Tabulka"
-                        value={lichnovStanding?.rank != null ? `${lichnovStanding.rank}. místo` : '—'}
-                      />
-                    </DataFade>
-                  )}
-                  {!matchesQuery.isLoading && (
-                    <DataFade>
-                      <HeroStat
-                        label="Zápasy"
-                        value={String(matches.length)}
-                      />
-                    </DataFade>
-                  )}
+                <div className="mt-8 grid grid-cols-2 gap-2.5">
+                  <HeroMetric
+                    label="Aktuální pozice"
+                    value={
+                      lichnovStanding?.rank != null
+                        ? `${lichnovStanding.rank}. místo`
+                        : '—'
+                    }
+                    detail={
+                      lichnovStanding?.points != null
+                        ? `${lichnovStanding.points} bodů`
+                        : undefined
+                    }
+                  />
+                  <HeroMetric
+                    label="Nejlepší střelec"
+                    value={topScorer ? playerName(topScorer) : '—'}
+                    detail={
+                      topScorer
+                        ? `${topScorer.goals_count ?? 0} gólů`
+                        : 'zatím bez dat'
+                    }
+                    icon={<Goal size={15} />}
+                  />
+                  <HeroMetric
+                    label="Bilance"
+                    value={
+                      lichnovStanding
+                        ? `${lichnovStanding.wins_count ?? 0}–${lichnovStanding.draws_count ?? 0}–${lichnovStanding.losses_count ?? 0}`
+                        : '—'
+                    }
+                    detail={
+                      lichnovStanding?.matches_count != null
+                        ? `${lichnovStanding.matches_count} zápasů`
+                        : undefined
+                    }
+                  />
+                  <FormMetric form={form} />
                 </div>
               </div>
 
-              {matchesQuery.isLoading ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="min-h-[190px] rounded-[28px] border border-white/10 bg-white/[0.05]" />
-                  <div className="min-h-[190px] rounded-[28px] border border-white/10 bg-white/[0.05]" />
+              <div className="relative min-h-[360px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.06] sm:min-h-[430px]">
+                <img
+                  src={teamHeroImage}
+                  alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
+                  aria-hidden={hasTeamPhoto ? undefined : true}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                  <div className="flex items-end justify-between gap-5">
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/50">
+                        {hasTeamPhoto ? 'Týmová fotografie' : 'NFC Lichnov'}
+                      </div>
+                      <div className="mt-2 text-xl font-black tracking-[-0.035em] text-white sm:text-2xl">
+                        {team.name}
+                      </div>
+                    </div>
+
+                    {galleryHref && (
+                      <Link
+                        to={galleryHref}
+                        className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-white/20 bg-brand-900/55 px-3.5 py-2.5 text-xs font-bold text-white backdrop-blur-sm transition hover:bg-brand-900"
+                      >
+                        <Images size={14} />
+                        Galerie
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <DataFade className="grid gap-3 sm:grid-cols-2">
-                  <HeroMatch
-                    label="Poslední výsledek"
-                    match={latest}
-                    kind="result"
-                    returnTo={returnTo}
-                  />
-                  <HeroMatch
-                    label="Další zápas"
-                    match={next}
-                    kind="upcoming"
-                    returnTo={returnTo}
-                  />
-                </DataFade>
-              )}
+              </div>
+            </div>
+
+            <div className="relative border-t border-white/10 p-6 sm:p-8 lg:px-10 lg:pb-10 lg:pt-7">
+              <div className="mb-3 flex items-center justify-between gap-4">
+                <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/40">
+                  Aktuálně
+                </div>
+                <div className="text-[10px] font-semibold text-white/35">
+                  {players.length} hráčů v soupisce
+                </div>
+              </div>
+
+              <DataFade className="grid gap-3 sm:grid-cols-2">
+                <HeroMatch
+                  label="Poslední výsledek"
+                  match={latest}
+                  kind="result"
+                  returnTo={returnTo}
+                />
+                <HeroMatch
+                  label="Další zápas"
+                  match={next}
+                  kind="upcoming"
+                  returnTo={returnTo}
+                />
+              </DataFade>
             </div>
           </div>
 
@@ -520,13 +613,91 @@ function SectionLink({ href, children }: { href: string; children: ReactNode }) 
   )
 }
 
-function HeroStat({ label, value }: { label: string; value: string }) {
+function playerName(player: { first_name: string | null; last_name: string | null }) {
+  return [player.first_name, player.last_name].filter(Boolean).join(' ') || 'Hráč NFC'
+}
+
+function resolvedMatchScore(match: Match): [number | null, number | null] {
+  const manual =
+    match.manual_override &&
+    match.manual_score_home != null &&
+    match.manual_score_away != null
+
+  return manual
+    ? [match.manual_score_home, match.manual_score_away]
+    : [match.score_home, match.score_away]
+}
+
+function teamMatchOutcome(match: Match): 'V' | 'R' | 'P' | null {
+  const [home, away] = resolvedMatchScore(match)
+  if (home == null || away == null) return null
+
+  const isHome = /lichnov/i.test(match.home_team_name)
+  const isAway = /lichnov/i.test(match.away_team_name)
+  if (!isHome && !isAway) return null
+
+  const scored = isHome ? home : away
+  const conceded = isHome ? away : home
+
+  if (scored > conceded) return 'V'
+  if (scored < conceded) return 'P'
+  return 'R'
+}
+
+function HeroMetric({
+  label,
+  value,
+  detail,
+  icon,
+}: {
+  label: string
+  value: string
+  detail?: string
+  icon?: ReactNode
+}) {
   return (
-    <div className="min-w-[106px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-sm">
-      <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/40">
-        {label}
+    <div className="min-h-[94px] rounded-[20px] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/40">
+          {label}
+        </div>
+        {icon && <div className="text-brand-500">{icon}</div>}
       </div>
-      <div className="mt-1 text-sm font-extrabold text-white">{value}</div>
+      <div className="mt-2 line-clamp-1 text-base font-black tracking-[-0.03em] text-white">
+        {value}
+      </div>
+      {detail && <div className="mt-1 text-[10px] font-semibold text-white/45">{detail}</div>}
+    </div>
+  )
+}
+
+function FormMetric({ form }: { form: Array<'V' | 'R' | 'P'> }) {
+  return (
+    <div className="min-h-[94px] rounded-[20px] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-sm">
+      <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/40">
+        Forma
+      </div>
+      <div className="mt-3 flex gap-1.5">
+        {form.length ? (
+          form.map((result, index) => (
+            <span
+              key={`${result}-${index}`}
+              title={result === 'V' ? 'Výhra' : result === 'R' ? 'Remíza' : 'Prohra'}
+              className={`grid h-7 w-7 place-items-center rounded-full text-[10px] font-black ${
+                result === 'V'
+                  ? 'bg-brand-500 text-white'
+                  : result === 'R'
+                    ? 'bg-white/18 text-white'
+                    : 'bg-white/[0.07] text-white/45'
+              }`}
+            >
+              {result}
+            </span>
+          ))
+        ) : (
+          <span className="text-sm font-black text-white">—</span>
+        )}
+      </div>
     </div>
   )
 }
