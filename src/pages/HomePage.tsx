@@ -524,7 +524,7 @@ function FanshopShowcase() {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-20 sm:py-24 lg:py-28">
+    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-24 sm:py-28 lg:py-32">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <img
           src="/hero-lichnov-field.webp"
@@ -537,12 +537,12 @@ function FanshopShowcase() {
       </div>
 
       <div className="relative mx-auto max-w-[1480px] px-5 md:px-8">
-        <div className="pointer-events-none absolute -left-6 top-[-72px] whitespace-nowrap text-[clamp(8rem,18vw,18rem)] font-black leading-[0.82] tracking-[-0.095em] text-brand-500/[0.11]">
+        <div className="pointer-events-none absolute -left-8 top-[-112px] whitespace-nowrap text-[clamp(9rem,20vw,20rem)] font-black leading-[0.8] tracking-[-0.1em] text-brand-500/[0.14]">
           FANSHOP
         </div>
 
         <div className="relative grid gap-9 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[330px_minmax(0,1fr)] xl:gap-10">
-          <div className="flex min-h-[540px] flex-col justify-between py-2 lg:min-h-[530px]">
+          <div className="flex min-h-[570px] flex-col justify-between py-2 lg:min-h-[560px]">
             <div>
               <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 <ShoppingBag size={15} />
@@ -576,7 +576,7 @@ function FanshopShowcase() {
             </a>
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0" style={{ width: "calc(100% + max(2rem, calc((100vw - 1480px) / 2 + 2rem)))" }}>
             <div className="mb-4 flex items-center justify-between gap-4">
               <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
                 Vybrané produkty
