@@ -524,7 +524,7 @@ function FanshopShowcase() {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-14 sm:py-16 lg:py-20">
+    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-18 sm:py-22 lg:py-28">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <img
           src="/hero-lichnov-field.webp"
@@ -537,12 +537,12 @@ function FanshopShowcase() {
       </div>
 
       <div className="relative mx-auto max-w-[1480px] px-5 md:px-8">
-        <div className="pointer-events-none absolute -left-2 top-[-18px] whitespace-nowrap text-[clamp(6rem,15vw,14rem)] font-black leading-none tracking-[-0.09em] text-brand-500/[0.095]">
+        <div className="pointer-events-none absolute -left-6 top-[-72px] whitespace-nowrap text-[clamp(8rem,18vw,18rem)] font-black leading-[0.82] tracking-[-0.095em] text-brand-500/[0.11]">
           FANSHOP
         </div>
 
         <div className="relative grid gap-9 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[330px_minmax(0,1fr)] xl:gap-10">
-          <div className="flex min-h-[500px] flex-col justify-between py-2 lg:min-h-[490px]">
+          <div className="flex min-h-[540px] flex-col justify-between py-2 lg:min-h-[530px]">
             <div>
               <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 <ShoppingBag size={15} />
@@ -639,41 +639,42 @@ function ShopProductCard({
       target="_blank"
       rel="noreferrer"
       aria-label={`Otevřít ${product.title} v e-shopu`}
-      className="group relative h-[440px] w-[270px] shrink-0 overflow-hidden rounded-[26px] border border-brand-900/[0.07] bg-[#f5f4ef] shadow-[0_16px_44px_rgba(24,53,42,.055)] sm:h-[470px] sm:w-[300px] xl:w-[315px]"
+      className="group flex h-[480px] w-[280px] shrink-0 flex-col overflow-hidden rounded-[26px] border border-brand-900/[0.075] bg-white shadow-[0_18px_48px_rgba(24,53,42,.06)] transition-shadow hover:shadow-[0_24px_58px_rgba(24,53,42,.10)] sm:h-[510px] sm:w-[310px] xl:w-[325px]"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#f8f7f2_0%,#f1f0e9_100%)]" />
-
-      <div className="absolute left-5 right-5 top-5 h-[72%] rounded-[18px] bg-white/55 sm:left-6 sm:right-6 sm:top-6" />
-
-      <img
-        src={product.image}
-        alt={product.title}
-        loading="lazy"
-        draggable={false}
-        referrerPolicy="no-referrer"
-        className="absolute left-5 right-5 top-5 h-[72%] object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.018] sm:left-6 sm:right-6 sm:top-6"
-        onError={(event) => {
-          const image = event.currentTarget;
-          image.style.display = "none";
-        }}
-      />
-
-      <div className="absolute left-4 top-4 rounded-full border border-brand-900/[0.08] bg-white/90 px-3 py-1.5 text-[10px] font-black text-brand-900 shadow-sm backdrop-blur">
-        {product.price}
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-900 via-brand-900/95 to-brand-900/0 px-5 pb-5 pt-24 text-white sm:px-6 sm:pb-6">
-        <div className="text-[8px] font-black uppercase tracking-[0.16em] text-brand-500">
-          NFC Lichnov
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-white px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
+        <div className="absolute left-4 top-4 z-10 rounded-full border border-brand-900/[0.08] bg-[#fbfaf6] px-3 py-1.5 text-[10px] font-black text-brand-900 shadow-[0_4px_14px_rgba(24,53,42,.04)]">
+          {product.price}
         </div>
 
-        <div className="mt-2 flex items-end justify-between gap-5">
-          <div className="max-w-[235px] text-xl font-black leading-[1.02] tracking-[-0.04em] sm:text-2xl">
-            {product.title}
+        <img
+          src={product.image}
+          alt={product.title}
+          loading="lazy"
+          draggable={false}
+          referrerPolicy="no-referrer"
+          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.018]"
+          onError={(event) => {
+            const image = event.currentTarget;
+            image.style.display = "none";
+          }}
+        />
+      </div>
+
+      <div className="relative shrink-0 border-t border-brand-900/[0.07] bg-white px-5 py-5 sm:px-6 sm:py-6">
+        <div className="mb-2 h-0.5 w-8 rounded-full bg-brand-500" />
+
+        <div className="flex items-end justify-between gap-5">
+          <div>
+            <div className="text-[8px] font-black uppercase tracking-[0.16em] text-brand-500">
+              NFC Lichnov
+            </div>
+            <div className="mt-2 max-w-[235px] text-xl font-black leading-[1.03] tracking-[-0.04em] text-brand-900 sm:text-2xl">
+              {product.title}
+            </div>
           </div>
 
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition-colors group-hover:bg-white/[0.18]">
-            <ArrowUpRight size={14} />
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-brand-900/[0.08] bg-brand-50 text-brand-900 transition-colors group-hover:border-brand-500/20 group-hover:bg-brand-900 group-hover:text-white">
+            <ArrowUpRight size={15} />
           </span>
         </div>
       </div>
