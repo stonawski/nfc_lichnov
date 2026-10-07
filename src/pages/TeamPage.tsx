@@ -3,13 +3,10 @@ import type { ReactNode } from 'react'
 import {
   ArrowRight,
   ArrowUpRight,
-  CalendarClock,
   CalendarDays,
   ChevronRight,
   Goal,
   Images,
-  MapPin,
-  Trophy,
   UsersRound,
 } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
@@ -33,7 +30,6 @@ import {
   formatMatchDay,
   formatMatchTime,
   initials,
-  isUpcomingMatch,
   matchScore,
 } from '../lib/format'
 import { locationPath, withReturnPath } from '../lib/navigationState'
@@ -126,9 +122,6 @@ export function TeamPage() {
     .filter((match) => new Date(match.playing_at).getTime() > now)
     .sort((a, b) => +new Date(a.playing_at) - +new Date(b.playing_at))[0]
 
-  const upcoming = matches
-    .filter((match) => isUpcomingMatch(match.playing_at))
-    .sort((a, b) => +new Date(a.playing_at) - +new Date(b.playing_at))
   const standings = standingsQuery.data ?? []
   const lichnovStanding = standings.find((row) =>
     /lichnov/i.test(row.team_name || row.club_name || ''),
@@ -177,148 +170,141 @@ export function TeamPage() {
         <HeroFieldBackdrop />
 
         <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-center">
-          <div className="relative overflow-hidden rounded-[42px] bg-brand-900 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)]">
+          <div className="relative min-h-[690px] overflow-hidden rounded-[42px] bg-brand-900 text-white shadow-[0_28px_80px_rgba(24,53,42,.16)]">
             <img
-              src="/hero-lichnov-field.webp"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover opacity-[0.12]"
+              src={teamHeroImage}
+              alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
+              aria-hidden={hasTeamPhoto ? undefined : true}
+              className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(105deg,#18352a_0%,rgba(24,53,42,.96)_52%,rgba(24,53,42,.82)_100%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,146,63,.18),transparent_34%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,46,35,.97)_0%,rgba(20,63,45,.88)_37%,rgba(18,53,42,.42)_68%,rgba(18,53,42,.16)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,40,29,.92)_0%,transparent_43%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_24%,rgba(0,146,63,.08),transparent_34%)]" />
 
-            <div className="relative grid gap-7 p-6 sm:p-8 lg:grid-cols-[.92fr_1.08fr] lg:gap-8 lg:p-10">
-              <div className="flex min-w-0 flex-col">
-                <div className="flex items-center gap-4">
-                  <div className="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] bg-white shadow-xl ring-1 ring-white/30 sm:h-24 sm:w-24">
-                    <ClubLogo src={team.logo_url} name={team.name} size="lg" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
-                      NFC Lichnov
+            <div className="relative flex min-h-[690px] flex-col">
+              <div className="flex flex-1 flex-col justify-between p-6 sm:p-8 lg:p-10 xl:p-12">
+                <div className="flex items-start justify-between gap-5">
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] bg-white shadow-xl ring-1 ring-white/30 sm:h-24 sm:w-24">
+                      <ClubLogo src={team.logo_url} name={team.name} size="lg" />
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {team.category && (
-                        <span className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/70">
-                          {team.category}
-                        </span>
-                      )}
-                      <span className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/70">
-                        Sezóna {team.season || 'aktuální'}
-                      </span>
-                      {competitionName && (
-                        <span className="max-w-[260px] truncate rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/70">
-                          {competitionName}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
 
-                <h1 className="mt-7 max-w-2xl text-5xl font-black leading-[0.9] tracking-[-0.065em] sm:text-6xl lg:text-7xl">
-                  {team.name}
-                </h1>
-
-                <div className="mt-8 grid grid-cols-2 gap-2.5">
-                  <HeroMetric
-                    label="Aktuální pozice"
-                    value={
-                      lichnovStanding?.rank != null
-                        ? `${lichnovStanding.rank}. místo`
-                        : '—'
-                    }
-                    detail={
-                      lichnovStanding?.points != null
-                        ? `${lichnovStanding.points} bodů`
-                        : undefined
-                    }
-                  />
-                  <HeroMetric
-                    label="Střelec sezony"
-                    value={topScorer ? playerName(topScorer) : '—'}
-                    detail={
-                      topScorer
-                        ? `${topScorer.goals_count ?? 0} gólů`
-                        : 'zatím bez dat'
-                    }
-                    icon={<Goal size={15} />}
-                  />
-                  <HeroMetric
-                    label="Bilance"
-                    value={
-                      lichnovStanding
-                        ? `${lichnovStanding.wins_count ?? 0}–${lichnovStanding.draws_count ?? 0}–${lichnovStanding.losses_count ?? 0}`
-                        : '—'
-                    }
-                    detail={
-                      lichnovStanding?.matches_count != null
-                        ? `${lichnovStanding.matches_count} zápasů`
-                        : undefined
-                    }
-                  />
-                  <FormMetric form={form} />
-                </div>
-              </div>
-
-              <div className="relative min-h-[360px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.06] sm:min-h-[430px]">
-                <img
-                  src={teamHeroImage}
-                  alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
-                  aria-hidden={hasTeamPhoto ? undefined : true}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                  <div className="flex items-end justify-between gap-5">
-                    <div>
-                      <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/50">
-                        {hasTeamPhoto ? 'Týmová fotografie' : 'NFC Lichnov'}
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+                        NFC Lichnov
                       </div>
-                      <div className="mt-2 text-xl font-black tracking-[-0.035em] text-white sm:text-2xl">
-                        {team.name}
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {team.category && (
+                          <span className="rounded-full border border-white/12 bg-brand-900/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/75 backdrop-blur-sm">
+                            {team.category}
+                          </span>
+                        )}
+                        <span className="rounded-full border border-white/12 bg-brand-900/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/75 backdrop-blur-sm">
+                          Sezóna {team.season || 'aktuální'}
+                        </span>
                       </div>
                     </div>
-
-                    {galleryHref && (
-                      <Link
-                        to={galleryHref}
-                        className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-white/20 bg-brand-900/55 px-3.5 py-2.5 text-xs font-bold text-white backdrop-blur-sm transition hover:bg-brand-900"
-                      >
-                        <Images size={14} />
-                        Galerie
-                        <ArrowUpRight size={13} />
-                      </Link>
-                    )}
                   </div>
+
+                  {galleryHref && (
+                    <Link
+                      to={galleryHref}
+                      className="group hidden shrink-0 items-center gap-2 rounded-full border border-white/20 bg-brand-900/35 px-4 py-2.5 text-xs font-bold text-white backdrop-blur-md transition hover:bg-brand-900/65 sm:inline-flex"
+                    >
+                      <Images size={14} />
+                      Fotogalerie
+                      <ArrowUpRight
+                        size={13}
+                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                    </Link>
+                  )}
+                </div>
+
+                <div className="mt-16 max-w-[650px] lg:mt-24">
+                  {competitionName && (
+                    <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
+                      {competitionName}
+                    </div>
+                  )}
+
+                  <h1 className="text-5xl font-black leading-[0.88] tracking-[-0.07em] sm:text-6xl lg:text-[82px]">
+                    {team.name}
+                  </h1>
+
+                  <div className="mt-8 flex flex-wrap items-start gap-x-8 gap-y-5 border-t border-white/14 pt-6">
+                    <EditorialStat
+                      label="Tabulka"
+                      value={
+                        lichnovStanding?.rank != null
+                          ? `${lichnovStanding.rank}. místo`
+                          : '—'
+                      }
+                      detail={
+                        lichnovStanding?.points != null
+                          ? `${lichnovStanding.points} bodů`
+                          : undefined
+                      }
+                    />
+                    <EditorialStat
+                      label="Střelec sezony"
+                      value={topScorer ? playerName(topScorer) : '—'}
+                      detail={
+                        topScorer
+                          ? `${topScorer.goals_count ?? 0} gólů`
+                          : undefined
+                      }
+                    />
+                    <EditorialStat
+                      label="Bilance"
+                      value={
+                        lichnovStanding
+                          ? `${lichnovStanding.wins_count ?? 0}–${lichnovStanding.draws_count ?? 0}–${lichnovStanding.losses_count ?? 0}`
+                          : '—'
+                      }
+                      detail="výhry – remízy – prohry"
+                    />
+                    <EditorialForm form={form} />
+                  </div>
+
+                  {galleryHref && (
+                    <Link
+                      to={galleryHref}
+                      className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-white sm:hidden"
+                    >
+                      <Images size={14} />
+                      Otevřít fotogalerii
+                      <ArrowUpRight size={13} />
+                    </Link>
+                  )}
                 </div>
               </div>
-            </div>
 
-            <div className="relative border-t border-white/10 p-6 sm:p-8 lg:px-10 lg:pb-10 lg:pt-7">
-              <div className="mb-3 flex items-center justify-between gap-4">
-                <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/40">
-                  Aktuálně
-                </div>
-                <div className="text-[10px] font-semibold text-white/35">
-                  {players.length} hráčů v soupisce
+              <div className="relative border-t border-white/12 bg-brand-900/52 px-6 py-5 backdrop-blur-md sm:px-8 lg:px-10 xl:px-12">
+                <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+                  <HeroMatch
+                    label="Poslední výsledek"
+                    match={latest}
+                    kind="result"
+                    returnTo={returnTo}
+                  />
+
+                  <Link
+                    to={`/zapasy?team=${team.slug}`}
+                    className="hidden items-center gap-2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-white/45 transition hover:text-white lg:inline-flex"
+                  >
+                    Všechna utkání
+                    <ArrowRight size={13} />
+                  </Link>
+
+                  <HeroMatch
+                    label="Další zápas"
+                    match={next}
+                    kind="upcoming"
+                    returnTo={returnTo}
+                  />
                 </div>
               </div>
-
-              <DataFade className="grid gap-3 sm:grid-cols-2">
-                <HeroMatch
-                  label="Poslední výsledek"
-                  match={latest}
-                  kind="result"
-                  returnTo={returnTo}
-                />
-                <HeroMatch
-                  label="Další zápas"
-                  match={next}
-                  kind="upcoming"
-                  returnTo={returnTo}
-                />
-              </DataFade>
             </div>
           </div>
 
@@ -326,82 +312,16 @@ export function TeamPage() {
             aria-label="Sekce týmu"
             className="relative z-20 mt-4 flex gap-2 overflow-x-auto rounded-[24px] border border-white/80 bg-white/75 p-2 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl [scrollbar-width:none] md:sticky md:top-24 [&::-webkit-scrollbar]:hidden"
           >
-            <SectionLink href="#zapasy">Zápasy</SectionLink>
             {standings.length > 0 && <SectionLink href="#tabulka">Tabulka</SectionLink>}
             <SectionLink href="#hraci">Hráči</SectionLink>
             <SectionLink href="#realizacni-tym">Realizační tým</SectionLink>
+            <Link
+              to={`/zapasy?team=${team.slug}`}
+              className="shrink-0 rounded-2xl px-4 py-2.5 text-sm font-bold text-ink-500 transition hover:bg-brand-50 hover:text-brand-900"
+            >
+              Všechna utkání
+            </Link>
           </nav>
-        </div>
-      </section>
-
-      <section id="zapasy" className="scroll-mt-28 bg-white px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Program"
-            title="Zápasy"
-            aside={
-              <Link
-                to={`/zapasy?team=${team.slug}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 ring-1 ring-brand-500/10 transition hover:bg-brand-100"
-              >
-                Všechna utkání
-                <ArrowRight size={14} />
-              </Link>
-            }
-          />
-
-          {matchesQuery.isLoading ? (
-            <LoadingState rows={2} />
-          ) : upcoming.length ? (
-            <DataFade className="grid items-stretch gap-4 lg:grid-cols-[1.35fr_.85fr]">
-              <div className="flex min-w-0 flex-col">
-                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Nadcházející zápas
-                </div>
-                <div className="flex-1">
-                  <TeamMatchCard
-                    match={upcoming[0]}
-                    returnTo={returnTo}
-                    featured
-                  />
-                </div>
-              </div>
-
-              <div className="flex min-w-0 flex-col">
-                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500">
-                  Další zápas
-                </div>
-                <div className="flex-1">
-                  {upcoming[1] ? (
-                    <TeamMatchCard
-                      match={upcoming[1]}
-                      returnTo={returnTo}
-                    />
-                  ) : (
-                    <div className="flex h-full min-h-[220px] items-center rounded-[28px] border border-sand-200 bg-sand-100 p-6">
-                      <div>
-                        <div className="text-base font-extrabold text-brand-900">
-                          Zatím není naplánovaný
-                        </div>
-                        <p className="mt-2 text-sm leading-6 text-ink-500">
-                          Další termín se zobrazí automaticky po synchronizaci.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </DataFade>
-          ) : (
-            <DataFade className="rounded-[30px] border border-sand-200 bg-sand-100 p-7">
-              <div className="text-base font-extrabold text-brand-900">
-                Další zápas zatím není naplánovaný.
-              </div>
-              <p className="mt-2 text-sm leading-6 text-ink-500">
-                Jakmile bude nový termín dostupný, objeví se tady.
-              </p>
-            </DataFade>
-          )}
         </div>
       </section>
 
@@ -645,58 +565,55 @@ function teamMatchOutcome(match: Match): 'V' | 'R' | 'P' | null {
   return 'R'
 }
 
-function HeroMetric({
+function EditorialStat({
   label,
   value,
   detail,
-  icon,
 }: {
   label: string
   value: string
   detail?: string
-  icon?: ReactNode
 }) {
   return (
-    <div className="min-h-[94px] rounded-[20px] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-sm">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/40">
-          {label}
-        </div>
-        {icon && <div className="text-brand-500">{icon}</div>}
+    <div className="min-w-[116px]">
+      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/40">
+        {label}
       </div>
-      <div className="mt-2 line-clamp-1 text-base font-black tracking-[-0.03em] text-white">
+      <div className="mt-1.5 text-lg font-black tracking-[-0.035em] text-white">
         {value}
       </div>
-      {detail && <div className="mt-1 text-[10px] font-semibold text-white/45">{detail}</div>}
+      {detail && (
+        <div className="mt-1 text-[10px] font-semibold text-white/42">{detail}</div>
+      )}
     </div>
   )
 }
 
-function FormMetric({ form }: { form: Array<'V' | 'R' | 'P'> }) {
+function EditorialForm({ form }: { form: Array<'V' | 'R' | 'P'> }) {
   return (
-    <div className="min-h-[94px] rounded-[20px] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-sm">
-      <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/40">
+    <div>
+      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/40">
         Forma
       </div>
-      <div className="mt-3 flex gap-1.5">
+      <div className="mt-2 flex gap-1.5">
         {form.length ? (
           form.map((result, index) => (
             <span
               key={`${result}-${index}`}
               title={result === 'V' ? 'Výhra' : result === 'R' ? 'Remíza' : 'Prohra'}
-              className={`grid h-7 w-7 place-items-center rounded-full text-[10px] font-black ${
+              className={`grid h-7 w-7 place-items-center rounded-full border text-[10px] font-black ${
                 result === 'V'
-                  ? 'bg-brand-500 text-white'
+                  ? 'border-brand-500 bg-brand-500 text-white'
                   : result === 'R'
-                    ? 'bg-white/18 text-white'
-                    : 'bg-white/[0.07] text-white/45'
+                    ? 'border-white/20 bg-white/[0.08] text-white'
+                    : 'border-white/12 bg-transparent text-white/50'
               }`}
             >
               {result}
             </span>
           ))
         ) : (
-          <span className="text-sm font-black text-white">—</span>
+          <span className="text-lg font-black text-white">—</span>
         )}
       </div>
     </div>
@@ -716,13 +633,11 @@ function HeroMatch({
 }) {
   if (!match) {
     return (
-      <div className="min-h-[190px] rounded-[28px] border border-white/10 bg-white/[0.07] p-5">
-        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+      <div>
+        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/35">
           {label}
         </div>
-        <div className="mt-8 text-sm font-semibold text-white/45">
-          Není k dispozici
-        </div>
+        <div className="mt-2 text-sm font-semibold text-white/45">Není k dispozici</div>
       </div>
     )
   }
@@ -739,212 +654,53 @@ function HeroMatch({
   return (
     <Link
       to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
-      className="group relative min-h-[190px] overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.07] p-5 transition hover:bg-white/[0.11]"
+      className="group flex min-w-0 items-center justify-between gap-4"
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+      <div className="min-w-0">
+        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/35">
           {label}
         </div>
-        <ChevronRight
-          size={15}
-          className="text-white/35 transition group-hover:translate-x-0.5 group-hover:text-white/70"
-        />
-      </div>
-
-      <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <HeroClub name={match.home_team_name} logo={match.home_team_logo} />
-        <div className="px-1 text-center">
-          {kind === 'result' ? (
-            <div className="text-3xl font-black tracking-[-0.065em]">
-              {score ?? '—'}
-            </div>
-          ) : (
-            <>
-              <div className="text-lg font-black tracking-[-0.04em]">
-                {formatMatchDay(match.playing_at)}
+        <div className="mt-2 flex min-w-0 items-center gap-3">
+          <HeroClub name={match.home_team_name} logo={match.home_team_logo} />
+          <div className="shrink-0 text-center">
+            {kind === 'result' ? (
+              <div className="text-2xl font-black tracking-[-0.055em] text-white">
+                {score ?? '—'}
               </div>
-              <div className="mt-1 text-[11px] font-bold text-white/55">
-                {formatMatchTime(match.playing_at)}
-              </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className="text-base font-black tracking-[-0.035em] text-white">
+                  {formatMatchDay(match.playing_at)}
+                </div>
+                <div className="mt-0.5 text-[10px] font-bold text-white/45">
+                  {formatMatchTime(match.playing_at)}
+                </div>
+              </>
+            )}
+          </div>
+          <HeroClub name={match.away_team_name} logo={match.away_team_logo} />
         </div>
-        <HeroClub name={match.away_team_name} logo={match.away_team_logo} />
       </div>
 
-      <div className="mt-5 flex items-center gap-2 border-t border-white/10 pt-3 text-[10px] font-medium text-white/45">
-        <CalendarDays size={12} />
-        {formatMatchDate(match.playing_at)}
-      </div>
+      <ChevronRight
+        size={15}
+        className="shrink-0 text-white/30 transition group-hover:translate-x-0.5 group-hover:text-white/70"
+      />
     </Link>
   )
 }
 
 function HeroClub({ name, logo }: { name: string; logo: string | null }) {
   return (
-    <div className="min-w-0 text-center">
-      <div className="mx-auto grid h-11 w-11 place-items-center overflow-hidden rounded-xl bg-white/95">
+    <div className="flex min-w-0 items-center gap-2">
+      <div className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/95">
         {logo ? (
-          <img src={logo} alt="" className="h-full w-full object-contain p-1.5" />
+          <img src={logo} alt="" className="h-full w-full object-contain p-1" />
         ) : (
-          <span className="text-[10px] font-black text-brand-900">{initials(name)}</span>
+          <span className="text-[8px] font-black text-brand-900">{initials(name)}</span>
         )}
       </div>
-      <div className="mt-2 line-clamp-2 text-[10px] font-bold leading-[1.15] text-white/80">
-        {name}
-      </div>
-    </div>
-  )
-}
-
-function TeamMatchCard({
-  match,
-  returnTo,
-  featured = false,
-}: {
-  match: Match
-  returnTo: string
-  featured?: boolean
-}) {
-  const upcoming = isUpcomingMatch(match.playing_at)
-  const score = matchScore(
-    match.score_home,
-    match.score_away,
-    match.manual_override,
-    match.manual_score_home,
-    match.manual_score_away,
-    match.playing_at,
-  )
-
-  return (
-    <Link
-      to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
-      className={`group flex h-full min-h-[220px] flex-col overflow-hidden rounded-[28px] border transition duration-300 hover:-translate-y-0.5 hover:shadow-soft ${
-        featured
-          ? 'border-brand-900 bg-brand-900 text-white'
-          : 'border-sand-200 bg-[#f6f3ec] text-ink-900 shadow-[0_12px_32px_rgba(24,53,42,.05)] hover:border-brand-500/20 hover:bg-[#fbfaf6]'
-      }`}
-    >
-      <div className="flex items-center justify-between gap-4 px-5 pt-4">
-        <div
-          className={`text-[10px] font-bold uppercase tracking-[0.14em] ${
-            featured ? 'text-white/45' : 'text-ink-500'
-          }`}
-        >
-          {upcoming ? 'Nadcházející utkání' : formatMatchDate(match.playing_at)}
-        </div>
-        <ChevronRight
-          size={16}
-          className={`transition group-hover:translate-x-0.5 ${
-            featured ? 'text-white/40' : 'text-ink-500'
-          }`}
-        />
-      </div>
-
-      <div className="grid flex-1 grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-5">
-        <MatchClub
-          name={match.home_team_name}
-          logo={match.home_team_logo}
-          featured={featured}
-        />
-
-        <div className="min-w-[76px] text-center">
-          {upcoming ? (
-            <div
-              className={`rounded-2xl px-3 py-2 ${
-                featured
-                  ? 'bg-white/[0.09] ring-1 ring-white/10'
-                  : 'bg-brand-50 ring-1 ring-brand-500/10'
-              }`}
-            >
-              <div
-                className={`text-lg font-black tracking-[-0.045em] ${
-                  featured ? 'text-white' : 'text-brand-900'
-                }`}
-              >
-                {formatMatchDay(match.playing_at)}
-              </div>
-              <div
-                className={`mt-0.5 inline-flex items-center gap-1 text-[10px] font-bold ${
-                  featured ? 'text-white/55' : 'text-brand-500'
-                }`}
-              >
-                <CalendarClock size={11} />
-                {formatMatchTime(match.playing_at)}
-              </div>
-            </div>
-          ) : (
-            <div
-              className={`text-3xl font-black tracking-[-0.06em] ${
-                featured ? 'text-white' : 'text-brand-900'
-              }`}
-            >
-              {score ?? '—'}
-            </div>
-          )}
-        </div>
-
-        <MatchClub
-          name={match.away_team_name}
-          logo={match.away_team_logo}
-          featured={featured}
-        />
-      </div>
-
-      {(match.competition_name || match.round || match.pitch_name) && (
-        <div
-          className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t px-5 py-3 text-[10px] ${
-            featured
-              ? 'border-white/10 text-white/45'
-              : 'border-sand-200 text-ink-500'
-          }`}
-        >
-          {match.competition_name && (
-            <span className="inline-flex items-center gap-1.5">
-              <Trophy size={11} />
-              {match.competition_name}
-            </span>
-          )}
-          {match.round && <span>{match.round}</span>}
-          {match.pitch_name && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin size={11} />
-              {match.pitch_name}
-            </span>
-          )}
-        </div>
-      )}
-    </Link>
-  )
-}
-
-function MatchClub({
-  name,
-  logo,
-  featured,
-}: {
-  name: string
-  logo: string | null
-  featured: boolean
-}) {
-  return (
-    <div className="min-w-0 text-center">
-      <div
-        className={`mx-auto grid h-11 w-11 place-items-center overflow-hidden rounded-xl ${
-          featured ? 'bg-white/95' : 'bg-white ring-1 ring-sand-200'
-        }`}
-      >
-        {logo ? (
-          <img src={logo} alt="" className="h-full w-full object-contain p-1.5" />
-        ) : (
-          <span className="text-[10px] font-black text-brand-900">{initials(name)}</span>
-        )}
-      </div>
-      <div
-        className={`mt-2 line-clamp-2 text-xs font-bold leading-[1.15] ${
-          featured ? 'text-white/85' : 'text-ink-900'
-        }`}
-      >
+      <div className="line-clamp-2 max-w-[120px] text-[10px] font-bold leading-[1.15] text-white/78">
         {name}
       </div>
     </div>
