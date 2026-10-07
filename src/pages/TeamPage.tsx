@@ -167,11 +167,23 @@ export function TeamPage() {
           src={teamHeroImage}
           alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
           aria-hidden={hasTeamPhoto ? undefined : true}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 h-full w-full object-cover object-center" style={{ filter: 'saturate(.9) contrast(.94) brightness(1.04)' }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(14,47,34,.94)_0%,rgba(18,57,41,.79)_34%,rgba(18,53,42,.36)_64%,rgba(18,53,42,.08)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(12,42,30,.72)_0%,rgba(12,42,30,.16)_32%,transparent_56%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_34%,rgba(0,146,63,.07),transparent_36%)]" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.76) 24%, rgba(250,248,243,.34) 50%, rgba(250,248,243,.10) 74%, rgba(250,248,243,.03) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(250,248,243,.03) 0%, rgba(250,248,243,.08) 50%, rgba(250,248,243,.54) 80%, rgba(250,248,243,.92) 100%)',
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_32%,rgba(255,255,255,.26),transparent_38%)]" />
 
         <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1240px] flex-1 flex-col px-5 md:px-8">
           <div className="flex flex-1 flex-col justify-between py-8 sm:py-10 lg:py-12 xl:py-14">
@@ -182,16 +194,16 @@ export function TeamPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-900/50">
                     NFC Lichnov
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {team.category && (
-                      <span className="rounded-full border border-white/16 bg-brand-900/24 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/80 backdrop-blur-sm">
+                      <span className="rounded-full border border-brand-900/10 bg-white/68 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-brand-900/75 backdrop-blur-sm">
                         {team.category}
                       </span>
                     )}
-                    <span className="rounded-full border border-white/16 bg-brand-900/24 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/80 backdrop-blur-sm">
+                    <span className="rounded-full border border-brand-900/10 bg-white/68 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-brand-900/75 backdrop-blur-sm">
                       Sezóna {team.season || 'aktuální'}
                     </span>
                   </div>
@@ -201,7 +213,7 @@ export function TeamPage() {
               {galleryHref && (
                 <Link
                   to={galleryHref}
-                  className="group hidden shrink-0 items-center gap-2 rounded-full border border-white/24 bg-brand-900/28 px-4 py-2.5 text-xs font-bold text-white backdrop-blur-md transition hover:bg-brand-900/55 sm:inline-flex"
+                  className="group hidden shrink-0 items-center gap-2 rounded-full border border-brand-900/10 bg-brand-900 px-4 py-2.5 text-xs font-bold text-white shadow-[0_10px_26px_rgba(24,53,42,.14)] transition hover:bg-brand-700 sm:inline-flex"
                 >
                   <Images size={14} />
                   Fotogalerie
@@ -220,11 +232,11 @@ export function TeamPage() {
                 </div>
               )}
 
-              <h1 className="text-5xl font-black leading-[0.88] tracking-[-0.07em] text-white sm:text-6xl lg:text-[82px]">
+              <h1 className="text-5xl font-black leading-[0.88] tracking-[-0.07em] text-brand-900 sm:text-6xl lg:text-[82px]">
                 {team.name}
               </h1>
 
-              <div className="mt-8 flex flex-wrap items-start gap-x-8 gap-y-5 border-t border-white/18 pt-6">
+              <div className="mt-8 flex flex-wrap items-start gap-x-8 gap-y-5 border-t border-brand-900/12 pt-6">
                 <EditorialStat
                   label="Tabulka"
                   value={
@@ -262,7 +274,7 @@ export function TeamPage() {
               {galleryHref && (
                 <Link
                   to={galleryHref}
-                  className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-white sm:hidden"
+                  className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-brand-900 sm:hidden"
                 >
                   <Images size={14} />
                   Otevřít fotogalerii
@@ -272,7 +284,7 @@ export function TeamPage() {
             </div>
           </div>
 
-          <div className="border-t border-white/16 bg-brand-900/38 px-0 py-5 backdrop-blur-sm">
+          <div className="border-t border-brand-900/10 bg-white/72 px-0 py-5 backdrop-blur-md">
             <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
               <HeroMatch
                 label="Poslední výsledek"
@@ -283,7 +295,7 @@ export function TeamPage() {
 
               <Link
                 to={`/zapasy?team=${team.slug}`}
-                className="hidden items-center gap-2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-white/48 transition hover:text-white lg:inline-flex"
+                className="hidden items-center gap-2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-ink-500 transition hover:text-brand-900 lg:inline-flex"
               >
                 Všechna utkání
                 <ArrowRight size={13} />
@@ -566,14 +578,14 @@ function EditorialStat({
 }) {
   return (
     <div className="min-w-[116px]">
-      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/40">
+      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-ink-500">
         {label}
       </div>
-      <div className="mt-1.5 text-lg font-black tracking-[-0.035em] text-white">
+      <div className="mt-1.5 text-lg font-black tracking-[-0.035em] text-brand-900">
         {value}
       </div>
       {detail && (
-        <div className="mt-1 text-[10px] font-semibold text-white/42">{detail}</div>
+        <div className="mt-1 text-[10px] font-semibold text-ink-500">{detail}</div>
       )}
     </div>
   )
@@ -582,7 +594,7 @@ function EditorialStat({
 function EditorialForm({ form }: { form: Array<'V' | 'R' | 'P'> }) {
   return (
     <div>
-      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/40">
+      <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-ink-500">
         Forma
       </div>
       <div className="mt-2 flex gap-1.5">
@@ -595,15 +607,15 @@ function EditorialForm({ form }: { form: Array<'V' | 'R' | 'P'> }) {
                 result === 'V'
                   ? 'border-brand-500 bg-brand-500 text-white'
                   : result === 'R'
-                    ? 'border-white/20 bg-white/[0.08] text-white'
-                    : 'border-white/12 bg-transparent text-white/50'
+                    ? 'border-brand-900/12 bg-white/70 text-brand-900'
+                    : 'border-brand-900/10 bg-sand-100/70 text-ink-500'
               }`}
             >
               {result}
             </span>
           ))
         ) : (
-          <span className="text-lg font-black text-white">—</span>
+          <span className="text-lg font-black text-brand-900">—</span>
         )}
       </div>
     </div>
@@ -624,10 +636,10 @@ function HeroMatch({
   if (!match) {
     return (
       <div>
-        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/35">
+        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-ink-500">
           {label}
         </div>
-        <div className="mt-2 text-sm font-semibold text-white/45">Není k dispozici</div>
+        <div className="mt-2 text-sm font-semibold text-ink-500">Není k dispozici</div>
       </div>
     )
   }
@@ -647,22 +659,22 @@ function HeroMatch({
       className="group flex min-w-0 items-center justify-between gap-4"
     >
       <div className="min-w-0">
-        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/35">
+        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-ink-500">
           {label}
         </div>
         <div className="mt-2 flex min-w-0 items-center gap-3">
           <HeroClub name={match.home_team_name} logo={match.home_team_logo} />
           <div className="shrink-0 text-center">
             {kind === 'result' ? (
-              <div className="text-2xl font-black tracking-[-0.055em] text-white">
+              <div className="text-2xl font-black tracking-[-0.055em] text-brand-900">
                 {score ?? '—'}
               </div>
             ) : (
               <>
-                <div className="text-base font-black tracking-[-0.035em] text-white">
+                <div className="text-base font-black tracking-[-0.035em] text-brand-900">
                   {formatMatchDay(match.playing_at)}
                 </div>
-                <div className="mt-0.5 text-[10px] font-bold text-white/45">
+                <div className="mt-0.5 text-[10px] font-bold text-ink-500">
                   {formatMatchTime(match.playing_at)}
                 </div>
               </>
@@ -674,7 +686,7 @@ function HeroMatch({
 
       <ChevronRight
         size={15}
-        className="shrink-0 text-white/30 transition group-hover:translate-x-0.5 group-hover:text-white/70"
+        className="shrink-0 text-ink-500/70 transition group-hover:translate-x-0.5 group-hover:text-brand-900"
       />
     </Link>
   )
@@ -690,7 +702,7 @@ function HeroClub({ name, logo }: { name: string; logo: string | null }) {
           <span className="text-[8px] font-black text-brand-900">{initials(name)}</span>
         )}
       </div>
-      <div className="line-clamp-2 max-w-[120px] text-[10px] font-bold leading-[1.15] text-white/78">
+      <div className="line-clamp-2 max-w-[120px] text-[10px] font-bold leading-[1.15] text-brand-900/78">
         {name}
       </div>
     </div>
