@@ -4,11 +4,19 @@ import {
   Newspaper,
   Trophy,
   UserRound,
+  Users,
   UsersRound,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const modules = [
+  {
+    to: '/admin/tymy',
+    title: 'Týmy',
+    description: 'Týmové fotografie a veřejná prezentace jednotlivých kategorií.',
+    icon: Users,
+    status: 'Připraveno',
+  },
   {
     to: '/admin/galerie',
     title: 'Galerie',
