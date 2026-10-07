@@ -444,6 +444,27 @@ const FANSHOP_PRODUCTS = [
     href: "https://nfclichnov.kastomi.com/4356-teplakova-souprava-teplaky",
   },
   {
+    id: 4084,
+    title: "Tréninkové šortky",
+    price: "335 Kč",
+    image: "https://cdn.kastomi.com/files/4084-Black-PREVIEW.png",
+    href: "https://nfclichnov.kastomi.com/4084-treninkove-sortky",
+  },
+  {
+    id: 3903,
+    title: "Sportovní taška",
+    price: "629 Kč",
+    image: "https://cdn.kastomi.com/files/3903-Blue-kastomizace.png",
+    href: "https://nfclichnov.kastomi.com/3903-sportovni-taska",
+  },
+  {
+    id: 3898,
+    title: "Hrnek s logem",
+    price: "209 Kč",
+    image: "https://cdn.kastomi.com/files/3898-White.png",
+    href: "https://nfclichnov.kastomi.com/3898-hrnek-s-logem-a-personalizaci",
+  },
+  {
     id: 3985,
     title: "Polotričko s proužky",
     price: "464 Kč",
@@ -509,10 +530,10 @@ function FanshopShowcase() {
           src="/hero-lichnov-field.webp"
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover opacity-[0.22] grayscale"
+          className="h-full w-full object-cover opacity-[0.30] grayscale"
         />
-        <div className="absolute inset-0 bg-white/[0.62]" />
-        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(255,255,255,.52)_0%,rgba(255,255,255,.30)_48%,rgba(245,249,246,.44)_100%)]" />
+        <div className="absolute inset-0 bg-white/[0.52]" />
+        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(255,255,255,.42)_0%,rgba(255,255,255,.20)_48%,rgba(245,249,246,.30)_100%)]" />
       </div>
 
       <div className="relative mx-auto max-w-[1480px] px-5 md:px-8">
