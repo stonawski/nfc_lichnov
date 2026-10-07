@@ -66,10 +66,11 @@ export function HomePage() {
   const galleries = galleriesQuery.data ?? [];
   const galleryPreview = galleries.slice(0, 2);
   const upcomingMatches = upcomingQuery.data ?? [];
-  const upcomingSummaries: TeamMatchSummary[] = upcomingMatches.flatMap((match) =>
-    match.team
-      ? [{ team: match.team, match, kind: "upcoming" as const }]
-      : [],
+  const upcomingSummaries: TeamMatchSummary[] = upcomingMatches.flatMap(
+    (match) =>
+      match.team
+        ? [{ team: match.team, match, kind: "upcoming" as const }]
+        : [],
   );
   const standings = standingsQuery.data ?? [];
   const lichnovIndex = standings.findIndex((row) =>
@@ -96,7 +97,8 @@ export function HomePage() {
             </h1>
 
             <p className="home-homepage-hero-copy mt-6 max-w-[620px] text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
-              Poslední výsledky a nejbližší zápasy všech kategorií na jednom místě.
+              Poslední výsledky a nejbližší zápasy všech kategorií na jednom
+              místě.
             </p>
           </div>
 
@@ -164,8 +166,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-      
 
       <section className="relative overflow-hidden bg-sand-100 px-5 py-20 md:px-8 md:py-28">
         <div className="relative mx-auto max-w-[1240px]">
@@ -245,14 +245,13 @@ export function HomePage() {
                     </div>
                   </Link>
                 ))}
-
               </div>
             </DataFade>
           ) : (
             <DataFade>
               <EmptyState
-              title="Aktuality zatím nejsou publikované"
-              text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
+                title="Aktuality zatím nejsou publikované"
+                text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
               />
             </DataFade>
           )}
@@ -315,9 +314,6 @@ export function HomePage() {
         </div>
       </section>
 
-      
-
-      
       <section className="border-y border-sand-200 bg-[#f4f7f2] py-16 md:py-24">
         <div className="mx-auto max-w-[1480px] px-5 md:px-8">
           <div className="grid gap-10 lg:grid-cols-[.62fr_1.38fr] lg:items-center lg:gap-14">
@@ -330,9 +326,9 @@ export function HomePage() {
                 NFC nosíme i mimo hřiště.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500 sm:text-base">
-                Fanouškovské doplňky a klubové oblečení NFC Lichnov. Vybrali jsme
-                několik kousků z aktuální nabídky — kompletní sortiment najdeš
-                v oficiálním e-shopu.
+                Fanouškovské doplňky a klubové oblečení NFC Lichnov. Vybrali
+                jsme několik kousků z aktuální nabídky — kompletní sortiment
+                najdeš v oficiálním e-shopu.
               </p>
               <a
                 href="https://nfclichnov.kastomi.com/"
@@ -348,7 +344,8 @@ export function HomePage() {
               {[
                 {
                   title: "Fanouškovská šála",
-                  image: "/shop/nfc-scarf.jpg",
+                  image:
+                    "https://cdn.kastomi.com/photo-cache/c_580_3894-green.png",
                   href: "https://nfclichnov.kastomi.com/3894-pletena-zimni-sala",
                 },
                 {
@@ -399,8 +396,7 @@ export function HomePage() {
         </div>
       </section>
 
-
-<section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+      <section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
             <div>
@@ -469,9 +465,6 @@ export function HomePage() {
         </div>
       </section>
 
-      
-
-
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
           <SectionHeading
@@ -505,4 +498,3 @@ export function HomePage() {
     </main>
   );
 }
-
