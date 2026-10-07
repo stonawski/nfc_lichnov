@@ -594,10 +594,6 @@ img {
   will-change: transform;
 }
 
-.sponsor-marquee:hover .sponsor-track {
-  animation-play-state: paused;
-}
-
 .sponsor-marquee {
   -webkit-mask-image: linear-gradient(
     to right,
