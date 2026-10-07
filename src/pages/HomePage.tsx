@@ -451,13 +451,6 @@ const FANSHOP_PRODUCTS = [
     href: "https://nfclichnov.kastomi.com/3974-vetrovka-nfc-lichnov",
   },
   {
-    id: 3797,
-    title: "Mikina s malým logem",
-    price: "682 Kč",
-    image: "https://cdn.kastomi.com/files/3797-preview.png",
-    href: "https://nfclichnov.kastomi.com/3797-mikina-s-malym-logem",
-  },
-  {
     id: 3985,
     title: "Polotričko s proužky",
     price: "464 Kč",
@@ -477,20 +470,6 @@ const FANSHOP_PRODUCTS = [
     price: "304 Kč",
     image: "https://cdn.kastomi.com/files/3979-preview.png",
     href: "https://nfclichnov.kastomi.com/3979-rolovaci-batoh-nfc-lichnov",
-  },
-  {
-    id: 4037,
-    title: "Kšiltovka s logem",
-    price: "250 Kč",
-    image: "https://cdn.kastomi.com/files/4037-preview.png",
-    href: "https://nfclichnov.kastomi.com/4037-ksiltovka-s-logem-a-napisem",
-  },
-  {
-    id: 3801,
-    title: "Ponožky NFC Lichnov",
-    price: "131 Kč",
-    image: "https://cdn.kastomi.com/files/3801-preview.png",
-    href: "https://nfclichnov.kastomi.com/3801-ponozky-nfc-lichnov",
   },
   {
     id: 3894,
@@ -547,7 +526,14 @@ function FanshopShowcase() {
   return (
     <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-12 sm:py-14 lg:py-16">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(110deg,#ffffff_0%,#fbfaf6_58%,#f4f8f3_100%)]" />
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover opacity-[0.085] grayscale"
+        />
+        <div className="absolute inset-0 bg-white/[0.82]" />
+        <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,.38)_0%,rgba(251,250,246,.18)_58%,rgba(244,248,243,.34)_100%)]" />
         <div className="absolute left-[7%] top-0 whitespace-nowrap text-[clamp(6rem,17vw,16rem)] font-black leading-[.78] tracking-[-0.09em] text-brand-500/[0.085]">
           FANSHOP
         </div>
@@ -622,33 +608,7 @@ function FanshopShowcase() {
               <ShopProductCard key={product.id} product={product} />
             ))}
 
-            <a
-              href="https://nfclichnov.kastomi.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="group flex h-[455px] w-[280px] shrink-0 flex-col justify-between rounded-[26px] bg-brand-900 p-6 text-white sm:h-[490px] sm:w-[310px] sm:p-7"
-            >
-              <div className="flex items-center justify-between">
-                <ShoppingBag size={20} className="text-brand-500" />
-                <ArrowUpRight
-                  size={18}
-                  className="text-white/50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white"
-                />
-              </div>
-
-              <div>
-                <div className="text-[9px] font-bold uppercase tracking-[0.17em] text-white/45">
-                  Kompletní nabídka
-                </div>
-                <div className="mt-3 text-3xl font-black leading-[.98] tracking-[-0.05em]">
-                  Další produkty najdeš přímo ve fanshopu.
-                </div>
-                <div className="mt-5 text-sm font-bold text-white/65">
-                  Otevřít Kastomi →
-                </div>
-              </div>
-            </a>
-          </div>
+         </div>
         </div>
       </div>
     </section>
@@ -670,14 +630,7 @@ function ShopProductCard({
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#f8f7f2_0%,#f1f0e9_100%)]" />
 
-      <div className="absolute left-5 right-5 top-5 grid h-[72%] place-items-center rounded-[18px] bg-white/55 px-8 text-center sm:left-6 sm:right-6 sm:top-6">
-        <div>
-          <ShoppingBag size={22} className="mx-auto text-brand-500/60" />
-          <div className="mt-3 text-sm font-extrabold leading-5 text-brand-900/45">
-            {product.title}
-          </div>
-        </div>
-      </div>
+      <div className="absolute left-5 right-5 top-5 h-[72%] rounded-[18px] bg-white/55 sm:left-6 sm:right-6 sm:top-6" />
 
       <img
         src={product.image}
