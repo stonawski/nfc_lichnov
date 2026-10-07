@@ -1,34 +1,65 @@
 const PARTNERS = [
   {
-    name: 'OneMobile / Vodafone',
-    href: 'https://www.onemobile.cz/',
-    image: null,
+    name: "NORD PLD",
+    image: "/sponsors/nord.webp",
   },
   {
-    name: 'NORD PLD',
-    image: 'https://nfclichnov.wbs.cz/Sponzori/Nord_Pld.jpg',
+    name: "AGROCAR",
+    href: "https://www.agrocar.cz/",
+    image: "/sponsors/agrocar.webp",
   },
   {
-    name: 'ZD Javorník',
-    image: 'https://nfclichnov.wbs.cz/zd_javornik.jpg',
+    name: "STIHL",
+    href: "https://www.agrocar.cz/",
+    image: "/sponsors/stihl.webp",
   },
   {
-    name: 'Allianz · Jiří Holub',
-    image: 'https://nfclichnov.wbs.cz/all_auto_obr_.png',
+    name: "EPO GEARMOT",
+    href: "https://www.epogm.com/",
+    image: "/sponsors/epogm.webp",
   },
   {
-    name: 'Podlahy Zbránek',
-    image: 'https://nfclichnov.wbs.cz/reklama.jpg',
+    name: "ZD Javorník",
+    image: "/sponsors/zd_javornik.webp",
   },
   {
-    name: 'Tomáš Strálka · Moragro',
-    image: 'https://nfclichnov.wbs.cz/Vizitka.jpg',
+    name: "Allianz · Jiří Holub",
+    image: "/sponsors/holub.webp",
   },
   {
-    name: 'Klempířství Zdeněk Matůš',
-    image: 'https://nfclichnov.wbs.cz/klempirstvi.jpg',
+    name: "Hummel",
+    href: "https://www.hummel.net/",
+    image: "/sponsors/hummel.webp",
   },
-] as const
+  {
+    name: "Tomáš Střalka · DPZ",
+    href: "https://www.stralka.cz/",
+    image: "/sponsors/stralka.webp",
+  },
+  {
+    name: "Klempířství Zdeněk Matůš",
+    image: "/sponsors/matus.webp",
+  },
+  {
+    name: "Auto Horečka",
+    href: "https://www.auto-horecka.cz/",
+    image: "/sponsors/autohorecka.webp",
+  },
+  {
+    name: "Obec Lichnov",
+    href: "https://www.lichnov.cz/",
+    image: "/sponsors/obec.webp",
+  },
+  {
+    name: "Kamenictví Oczadly",
+    image: "/sponsors/oczadly.webp",
+  },
+  {
+    name: "Rožnovské traviny",
+    href: "https://www.roznovska-travni.cz/",
+    image: "/sponsors/roznov.webp",
+  },
+] as const;
 
 export function SponsorStrip() {
   return (
@@ -43,7 +74,7 @@ export function SponsorStrip() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function SponsorGroup({ duplicate = false }: { duplicate?: boolean }) {
@@ -54,21 +85,21 @@ function SponsorGroup({ duplicate = false }: { duplicate?: boolean }) {
     >
       {PARTNERS.map((partner) => (
         <SponsorItem
-          key={`${partner.name}-${duplicate ? 'duplicate' : 'primary'}`}
+          key={`${partner.name}-${duplicate ? "duplicate" : "primary"}`}
           partner={partner}
           duplicate={duplicate}
         />
       ))}
     </div>
-  )
+  );
 }
 
 function SponsorItem({
   partner,
   duplicate,
 }: {
-  partner: (typeof PARTNERS)[number]
-  duplicate: boolean
+  partner: (typeof PARTNERS)[number];
+  duplicate: boolean;
 }) {
   const content = (
     <div className="flex h-[86px] w-[210px] shrink-0 items-center justify-center overflow-hidden px-5 py-3 sm:h-[98px] sm:w-[250px] sm:px-6">
@@ -92,9 +123,9 @@ function SponsorItem({
         </div>
       )}
     </div>
-  )
+  );
 
-  if ('href' in partner && partner.href) {
+  if ("href" in partner && partner.href) {
     return (
       <a
         href={partner.href}
@@ -106,8 +137,12 @@ function SponsorItem({
       >
         {content}
       </a>
-    )
+    );
   }
 
-  return <div className="shrink-0" title={duplicate ? undefined : partner.name}>{content}</div>
+  return (
+    <div className="shrink-0" title={duplicate ? undefined : partner.name}>
+      {content}
+    </div>
+  );
 }
