@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -74,15 +74,7 @@ export function TeamPage() {
     retry: false,
   })
 
-  const teamDataLoading =
-    Boolean(team?.id) &&
-    (matchesQuery.isLoading ||
-      standingsQuery.isLoading ||
-      playersQuery.isLoading ||
-      staffQuery.isLoading ||
-      galleriesQuery.isLoading)
-
-  if (teamQuery.isLoading || teamDataLoading) {
+  if (teamQuery.isLoading) {
     return <PublicDataPageLoading sections={4} />
   }
 
@@ -143,6 +135,11 @@ export function TeamPage() {
     : null
   const competitionName =
     next?.competition_name || latest?.competition_name || null
+  const heroStatsReady =
+    !matchesQuery.isLoading &&
+    !standingsQuery.isLoading &&
+    !playersQuery.isLoading
+  const heroMatchesReady = !matchesQuery.isLoading
   const form = matches
     .filter((match) => {
       if (new Date(match.playing_at).getTime() > now) return false
@@ -162,28 +159,12 @@ export function TeamPage() {
         image={teamHeroImage || team.logo_url}
         canonicalPath={`/tymy/${team.slug}`}
       />
-      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:pb-14 md:pt-[144px]">
-        <img
+      <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden bg-sand-50 pb-10 pt-[126px] sm:-mt-[88px] sm:pt-[136px] md:pb-14 md:pt-[144px]">
+        <TeamHeroPhoto
           src={teamHeroImage}
           alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
-          aria-hidden={hasTeamPhoto ? undefined : true}
-          className="absolute inset-0 h-full w-full object-cover object-center" style={{ filter: 'saturate(.9) contrast(.94) brightness(1.04)' }}
+          hasTeamPhoto={hasTeamPhoto}
         />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.76) 24%, rgba(250,248,243,.34) 50%, rgba(250,248,243,.10) 74%, rgba(250,248,243,.03) 100%)',
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(250,248,243,.03) 0%, rgba(250,248,243,.08) 50%, rgba(250,248,243,.54) 80%, rgba(250,248,243,.92) 100%)',
-          }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_32%,rgba(255,255,255,.26),transparent_38%)]" />
 
         <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1240px] flex-1 flex-col px-5 md:px-8">
           <div className="flex flex-1 flex-col justify-between py-8 sm:py-10 lg:py-12 xl:py-14">
@@ -236,7 +217,13 @@ export function TeamPage() {
                 {team.name}
               </h1>
 
-              <div className="mt-8 flex flex-wrap items-start gap-x-8 gap-y-5 border-t border-brand-900/12 pt-6">
+              <div
+                className={`mt-8 min-h-[78px] flex flex-wrap items-start gap-x-8 gap-y-5 border-t border-brand-900/12 pt-6 transition-all duration-700 ease-out ${
+                  heroStatsReady
+                    ? 'translate-y-0 opacity-100'
+                    : 'translate-y-2 opacity-0'
+                }`}
+              >
                 <EditorialStat
                   label="Tabulka"
                   value={
@@ -284,8 +271,14 @@ export function TeamPage() {
             </div>
           </div>
 
-          <div className="border-t border-brand-900/10 bg-white/72 px-0 py-5 backdrop-blur-md">
-            <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+          <div className="min-h-[92px] border-t border-brand-900/10 bg-white/72 px-0 py-5 backdrop-blur-md">
+            <div
+              className={`grid gap-5 transition-all duration-700 ease-out lg:grid-cols-[1fr_auto_1fr] lg:items-center ${
+                heroMatchesReady
+                  ? 'translate-y-0 opacity-100'
+                  : 'translate-y-2 opacity-0'
+              }`}
+            >
               <HeroMatch
                 label="Poslední výsledek"
                 match={latest}
@@ -565,6 +558,74 @@ function teamMatchOutcome(match: Match): 'V' | 'R' | 'P' | null {
   if (scored > conceded) return 'V'
   if (scored < conceded) return 'P'
   return 'R'
+}
+
+function TeamHeroPhoto({
+  src,
+  alt,
+  hasTeamPhoto,
+}: {
+  src: string
+  alt: string
+  hasTeamPhoto: boolean
+}) {
+  const [loaded, setLoaded] = useState(!hasTeamPhoto)
+
+  useEffect(() => {
+    setLoaded(!hasTeamPhoto)
+  }, [hasTeamPhoto, src])
+
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="hero-field-image-frame absolute right-0 top-0 overflow-hidden">
+        <img
+          src="/hero-lichnov-field.webp"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className={`absolute inset-0 h-full w-full object-cover object-[66%_center] transition-opacity duration-1000 ease-out ${
+            loaded && hasTeamPhoto ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
+        />
+
+        {hasTeamPhoto && (
+          <img
+            key={src}
+            src={src}
+            alt={alt}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            onLoad={() => setLoaded(true)}
+            className={`absolute inset-0 h-full w-full object-cover object-center transition-[opacity,transform] duration-1000 ease-out ${
+              loaded
+                ? 'scale-100 opacity-100'
+                : 'scale-[1.015] opacity-0'
+            }`}
+            style={{ filter: 'saturate(.92) contrast(.95) brightness(1.04)' }}
+          />
+        )}
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)',
+          }}
+        />
+      </div>
+
+      <div className="hero-glow absolute inset-0 opacity-35" />
+    </div>
+  )
 }
 
 function EditorialStat({
