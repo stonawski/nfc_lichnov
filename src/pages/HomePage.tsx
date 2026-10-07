@@ -524,7 +524,7 @@ function FanshopShowcase() {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-18 sm:py-22 lg:py-28">
+    <section className="relative overflow-hidden border-y border-brand-900/[0.07] bg-white py-20 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <img
           src="/hero-lichnov-field.webp"
