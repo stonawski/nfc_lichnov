@@ -127,6 +127,18 @@ export function GalleryPage() {
   }, [galleries, openGalleryId, searchParams])
 
   useEffect(() => {
+    const requestedTeam = searchParams.get('team')
+    if (!requestedTeam || !teams.length) return
+
+    const target = teams.find(
+      (team) => team.slug === requestedTeam || team.id === requestedTeam,
+    )
+    if (target && teamId !== target.id) {
+      setTeamId(target.id)
+    }
+  }, [searchParams, teamId, teams])
+
+  useEffect(() => {
     if (!openGallery) return
 
     const previousOverflow = document.body.style.overflow
@@ -156,9 +168,28 @@ export function GalleryPage() {
     }
   }
 
+  const setTeamFilter = (value: string) => {
+    setTeamId(value)
+
+    const nextParams = new URLSearchParams(searchParams)
+    if (value === 'all') {
+      nextParams.delete('team')
+    } else {
+      const selectedTeam = teams.find((team) => team.id === value)
+      nextParams.set('team', selectedTeam?.slug || value)
+    }
+    setSearchParams(nextParams, { replace: true })
+  }
+
   const resetFilters = () => {
     setTeamId('all')
     setYear('all')
+
+    if (searchParams.has('team')) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete('team')
+      setSearchParams(nextParams, { replace: true })
+    }
   }
 
   return (
@@ -218,7 +249,7 @@ export function GalleryPage() {
                   <GallerySelect
                     label="Tým"
                     value={teamId}
-                    onChange={setTeamId}
+                    onChange={setTeamFilter}
                     options={[
                       { value: 'all', label: 'Všechny týmy' },
                       ...galleryTeams.map((team) => ({
