@@ -4,6 +4,9 @@
 alter table public.staff
   alter column facr_person_id drop not null;
 
+alter table public.staff
+  alter column sort_order set default 0;
+
 alter table public.staff enable row level security;
 
 drop policy if exists "staff public read" on public.staff;
