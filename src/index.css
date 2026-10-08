@@ -621,6 +621,124 @@ img {
   }
 }
 
+
+.team-gallery-panel {
+  z-index: 30;
+  transform: translate3d(0, 0, 40px) scale(1);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  background: #18352A;
+}
+
+.team-gallery-panel-back {
+  z-index: 10;
+  transform: translate3d(-64px, 10px, -210px) scale(0.95);
+  opacity: 0.92;
+}
+
+.team-gallery-panel-to-back {
+  animation: team-gallery-panel-to-back 1180ms linear both;
+}
+
+.team-gallery-panel-to-front {
+  animation: team-gallery-panel-to-front 1180ms linear both;
+}
+
+.team-gallery-photo {
+  z-index: 20;
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.team-gallery-photo-front {
+  transform: translate3d(5.5%, 0, 150px) scale(1.014);
+}
+
+.team-gallery-photo-to-front {
+  animation: team-gallery-photo-to-front 1180ms linear both;
+}
+
+.team-gallery-photo-to-back {
+  animation: team-gallery-photo-to-back 1180ms linear both;
+}
+
+@keyframes team-gallery-panel-to-back {
+  0% {
+    z-index: 30;
+    transform: translate3d(0, 0, 40px) scale(1);
+    opacity: 1;
+  }
+
+  55% {
+    z-index: 30;
+    transform: translate3d(-78%, 0, 40px) scale(0.985);
+    opacity: 0.98;
+  }
+
+  55.01% {
+    z-index: 10;
+    transform: translate3d(-78%, 0, -210px) scale(0.965);
+    opacity: 0.92;
+  }
+
+  100% {
+    z-index: 10;
+    transform: translate3d(-64px, 10px, -210px) scale(0.95);
+    opacity: 0.92;
+  }
+}
+
+@keyframes team-gallery-panel-to-front {
+  0% {
+    z-index: 10;
+    transform: translate3d(-64px, 10px, -210px) scale(0.95);
+    opacity: 0.92;
+  }
+
+  44.99% {
+    z-index: 10;
+    transform: translate3d(-78%, 0, -210px) scale(0.965);
+    opacity: 0.92;
+  }
+
+  45% {
+    z-index: 30;
+    transform: translate3d(-78%, 0, 40px) scale(0.985);
+    opacity: 0.98;
+  }
+
+  100% {
+    z-index: 30;
+    transform: translate3d(0, 0, 40px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes team-gallery-photo-to-front {
+  0%,
+  55% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(5.5%, 0, 150px) scale(1.014);
+  }
+}
+
+@keyframes team-gallery-photo-to-back {
+  0% {
+    transform: translate3d(5.5%, 0, 150px) scale(1.014);
+  }
+
+  45%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
