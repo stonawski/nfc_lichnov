@@ -469,6 +469,19 @@ export async function fetchAdminStaffById(id: string): Promise<Staff | null> {
 }
 
 export async function createStaffMember(input: CreateStaffInput): Promise<Staff> {
+  const { data: latest, error: latestError } = await supabase
+    .from('staff')
+    .select('sort_order')
+    .eq('team_id', input.team_id)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (latestError) throw latestError
+
+  const nextSortOrder =
+    typeof latest?.sort_order === 'number' ? latest.sort_order + 1 : 0
+
   const { data, error } = await supabase
     .from('staff')
     .insert({
@@ -479,7 +492,7 @@ export async function createStaffMember(input: CreateStaffInput): Promise<Staff>
       photo_url: null,
       bio: null,
       active: true,
-      sort_order: null,
+      sort_order: nextSortOrder,
     })
     .select(staffSelect)
     .single()
