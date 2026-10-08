@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   ChevronRight,
   Images,
+  UserRound,
   UsersRound,
 } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
@@ -441,78 +442,100 @@ export function TeamPage() {
             </div>
 
             <div className="overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_50px_rgba(24,53,42,.055)]">
-              <div className="grid grid-cols-[42px_minmax(0,1fr)_62px_62px_64px] items-center gap-2 border-b border-sand-200 px-4 py-3 text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500 sm:grid-cols-[50px_minmax(0,1fr)_76px_76px_78px] sm:px-5">
-                <div>#</div>
-                <div>Hráč</div>
-                <div className="text-center">Z</div>
-                <div className="text-center">G</div>
-                <div className="text-right">G / Z</div>
-              </div>
-
-              {scorers.map((player, index) => {
-                const matchesCount = player.matches_count ?? 0
-                const goalsCount = player.goals_count ?? 0
-                const rate =
-                  matchesCount > 0 ? (goalsCount / matchesCount).toFixed(2) : '—'
-
-                return (
-                  <div
-                    key={player.id}
-                    className={`grid grid-cols-[42px_minmax(0,1fr)_62px_62px_64px] items-center gap-2 border-b border-sand-200/70 px-4 py-3.5 text-sm last:border-b-0 sm:grid-cols-[50px_minmax(0,1fr)_76px_76px_78px] sm:px-5 ${
-                      index < 3 ? 'bg-brand-50/45' : 'bg-white'
-                    }`}
-                  >
-                    <div
-                      className={`font-black ${
-                        index === 0
-                          ? 'text-brand-500'
-                          : index < 3
-                            ? 'text-brand-900'
-                            : 'text-ink-500'
-                      }`}
-                    >
-                      {index + 1}
-                    </div>
-
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-sand-200 bg-sand-100">
-                        {player.photo_url || player.facr_photo_url ? (
-                          <img
-                            src={player.photo_url || player.facr_photo_url || ''}
-                            alt=""
-                            loading="lazy"
-                            className="h-full w-full object-cover object-top"
-                          />
-                        ) : (
-                          <div className="grid h-full place-items-center text-[9px] font-black text-brand-900">
-                            {initials(playerName(player))}
-                          </div>
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="truncate font-extrabold text-brand-900">
-                          {playerName(player)}
-                        </div>
-                        {player.position && (
-                          <div className="mt-0.5 truncate text-[10px] font-semibold text-ink-500">
-                            {player.position}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="text-center font-semibold text-ink-500">
-                      {matchesCount || '—'}
-                    </div>
-                    <div className="text-center text-lg font-black text-brand-900">
-                      {goalsCount}
-                    </div>
-                    <div className="text-right text-xs font-bold text-ink-500">
-                      {rate}
-                    </div>
+              <div className="overflow-x-auto [scrollbar-width:thin]">
+                <div className="min-w-[760px]">
+                  <div className="grid grid-cols-[46px_minmax(220px,1fr)_58px_58px_58px_58px_68px] items-center gap-2 border-b border-sand-200 px-5 py-3 text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
+                    <div>#</div>
+                    <div>Hráč</div>
+                    <div className="text-center">Z</div>
+                    <div className="text-center">G</div>
+                    <div className="text-center">ŽK</div>
+                    <div className="text-center">ČK</div>
+                    <div className="text-right">G / Z</div>
                   </div>
-                )
-              })}
+
+                  {scorers.map((player, index) => {
+                    const matchesCount = player.matches_count ?? 0
+                    const goalsCount = player.goals_count ?? 0
+                    const yellowCards = player.yellow_cards ?? 0
+                    const redCards = player.red_cards ?? 0
+                    const rate =
+                      matchesCount > 0 ? (goalsCount / matchesCount).toFixed(2) : '—'
+                    const playerMeta = [
+                      player.number != null ? `#${player.number}` : null,
+                      player.position,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')
+
+                    return (
+                      <div
+                        key={player.id}
+                        className={`grid grid-cols-[46px_minmax(220px,1fr)_58px_58px_58px_58px_68px] items-center gap-2 border-b border-sand-200/70 px-5 py-3.5 text-sm last:border-b-0 ${
+                          index < 3 ? 'bg-brand-50/45' : 'bg-white'
+                        }`}
+                      >
+                        <div
+                          className={`font-black ${
+                            index === 0
+                              ? 'text-brand-500'
+                              : index < 3
+                                ? 'text-brand-900'
+                                : 'text-ink-500'
+                          }`}
+                        >
+                          {index + 1}
+                        </div>
+
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-sand-200 bg-sand-100">
+                            {player.photo_url || player.facr_photo_url ? (
+                              <img
+                                src={player.photo_url || player.facr_photo_url || ''}
+                                alt=""
+                                loading="lazy"
+                                className="h-full w-full object-cover object-top"
+                              />
+                            ) : (
+                              <UserRound size={19} className="text-brand-700/55" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="truncate font-extrabold text-brand-900">
+                              {playerName(player)}
+                            </div>
+                            {playerMeta && (
+                              <div className="mt-0.5 truncate text-[10px] font-semibold text-ink-500">
+                                {playerMeta}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="text-center font-semibold text-ink-500">
+                          {matchesCount || '—'}
+                        </div>
+                        <div className="text-center text-lg font-black text-brand-900">
+                          {goalsCount}
+                        </div>
+                        <div className="text-center">
+                          <span className="inline-flex min-w-7 items-center justify-center rounded-lg bg-amber-50 px-2 py-1 text-xs font-black text-amber-700">
+                            {yellowCards}
+                          </span>
+                        </div>
+                        <div className="text-center">
+                          <span className="inline-flex min-w-7 items-center justify-center rounded-lg bg-red-50 px-2 py-1 text-xs font-black text-red-700">
+                            {redCards}
+                          </span>
+                        </div>
+                        <div className="text-right text-xs font-bold tabular-nums text-ink-500">
+                          {rate}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </section>
