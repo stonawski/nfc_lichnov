@@ -279,7 +279,7 @@ export function TeamPage() {
 
           <div className="min-h-[92px] border-t border-brand-900/10 bg-white/72 px-0 py-5 backdrop-blur-md">
             <div
-              className={`grid gap-5 transition-all duration-700 ease-out lg:grid-cols-[1fr_auto_1fr] lg:items-center ${
+              className={`grid gap-5 transition-all duration-700 ease-out lg:grid-cols-[minmax(0,1fr)_150px_minmax(0,1fr)] lg:items-start ${
                 heroMatchesReady
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-2 opacity-0'
@@ -294,7 +294,7 @@ export function TeamPage() {
 
               <Link
                 to={`/zapasy?team=${team.slug}`}
-                className="hidden items-center gap-2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-ink-500 transition hover:text-brand-900 lg:inline-flex"
+                className="hidden h-10 items-center justify-center gap-2 self-start whitespace-nowrap pt-[18px] text-[10px] font-bold uppercase tracking-[0.15em] text-ink-500 transition hover:text-brand-900 lg:inline-flex"
               >
                 Všechna utkání
                 <ArrowRight size={13} />
@@ -761,13 +761,13 @@ function HeroMatch({
   return (
     <Link
       to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
-      className="group flex min-w-0 items-center justify-between gap-4"
+      className="group grid min-h-[58px] w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-4"
     >
-      <div className="min-w-0">
-        <div className="text-[8px] font-bold uppercase tracking-[0.15em] text-ink-500">
+      <div className="grid min-w-0 grid-rows-[12px_38px]">
+        <div className="text-[8px] font-bold uppercase leading-3 tracking-[0.15em] text-ink-500">
           {label}
         </div>
-        <div className="mt-2 flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <HeroClub name={match.home_team_name} logo={match.home_team_logo} />
           <div className="shrink-0 text-center">
             {kind === 'result' ? (
@@ -791,7 +791,7 @@ function HeroMatch({
 
       <ChevronRight
         size={15}
-        className="shrink-0 text-ink-500/70 transition group-hover:translate-x-0.5 group-hover:text-brand-900"
+        className="mt-[22px] shrink-0 text-ink-500/70 transition group-hover:translate-x-0.5 group-hover:text-brand-900"
       />
     </Link>
   )
