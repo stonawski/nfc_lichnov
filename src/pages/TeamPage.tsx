@@ -378,7 +378,7 @@ export function TeamPage() {
 
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
             <div className="relative grid gap-6 lg:grid-cols-[.52fr_1.48fr] lg:items-start">
-              <div className="relative z-20 lg:sticky lg:top-28">
+              <div className="lg:sticky lg:top-28">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
                   Soutěž
                 </div>
@@ -423,7 +423,7 @@ export function TeamPage() {
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
           <div className="relative mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-start">
-            <div className="lg:sticky lg:top-28">
+            <div className="relative z-20 lg:sticky lg:top-28">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
                 Sezóna {team.season || 'aktuální'}
               </div>
