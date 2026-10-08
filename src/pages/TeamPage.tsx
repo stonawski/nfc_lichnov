@@ -134,7 +134,10 @@ export function TeamPage() {
     ? `/galerie?album=${encodeURIComponent(teamGallery.slug || teamGallery.id)}`
     : null
   const competitionName =
-    next?.competition_name || latest?.competition_name || null
+    next?.competition_name ||
+    latest?.competition_name ||
+    matches.find((match) => match.competition_name)?.competition_name ||
+    null
   const heroStatsReady =
     !matchesQuery.isLoading &&
     !standingsQuery.isLoading &&
@@ -167,7 +170,7 @@ export function TeamPage() {
           galleryHref={galleryHref}
         />
 
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_46%,rgba(0,146,63,.07),transparent_28%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_96%,rgba(0,146,63,.105),transparent_34%)]" />
 
         <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1240px] flex-1 flex-col px-5 md:px-8">
           <div className="flex flex-1 flex-col justify-between py-8 sm:py-10 lg:py-12 xl:py-14">
@@ -328,19 +331,35 @@ export function TeamPage() {
           id="tabulka"
           className="data-fade-in relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-10 md:px-8 md:py-12"
         >
-          <div className="pointer-events-none absolute -left-28 top-8 h-[460px] w-[460px] rounded-full bg-brand-500/[0.055] blur-3xl" />
-          <div className="pointer-events-none absolute -right-32 bottom-[-120px] h-[420px] w-[420px] rounded-full bg-brand-700/[0.045] blur-3xl" />
+          <div className="pointer-events-none absolute left-[4%] top-[-28px] whitespace-nowrap text-[clamp(7rem,16vw,15rem)] font-black leading-none tracking-[-0.095em] text-brand-500/[0.10]">
+            TABULKA
+          </div>
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-[-220px] h-[620px]"
+            style={{
+              background:
+                'radial-gradient(ellipse at 24% 72%, rgba(0,146,63,.15) 0%, rgba(0,146,63,.07) 28%, transparent 64%)',
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-[-250px] h-[560px]"
+            style={{
+              background:
+                'radial-gradient(ellipse at 78% 82%, rgba(20,83,45,.11) 0%, rgba(20,83,45,.04) 30%, transparent 66%)',
+            }}
+          />
 
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
-            <div className="pointer-events-none absolute right-4 top-4 text-[110px] font-black leading-none tracking-[-0.08em] text-white/[0.025]">
-              {lichnovStanding?.rank ?? 'NFC'}
-            </div>
-
             <div className="relative grid gap-6 lg:grid-cols-[.52fr_1.48fr] lg:items-start">
               <div className="lg:sticky lg:top-28">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
                   Soutěž
                 </div>
+                {competitionName && (
+                  <div className="mt-2 max-w-sm text-sm font-extrabold leading-5 text-white/70">
+                    {competitionName}
+                  </div>
+                )}
                 <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
                   Tabulka
                 </h2>
@@ -618,7 +637,7 @@ function TeamHeroPhoto({
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(90deg, rgba(250,248,243,.96) 0%, rgba(250,248,243,.50) 16%, rgba(250,248,243,.14) 34%, rgba(250,248,243,0) 58%)',
+                'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.86) 12%, rgba(250,248,243,.58) 26%, rgba(250,248,243,.28) 42%, rgba(250,248,243,.08) 58%, rgba(250,248,243,0) 72%)',
             }}
           />
           <div
@@ -630,7 +649,13 @@ function TeamHeroPhoto({
           />
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 -left-20 w-36 bg-gradient-to-r from-sand-50 via-sand-50/75 to-transparent blur-[2px] lg:block hidden" />
+        <div
+          className="pointer-events-none absolute inset-y-0 -left-[280px] hidden w-[620px] lg:block"
+          style={{
+            background:
+              'linear-gradient(90deg, #faf8f3 0%, #faf8f3 30%, rgba(250,248,243,.94) 43%, rgba(250,248,243,.72) 57%, rgba(250,248,243,.38) 72%, rgba(250,248,243,.12) 86%, transparent 100%)',
+          }}
+        />
         <div className="pointer-events-none absolute inset-x-0 -bottom-10 h-32 bg-gradient-to-b from-transparent via-sand-50/60 to-sand-50 blur-[2px]" />
 
         {hasTeamPhoto && galleryHref && loaded && (
