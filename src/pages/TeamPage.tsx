@@ -48,7 +48,7 @@ export function TeamPage() {
       window.setTimeout(() => {
         setGalleryPhotoFront(true)
         setGalleryPanelPhase('back')
-      }, 420)
+      }, 620)
       return
     }
 
@@ -57,7 +57,7 @@ export function TeamPage() {
       window.setTimeout(() => {
         setGalleryPhotoFront(false)
         setGalleryPanelPhase('front')
-      }, 420)
+      }, 620)
     }
   }
 
@@ -722,7 +722,7 @@ export function TeamPage() {
                 galleryPanelPhase === 'exit-left' ||
                 galleryPanelPhase === 'return-left'
               }
-              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-[460ms] ease-[cubic-bezier(.22,.72,.18,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
+              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
                 galleryPhotoFront
                   ? 'z-30 shadow-[0_34px_90px_rgba(24,53,42,.24)]'
                   : 'z-0 shadow-[0_24px_70px_rgba(24,53,42,.12)]'
@@ -741,7 +741,7 @@ export function TeamPage() {
                 src={teamHeroImage}
                 alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
                 loading="lazy"
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-[460ms] ease-[cubic-bezier(.22,.72,.18,1)] motion-reduce:transition-none ${
+                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] motion-reduce:transition-none ${
                   galleryPhotoFront ? 'scale-[1.008]' : 'scale-100'
                 }`}
                 style={{
@@ -782,9 +782,9 @@ export function TeamPage() {
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div
-                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-[460ms] ease-[cubic-bezier(.22,.72,.18,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
+                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
                   galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
-                    ? 'pointer-events-none border-white/16 bg-brand-900/42 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
+                    ? 'pointer-events-none border-white/12 bg-brand-900 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
                     : galleryPanelPhase === 'exit-left'
                       ? 'pointer-events-none bg-brand-900 shadow-[0_18px_52px_rgba(24,53,42,.16)]'
                       : 'pointer-events-auto bg-brand-900'
@@ -792,19 +792,19 @@ export function TeamPage() {
                 style={{
                   transform:
                     galleryPanelPhase === 'exit-left'
-                      ? 'translate3d(-190px, 0, 40px) scale(.97)'
+                      ? 'translate3d(-78%, 0, 40px) scale(.985)'
                       : galleryPanelPhase === 'back'
-                        ? 'translate3d(-78px, 10px, -210px) scale(.93)'
+                        ? 'translate3d(-64px, 10px, -210px) scale(.95)'
                         : galleryPanelPhase === 'return-left'
-                          ? 'translate3d(-190px, 0, -210px) scale(.95)'
+                          ? 'translate3d(-78%, 0, -210px) scale(.965)'
                           : 'translate3d(0, 0, 40px) scale(1)',
                   opacity:
                     galleryPanelPhase === 'back'
-                      ? 0.84
+                      ? 0.9
                       : galleryPanelPhase === 'return-left'
-                        ? 0.78
+                        ? 0.9
                         : galleryPanelPhase === 'exit-left'
-                          ? 0.94
+                          ? 0.98
                           : 1,
                   transformStyle: 'preserve-3d',
                   transformOrigin: '50% 50%',
