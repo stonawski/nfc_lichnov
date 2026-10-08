@@ -627,6 +627,8 @@ img {
   transform: translate3d(0, 0, 40px) scale(1);
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   will-change: transform, opacity;
   background: #18352A;
 }
@@ -638,11 +640,11 @@ img {
 }
 
 .team-gallery-panel-to-back {
-  animation: team-gallery-panel-to-back 960ms linear both;
+  animation: team-gallery-panel-to-back 880ms linear both;
 }
 
 .team-gallery-panel-to-front {
-  animation: team-gallery-panel-to-front 960ms linear both;
+  animation: team-gallery-panel-to-front 880ms linear both;
 }
 
 .team-gallery-photo {
@@ -650,6 +652,8 @@ img {
   transform: translate3d(0, 0, 0) scale(1);
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   will-change: transform;
 }
 
@@ -658,11 +662,11 @@ img {
 }
 
 .team-gallery-photo-to-front {
-  animation: team-gallery-photo-to-front 960ms linear both;
+  animation: team-gallery-photo-to-front 880ms linear both;
 }
 
 .team-gallery-photo-to-back {
-  animation: team-gallery-photo-to-back 960ms linear both;
+  animation: team-gallery-photo-to-back 880ms linear both;
 }
 
 @keyframes team-gallery-panel-to-back {
@@ -672,27 +676,27 @@ img {
     opacity: 1;
   }
 
-  28% {
+  26% {
     z-index: 30;
-    transform: translate3d(-43%, 0, 12px) scale(0.955);
-    opacity: 0.98;
+    transform: translate3d(-42%, 0, 8px) scale(0.956);
+    opacity: 0.985;
   }
 
-  50% {
-    z-index: 30;
-    transform: translate3d(-76%, 0, -95px) scale(0.9);
-    opacity: 0.95;
-  }
-
-  62% {
+  52% {
     z-index: 30;
     transform: translate3d(-82%, 0, -210px) scale(0.88);
     opacity: 0.92;
   }
 
-  62.01% {
+  52.01% {
     z-index: 10;
     transform: translate3d(-82%, 0, -210px) scale(0.88);
+    opacity: 0.92;
+  }
+
+  76% {
+    z-index: 10;
+    transform: translate3d(-48%, 5px, -210px) scale(0.91);
     opacity: 0.92;
   }
 
@@ -710,22 +714,28 @@ img {
     opacity: 0.92;
   }
 
-  38% {
+  24% {
+    z-index: 10;
+    transform: translate3d(-48%, 5px, -210px) scale(0.91);
+    opacity: 0.92;
+  }
+
+  47.99% {
     z-index: 10;
     transform: translate3d(-82%, 0, -210px) scale(0.88);
     opacity: 0.92;
   }
 
-  50% {
-    z-index: 10;
-    transform: translate3d(-76%, 0, -95px) scale(0.9);
-    opacity: 0.95;
+  48% {
+    z-index: 30;
+    transform: translate3d(-82%, 0, -210px) scale(0.88);
+    opacity: 0.92;
   }
 
-  72% {
+  74% {
     z-index: 30;
-    transform: translate3d(-43%, 0, 12px) scale(0.955);
-    opacity: 0.98;
+    transform: translate3d(-42%, 0, 8px) scale(0.956);
+    opacity: 0.985;
   }
 
   100% {
@@ -737,7 +747,7 @@ img {
 
 @keyframes team-gallery-photo-to-front {
   0%,
-  62% {
+  52% {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
@@ -751,7 +761,7 @@ img {
     transform: translate3d(5.5%, 0, 150px) scale(1.014);
   }
 
-  38%,
+  48%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
