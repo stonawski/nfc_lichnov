@@ -331,21 +331,23 @@ export function TeamPage() {
           id="tabulka"
           className="data-fade-in relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-10 md:px-8 md:py-12"
         >
-          <div className="pointer-events-none absolute left-[4%] top-[-28px] whitespace-nowrap text-[clamp(7rem,16vw,15rem)] font-black leading-none tracking-[-0.095em] text-brand-500/[0.10]">
+          <div className="pointer-events-none absolute left-[1%] top-[-58px] whitespace-nowrap text-[clamp(9rem,20vw,20rem)] font-black leading-[0.82] tracking-[-0.10em] text-brand-500/[0.12]">
             TABULKA
           </div>
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-[-220px] h-[620px]"
+            className="pointer-events-none absolute right-[-260px] top-[18%] h-[520px] w-[760px]"
             style={{
               background:
-                'radial-gradient(ellipse at 24% 72%, rgba(0,146,63,.15) 0%, rgba(0,146,63,.07) 28%, transparent 64%)',
+                'radial-gradient(ellipse at 50% 50%, rgba(0,146,63,.18) 0%, rgba(0,146,63,.10) 24%, rgba(0,146,63,.045) 42%, transparent 70%)',
+              filter: 'blur(10px)',
             }}
           />
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-[-250px] h-[560px]"
+            className="pointer-events-none absolute right-[-120px] top-[31%] h-[280px] w-[420px]"
             style={{
               background:
-                'radial-gradient(ellipse at 78% 82%, rgba(20,83,45,.11) 0%, rgba(20,83,45,.04) 30%, transparent 66%)',
+                'radial-gradient(ellipse at 50% 50%, rgba(20,83,45,.095) 0%, rgba(20,83,45,.035) 38%, transparent 72%)',
+              filter: 'blur(18px)',
             }}
           />
 
@@ -360,7 +362,7 @@ export function TeamPage() {
                     {competitionName}
                   </div>
                 )}
-                <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
+                <h2 className="mt-3 text-5xl font-black leading-[0.95] tracking-[-0.06em] sm:text-6xl lg:text-7xl">
                   Tabulka
                 </h2>
                 <p className="mt-3 max-w-sm text-sm leading-6 text-white/[0.58]">
