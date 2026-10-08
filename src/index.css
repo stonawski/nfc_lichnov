@@ -623,32 +623,11 @@ img {
 
 
 .team-gallery-panel-layer {
-  z-index: 30;
-  --gallery-panel-clip-right: 94.5%;
-  clip-path: inset(0 0 0 0);
   transform-style: preserve-3d;
-  will-change: clip-path;
-}
-
-.team-gallery-panel-layer-back {
-  clip-path: inset(0 var(--gallery-panel-clip-right) 0 0);
-}
-
-.team-gallery-panel-layer-to-back {
-  animation: team-gallery-layer-to-back 820ms linear both;
-}
-
-.team-gallery-panel-layer-to-front {
-  animation: team-gallery-layer-to-front 820ms linear both;
-}
-
-@media (min-width: 1024px) {
-  .team-gallery-panel-layer {
-    --gallery-panel-clip-right: 79.4%;
-  }
 }
 
 .team-gallery-panel {
+  z-index: 30;
   transform: translate3d(0, 0, 40px) scale(1);
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
@@ -659,16 +638,17 @@ img {
 }
 
 .team-gallery-panel-back {
+  z-index: 10;
   transform: translate3d(-64px, 10px, -210px) scale(0.94);
   opacity: 0.92;
 }
 
 .team-gallery-panel-to-back {
-  animation: team-gallery-panel-to-back 820ms linear both;
+  animation: team-gallery-panel-to-back 800ms linear both;
 }
 
 .team-gallery-panel-to-front {
-  animation: team-gallery-panel-to-front 820ms linear both;
+  animation: team-gallery-panel-to-front 800ms linear both;
 }
 
 .team-gallery-photo {
@@ -686,89 +666,76 @@ img {
 }
 
 .team-gallery-photo-to-front {
-  animation: team-gallery-photo-to-front 820ms linear both;
+  animation: team-gallery-photo-to-front 800ms linear both;
 }
 
 .team-gallery-photo-to-back {
-  animation: team-gallery-photo-to-back 820ms linear both;
-}
-
-@keyframes team-gallery-layer-to-back {
-  0%,
-  48% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  64%,
-  100% {
-    clip-path: inset(0 var(--gallery-panel-clip-right) 0 0);
-  }
-}
-
-@keyframes team-gallery-layer-to-front {
-  0%,
-  36% {
-    clip-path: inset(0 var(--gallery-panel-clip-right) 0 0);
-  }
-
-  52%,
-  100% {
-    clip-path: inset(0 0 0 0);
-  }
+  animation: team-gallery-photo-to-back 800ms linear both;
 }
 
 @keyframes team-gallery-panel-to-back {
   0% {
+    z-index: 30;
     transform: translate3d(0, 0, 40px) scale(1);
     opacity: 1;
   }
 
-  10% {
-    transform: translate3d(-17%, -3px, 28px) scale(0.987);
+  12% {
+    z-index: 30;
+    transform: translate3d(-20%, -4px, 24px) scale(0.982);
     opacity: 0.992;
   }
 
-  20% {
-    transform: translate3d(-33%, -7px, 5px) scale(0.972);
-    opacity: 0.982;
+  24% {
+    z-index: 30;
+    transform: translate3d(-40%, -9px, -10px) scale(0.958);
+    opacity: 0.98;
   }
 
-  30% {
-    transform: translate3d(-48%, -12px, -35px) scale(0.95);
-    opacity: 0.97;
+  36% {
+    z-index: 30;
+    transform: translate3d(-60%, -15px, -62px) scale(0.93);
+    opacity: 0.962;
   }
 
-  40% {
-    transform: translate3d(-62%, -18px, -90px) scale(0.925);
-    opacity: 0.955;
-  }
-
-  50% {
-    transform: translate3d(-74%, -24px, -150px) scale(0.9);
-    opacity: 0.938;
+  48% {
+    z-index: 30;
+    transform: translate3d(-80%, -23px, -132px) scale(0.902);
+    opacity: 0.942;
   }
 
   58% {
-    transform: translate3d(-82%, -30px, -210px) scale(0.88);
+    z-index: 30;
+    transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
-  66% {
-    transform: translate3d(-78%, -24px, -210px) scale(0.887);
+  58.01% {
+    z-index: 10;
+    transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
-  76% {
-    transform: translate3d(-58%, -13px, -210px) scale(0.905);
+  68% {
+    z-index: 10;
+    transform: translate3d(-84%, -24px, -210px) scale(0.889);
     opacity: 0.92;
   }
 
-  88% {
-    transform: translate3d(-35%, -1px, -210px) scale(0.923);
+  80% {
+    z-index: 10;
+    transform: translate3d(-58%, -13px, -210px) scale(0.907);
+    opacity: 0.92;
+  }
+
+  90% {
+    z-index: 10;
+    transform: translate3d(-34%, -1px, -210px) scale(0.925);
     opacity: 0.92;
   }
 
   100% {
+    z-index: 10;
     transform: translate3d(-64px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
@@ -776,56 +743,67 @@ img {
 
 @keyframes team-gallery-panel-to-front {
   0% {
+    z-index: 10;
     transform: translate3d(-64px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
 
-  12% {
-    transform: translate3d(-35%, -1px, -210px) scale(0.923);
+  10% {
+    z-index: 10;
+    transform: translate3d(-34%, -1px, -210px) scale(0.925);
     opacity: 0.92;
   }
 
-  24% {
-    transform: translate3d(-58%, -13px, -210px) scale(0.905);
+  20% {
+    z-index: 10;
+    transform: translate3d(-58%, -13px, -210px) scale(0.907);
     opacity: 0.92;
   }
 
-  34% {
-    transform: translate3d(-78%, -24px, -210px) scale(0.887);
+  32% {
+    z-index: 10;
+    transform: translate3d(-84%, -24px, -210px) scale(0.889);
+    opacity: 0.92;
+  }
+
+  41.99% {
+    z-index: 10;
+    transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
   42% {
-    transform: translate3d(-82%, -30px, -210px) scale(0.88);
+    z-index: 30;
+    transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
-  50% {
-    transform: translate3d(-74%, -24px, -150px) scale(0.9);
-    opacity: 0.938;
+  52% {
+    z-index: 30;
+    transform: translate3d(-80%, -23px, -132px) scale(0.902);
+    opacity: 0.942;
   }
 
-  60% {
-    transform: translate3d(-62%, -18px, -90px) scale(0.925);
-    opacity: 0.955;
+  64% {
+    z-index: 30;
+    transform: translate3d(-60%, -15px, -62px) scale(0.93);
+    opacity: 0.962;
   }
 
-  70% {
-    transform: translate3d(-48%, -12px, -35px) scale(0.95);
-    opacity: 0.97;
+  76% {
+    z-index: 30;
+    transform: translate3d(-40%, -9px, -10px) scale(0.958);
+    opacity: 0.98;
   }
 
-  80% {
-    transform: translate3d(-33%, -7px, 5px) scale(0.972);
-    opacity: 0.982;
-  }
-
-  90% {
-    transform: translate3d(-17%, -3px, 28px) scale(0.987);
+  88% {
+    z-index: 30;
+    transform: translate3d(-20%, -4px, 24px) scale(0.982);
     opacity: 0.992;
   }
 
   100% {
+    z-index: 30;
     transform: translate3d(0, 0, 40px) scale(1);
     opacity: 1;
   }
@@ -833,7 +811,7 @@ img {
 
 @keyframes team-gallery-photo-to-front {
   0%,
-  52% {
+  58% {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
@@ -847,7 +825,7 @@ img {
     transform: translate3d(5.5%, 0, 150px) scale(1.014);
   }
 
-  48%,
+  42%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
