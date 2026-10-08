@@ -630,7 +630,10 @@ img {
   padding-left: max(1.25rem, calc((100vw - 1180px) / 2));
   padding-right: max(1.25rem, calc((100vw - 1180px) / 2));
   --gallery-photo-left: 1.25rem;
-  --gallery-clip-right: calc(100vw - var(--gallery-photo-left));
+  --gallery-clip-overlap: 10px;
+  --gallery-clip-right: calc(
+    100vw - var(--gallery-photo-left) - var(--gallery-clip-overlap)
+  );
   clip-path: inset(0 0 0 0);
   transform-style: preserve-3d;
   will-change: clip-path;
@@ -671,7 +674,7 @@ img {
 }
 
 .team-gallery-panel-back {
-  transform: translate3d(-110px, 10px, -210px) scale(0.94);
+  transform: translate3d(-82px, 10px, -210px) scale(0.94);
   opacity: 0.92;
 }
 
@@ -751,17 +754,17 @@ img {
   }
 
   48% {
-    transform: translate3d(-80%, -23px, -132px) scale(0.902);
+    transform: translate3d(-72%, -21px, -132px) scale(0.91);
     opacity: 0.942;
   }
 
   58% {
-    transform: translate3d(-104%, -30px, -210px) scale(0.88);
+    transform: translate3d(-90%, -28px, -210px) scale(0.89);
     opacity: 0.92;
   }
 
   68% {
-    transform: translate3d(-84%, -24px, -210px) scale(0.889);
+    transform: translate3d(-76%, -22px, -210px) scale(0.898);
     opacity: 0.92;
   }
 
@@ -776,14 +779,14 @@ img {
   }
 
   100% {
-    transform: translate3d(-110px, 10px, -210px) scale(0.94);
+    transform: translate3d(-82px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
 }
 
 @keyframes team-gallery-panel-to-front {
   0% {
-    transform: translate3d(-110px, 10px, -210px) scale(0.94);
+    transform: translate3d(-82px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
 
@@ -798,17 +801,17 @@ img {
   }
 
   32% {
-    transform: translate3d(-84%, -24px, -210px) scale(0.889);
+    transform: translate3d(-76%, -22px, -210px) scale(0.898);
     opacity: 0.92;
   }
 
   42% {
-    transform: translate3d(-104%, -30px, -210px) scale(0.88);
+    transform: translate3d(-90%, -28px, -210px) scale(0.89);
     opacity: 0.92;
   }
 
   52% {
-    transform: translate3d(-80%, -23px, -132px) scale(0.902);
+    transform: translate3d(-72%, -21px, -132px) scale(0.91);
     opacity: 0.942;
   }
 
