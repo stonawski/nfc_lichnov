@@ -480,10 +480,10 @@ export function TeamPage() {
 
             <div className="relative isolate">
               <div
-                className="pointer-events-none absolute -left-[190px] bottom-[-170px] -z-10 h-[650px] w-[650px] rounded-full"
+                className="pointer-events-none absolute -left-[300px] bottom-[-290px] -z-10 h-[900px] w-[900px] rounded-full"
                 style={{
                   background:
-                    'radial-gradient(circle, rgba(0,146,63,.30) 0%, rgba(0,146,63,.19) 20%, rgba(0,146,63,.105) 38%, rgba(0,146,63,.04) 57%, transparent 74%)',
+                    'radial-gradient(circle, rgba(0,146,63,.31) 0%, rgba(0,146,63,.20) 20%, rgba(0,146,63,.115) 39%, rgba(0,146,63,.05) 58%, rgba(0,146,63,.018) 68%, transparent 78%)',
                   filter: 'blur(20px)',
                 }}
               />
@@ -697,24 +697,24 @@ export function TeamPage() {
                   : 'Přesunout týmovou fotografii do popředí'
               }
               onClick={() => setGalleryPhotoFront((current) => !current)}
-              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
+              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-[820ms] ease-[cubic-bezier(.2,.78,.18,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
                 galleryPhotoFront
                   ? 'z-30 shadow-[0_34px_90px_rgba(24,53,42,.24)]'
                   : 'z-0 shadow-[0_24px_70px_rgba(24,53,42,.12)]'
               }`}
               style={{
                 transform: galleryPhotoFront
-                  ? 'translate3d(-3%, 0, 110px) rotateY(-1.5deg) scale(1.015)'
-                  : 'translate3d(0, 0, 0) rotateY(-5deg) scale(.985)',
+                  ? 'translate3d(4%, 0, 130px) scale(1.012)'
+                  : 'translate3d(0, 0, 0) scale(1)',
                 transformStyle: 'preserve-3d',
-                transformOrigin: '58% 50%',
+                transformOrigin: '50% 50%',
               }}
             >
               <img
                 src={teamHeroImage}
                 alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
                 loading="lazy"
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] motion-reduce:transition-none ${
+                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-[820ms] ease-[cubic-bezier(.2,.78,.18,1)] motion-reduce:transition-none ${
                   galleryPhotoFront ? 'scale-[1.008]' : 'scale-100'
                 }`}
                 style={{
@@ -746,18 +746,18 @@ export function TeamPage() {
 
             <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
               <div
-                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
+                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-[820ms] ease-[cubic-bezier(.2,.78,.18,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
                   galleryPhotoFront
-                    ? 'pointer-events-none bg-brand-900/58 shadow-[0_18px_45px_rgba(24,53,42,.12)]'
+                    ? 'pointer-events-none bg-brand-900/48 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
                     : 'pointer-events-auto bg-brand-900'
                 }`}
                 style={{
                   transform: galleryPhotoFront
-                    ? 'translate3d(96px, 18px, -120px) rotateY(11deg) scale(.92)'
+                    ? 'translate3d(-72px, 12px, -150px) rotateY(-14deg) scale(.93)'
                     : 'translate3d(0, 0, 40px) rotateY(0deg) scale(1)',
-                  opacity: galleryPhotoFront ? 0.62 : 1,
+                  opacity: galleryPhotoFront ? 0.66 : 1,
                   transformStyle: 'preserve-3d',
-                  transformOrigin: '45% 50%',
+                  transformOrigin: '100% 50%',
                 }}
               >
                 <div className="flex items-center gap-3">
