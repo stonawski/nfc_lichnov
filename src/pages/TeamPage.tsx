@@ -421,11 +421,11 @@ export function TeamPage() {
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
           <div
-            className="pointer-events-none absolute -right-[18%] top-[10%] h-[620px] w-[760px] rounded-full"
+            className="pointer-events-none absolute left-[42%] top-[50%] h-[980px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full"
             style={{
               background:
-                'radial-gradient(ellipse at center, rgba(0,146,63,.13) 0%, rgba(0,146,63,.065) 30%, rgba(0,146,63,.02) 52%, transparent 72%)',
-              filter: 'blur(26px)',
+                'radial-gradient(circle, rgba(0,146,63,.145) 0%, rgba(0,146,63,.10) 18%, rgba(0,146,63,.055) 36%, rgba(0,146,63,.022) 52%, transparent 70%)',
+              filter: 'blur(18px)',
             }}
           />
 
@@ -508,7 +508,7 @@ export function TeamPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_24px_60px_rgba(24,53,42,.08),0_0_88px_rgba(0,146,63,.22)]">
+            <div className="relative overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]/95 shadow-[0_24px_60px_rgba(24,53,42,.08)] backdrop-blur-[1px]">
               <div className="border-b border-sand-200 px-5 py-4">
                 <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
                   Řazení podle
