@@ -6,6 +6,12 @@ alter table public.staff
 
 alter table public.staff enable row level security;
 
+drop policy if exists "staff public read" on public.staff;
+create policy "staff public read"
+on public.staff
+for select
+using (true);
+
 drop policy if exists "staff editor insert" on public.staff;
 create policy "staff editor insert"
 on public.staff
@@ -28,4 +34,5 @@ for delete
 to authenticated
 using (public.can_edit_content());
 
+grant select on public.staff to anon, authenticated;
 grant insert, update, delete on public.staff to authenticated;
