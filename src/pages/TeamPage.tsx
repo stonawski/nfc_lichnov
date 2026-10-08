@@ -38,26 +38,29 @@ export function TeamPage() {
   const [seasonStatMetric, setSeasonStatMetric] =
     useState<SeasonStatMetric>('goals')
   const [showAllSeasonStats, setShowAllSeasonStats] = useState(false)
-  const [galleryPhotoFront, setGalleryPhotoFront] = useState(false)
   const [galleryPanelPhase, setGalleryPanelPhase] =
-    useState<'front' | 'exit-left' | 'back' | 'return-left'>('front')
+    useState<'front' | 'to-back' | 'back' | 'to-front'>('front')
+  const galleryPhotoFront =
+    galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
+  const galleryAnimating =
+    galleryPanelPhase === 'to-back' || galleryPanelPhase === 'to-front'
 
   const toggleGalleryLayers = () => {
     if (galleryPanelPhase === 'front') {
-      setGalleryPanelPhase('exit-left')
-      window.setTimeout(() => {
-        setGalleryPhotoFront(true)
-        setGalleryPanelPhase('back')
-      }, 620)
+      setGalleryPanelPhase('to-back')
       return
     }
 
     if (galleryPanelPhase === 'back') {
-      setGalleryPanelPhase('return-left')
-      window.setTimeout(() => {
-        setGalleryPhotoFront(false)
-        setGalleryPanelPhase('front')
-      }, 620)
+      setGalleryPanelPhase('to-front')
+    }
+  }
+
+  const finishGalleryPanelMotion = () => {
+    if (galleryPanelPhase === 'to-back') {
+      setGalleryPanelPhase('back')
+    } else if (galleryPanelPhase === 'to-front') {
+      setGalleryPanelPhase('front')
     }
   }
 
@@ -713,37 +716,27 @@ export function TeamPage() {
               type="button"
               aria-pressed={galleryPhotoFront}
               aria-label={
-                galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
+                galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
                   ? 'Vrátit informace galerie do popředí'
                   : 'Přesunout týmovou fotografii do popředí'
               }
               onClick={toggleGalleryLayers}
-              disabled={
-                galleryPanelPhase === 'exit-left' ||
-                galleryPanelPhase === 'return-left'
-              }
-              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
-                galleryPhotoFront
-                  ? 'z-30 shadow-[0_34px_90px_rgba(24,53,42,.24)]'
-                  : 'z-0 shadow-[0_24px_70px_rgba(24,53,42,.12)]'
+              disabled={galleryAnimating}
+              className={`team-gallery-photo group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 lg:w-[84%] ${
+                galleryPanelPhase === 'to-back'
+                  ? 'team-gallery-photo-to-front shadow-[0_34px_90px_rgba(24,53,42,.24)]'
+                  : galleryPanelPhase === 'back'
+                    ? 'team-gallery-photo-front shadow-[0_34px_90px_rgba(24,53,42,.24)]'
+                    : galleryPanelPhase === 'to-front'
+                      ? 'team-gallery-photo-to-back shadow-[0_34px_90px_rgba(24,53,42,.24)]'
+                      : 'shadow-[0_24px_70px_rgba(24,53,42,.12)]'
               }`}
-              style={{
-                transform:
-                  galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
-                    ? 'translate3d(5.5%, 0, 170px) scale(1.016)'
-                    : 'translate3d(0, 0, 0) scale(1)',
-                transformStyle: 'preserve-3d',
-                transformOrigin: '50% 50%',
-                willChange: 'transform',
-              }}
             >
               <img
                 src={teamHeroImage}
                 alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
                 loading="lazy"
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] motion-reduce:transition-none ${
-                  galleryPhotoFront ? 'scale-[1.008]' : 'scale-100'
-                }`}
+                className="absolute inset-0 h-full w-full object-cover object-center transition-[filter] duration-500 motion-reduce:transition-none"
                 style={{
                   filter: galleryPhotoFront
                     ? 'saturate(.98) contrast(.99) brightness(1)'
@@ -761,55 +754,33 @@ export function TeamPage() {
 
               <div
                 className={`absolute bottom-6 right-6 flex items-center gap-2 rounded-full border border-white/25 bg-brand-900/40 px-3.5 py-2 text-[10px] font-bold text-white backdrop-blur-md transition-all duration-500 motion-reduce:transition-none ${
-                  galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
+                  galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
                     ? 'translate-y-0 opacity-100'
                     : 'translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100'
                 }`}
               >
                 <Images size={13} />
-                {galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
+                {galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
                   ? 'Vrátit info dopředu'
                   : 'Fotku do popředí'}
               </div>
             </button>
 
             <div
-              className={`pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
-                galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
-                  ? 'z-10'
-                  : 'z-20'
-              }`}
+              className="pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0"
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div
-                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-[620ms] ease-[cubic-bezier(.16,1,.3,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
-                  galleryPanelPhase === 'back' || galleryPanelPhase === 'return-left'
-                    ? 'pointer-events-none border-white/12 bg-brand-900 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
-                    : galleryPanelPhase === 'exit-left'
-                      ? 'pointer-events-none bg-brand-900 shadow-[0_18px_52px_rgba(24,53,42,.16)]'
-                      : 'pointer-events-auto bg-brand-900'
+                onAnimationEnd={finishGalleryPanelMotion}
+                className={`team-gallery-panel relative w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10 ${
+                  galleryPanelPhase === 'to-back'
+                    ? 'team-gallery-panel-to-back pointer-events-none'
+                    : galleryPanelPhase === 'back'
+                      ? 'team-gallery-panel-back pointer-events-none shadow-[0_14px_38px_rgba(24,53,42,.10)]'
+                      : galleryPanelPhase === 'to-front'
+                        ? 'team-gallery-panel-to-front pointer-events-none'
+                        : 'pointer-events-auto'
                 }`}
-                style={{
-                  transform:
-                    galleryPanelPhase === 'exit-left'
-                      ? 'translate3d(-78%, 0, 40px) scale(.985)'
-                      : galleryPanelPhase === 'back'
-                        ? 'translate3d(-64px, 10px, -210px) scale(.95)'
-                        : galleryPanelPhase === 'return-left'
-                          ? 'translate3d(-78%, 0, -210px) scale(.965)'
-                          : 'translate3d(0, 0, 40px) scale(1)',
-                  opacity:
-                    galleryPanelPhase === 'back'
-                      ? 0.9
-                      : galleryPanelPhase === 'return-left'
-                        ? 0.9
-                        : galleryPanelPhase === 'exit-left'
-                          ? 0.98
-                          : 1,
-                  transformStyle: 'preserve-3d',
-                  transformOrigin: '50% 50%',
-                  willChange: 'transform, opacity',
-                }}
               >
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
