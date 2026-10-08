@@ -579,7 +579,7 @@ function TeamHeroPhoto({
   }, [hasTeamPhoto, src])
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute right-0 top-0 h-[min(74svh,620px)] w-full overflow-hidden sm:h-[min(78svh,660px)] lg:h-[min(72svh,650px)] lg:w-[82%] xl:w-[80%]">
         {!hasTeamPhoto && (
           <img
