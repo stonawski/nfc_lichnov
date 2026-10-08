@@ -378,7 +378,7 @@ export function TeamPage() {
 
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
             <div className="relative grid gap-6 lg:grid-cols-[.52fr_1.48fr] lg:items-start">
-              <div className="lg:sticky lg:top-28">
+              <div className="relative z-20 lg:sticky lg:top-28">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
                   Soutěž
                 </div>
@@ -434,7 +434,7 @@ export function TeamPage() {
                 Přepni metriku a porovnej hráče podle výkonů v aktuální sezoně.
               </p>
 
-              <div className="mt-6 flex max-w-md flex-wrap gap-2">
+              <div className="relative z-20 mt-6 flex max-w-md flex-wrap gap-2">
                 {SEASON_STAT_OPTIONS.map((option) => {
                   const active = seasonStatMetric === option.id
 
@@ -449,7 +449,7 @@ export function TeamPage() {
                       className={`rounded-full px-3.5 py-2 text-[10px] font-bold transition ${
                         active
                           ? 'bg-brand-900 text-white'
-                          : 'border border-brand-900/10 bg-[#fbfaf6] text-ink-500 hover:border-brand-500/25 hover:text-brand-900'
+                          : 'border border-brand-900/10 bg-white text-ink-500 shadow-[0_6px_20px_rgba(24,53,42,.035)] hover:border-brand-500/25 hover:text-brand-900'
                       }`}
                     >
                       {option.label}
@@ -458,8 +458,8 @@ export function TeamPage() {
                 })}
               </div>
 
-              <div className="mt-7 grid max-w-sm grid-cols-2 gap-3">
-                <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
+              <div className="relative z-20 mt-7 grid max-w-sm grid-cols-2 gap-3">
+                <div className="rounded-[22px] border border-sand-200 bg-white p-4 shadow-[0_10px_28px_rgba(24,53,42,.045)]">
                   <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
                     Lídr
                   </div>
@@ -467,7 +467,7 @@ export function TeamPage() {
                     {statLeader ? playerName(statLeader) : '—'}
                   </div>
                 </div>
-                <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
+                <div className="rounded-[22px] border border-sand-200 bg-white p-4 shadow-[0_10px_28px_rgba(24,53,42,.045)]">
                   <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
                     {selectedStat.shortLabel}
                   </div>
@@ -704,10 +704,11 @@ export function TeamPage() {
               }`}
               style={{
                 transform: galleryPhotoFront
-                  ? 'translate3d(4%, 0, 130px) scale(1.012)'
+                  ? 'translate3d(5.5%, 0, 170px) scale(1.016)'
                   : 'translate3d(0, 0, 0) scale(1)',
                 transformStyle: 'preserve-3d',
                 transformOrigin: '50% 50%',
+                willChange: 'transform',
               }}
             >
               <img
@@ -744,20 +745,26 @@ export function TeamPage() {
               </div>
             </button>
 
-            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+            <div
+              className={`relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
+                galleryPhotoFront ? 'z-10' : 'z-20'
+              }`}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
               <div
                 className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-[820ms] ease-[cubic-bezier(.2,.78,.18,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
                   galleryPhotoFront
-                    ? 'pointer-events-none bg-brand-900/48 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
+                    ? 'pointer-events-none border-white/16 bg-brand-900/42 shadow-[0_14px_38px_rgba(24,53,42,.10)]'
                     : 'pointer-events-auto bg-brand-900'
                 }`}
                 style={{
                   transform: galleryPhotoFront
-                    ? 'translate3d(-72px, 12px, -150px) rotateY(-14deg) scale(.93)'
+                    ? 'translate3d(-118px, 16px, -230px) rotateY(-24deg) scale(.91)'
                     : 'translate3d(0, 0, 40px) rotateY(0deg) scale(1)',
-                  opacity: galleryPhotoFront ? 0.66 : 1,
+                  opacity: galleryPhotoFront ? 0.82 : 1,
                   transformStyle: 'preserve-3d',
                   transformOrigin: '100% 50%',
+                  willChange: 'transform, opacity',
                 }}
               >
                 <div className="flex items-center gap-3">
