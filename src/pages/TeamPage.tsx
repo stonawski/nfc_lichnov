@@ -336,10 +336,11 @@ export function TeamPage() {
               src="/hero-lichnov-field.webp"
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover opacity-[0.10] grayscale"
+              className="h-full w-full object-cover opacity-[0.24]"
+              style={{ filter: 'saturate(.55) contrast(.92) brightness(1.04)' }}
             />
-            <div className="absolute inset-0 bg-sand-100/[0.84]" />
-            <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,.18)_0%,rgba(245,243,236,.06)_48%,rgba(255,255,255,.24)_100%)]" />
+            <div className="absolute inset-0 bg-sand-100/[0.64]" />
+            <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,.12)_0%,rgba(245,243,236,.02)_48%,rgba(255,255,255,.16)_100%)]" />
           </div>
 
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
