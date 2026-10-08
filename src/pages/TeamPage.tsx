@@ -153,9 +153,10 @@ export function TeamPage() {
     ? seasonStats
     : seasonStats.slice(0, 6)
 
-  const teamGallery = (galleriesQuery.data ?? []).find(
+  const teamGalleries = (galleriesQuery.data ?? []).filter(
     (gallery) => gallery.team_id === team.id,
   )
+  const teamGallery = teamGalleries[0]
   const teamHeroImage =
     team.hero_image_url || teamGallery?.cover_image || '/hero-lichnov-field.webp'
   const hasTeamPhoto = Boolean(team.hero_image_url || teamGallery?.cover_image)
@@ -441,12 +442,26 @@ export function TeamPage() {
               </p>
 
               <Link
-                to={`/galerie?team=${encodeURIComponent(team.slug)}`}
-                className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-brand-900 transition-colors hover:text-brand-500"
+                to={`/galerie?team=${encodeURIComponent(team.slug)}#gallery-albums`}
+                className="group mt-6 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-brand-900 px-4 py-3 text-white shadow-[0_12px_30px_rgba(24,53,42,.14)] transition hover:bg-brand-700"
               >
-                <Images size={14} />
-                Galerie {team.short_name || team.name}
-                <ArrowUpRight size={13} />
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-white/10">
+                  <Images size={15} />
+                </span>
+                <span className="min-w-0 text-left">
+                  <span className="block text-xs font-extrabold">
+                    Fotogalerie {team.short_name || team.name}
+                  </span>
+                  <span className="mt-0.5 block text-[10px] font-semibold text-white/55">
+                    {teamGalleries.length > 0
+                      ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
+                      : 'Zobrazit alba týmu'}
+                  </span>
+                </span>
+                <ArrowUpRight
+                  size={14}
+                  className="ml-1 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
               </Link>
 
               <div className="mt-6 flex max-w-md flex-wrap gap-2">
@@ -493,7 +508,7 @@ export function TeamPage() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_50px_rgba(24,53,42,.055)]">
+            <div className="relative overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_24px_60px_rgba(24,53,42,.08),0_0_88px_rgba(0,146,63,.22)]">
               <div className="border-b border-sand-200 px-5 py-4">
                 <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
                   Řazení podle
@@ -571,11 +586,17 @@ export function TeamPage() {
 
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-sand-200 bg-sand-100">
-                            {player.photo_url || player.facr_photo_url ? (
+                            {player.photo_url ? (
                               <img
-                                src={player.photo_url || player.facr_photo_url || ''}
+                                src={player.photo_url}
                                 alt=""
                                 loading="lazy"
+                                onError={(event) => {
+                                  event.currentTarget.onerror = null
+                                  event.currentTarget.src = '/player-placeholder.webp'
+                                  event.currentTarget.className =
+                                    'h-full w-full scale-[0.72] object-contain object-center'
+                                }}
                                 className="h-full w-full object-cover object-top"
                               />
                             ) : (
@@ -584,7 +605,7 @@ export function TeamPage() {
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
-                                className="h-full w-full scale-[0.82] object-cover object-center"
+                                className="h-full w-full scale-[0.72] object-contain object-center"
                               />
                             )}
                           </div>
