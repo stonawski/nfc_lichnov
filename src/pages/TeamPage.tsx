@@ -884,11 +884,11 @@ export function TeamPage() {
           {staffQuery.isLoading ? (
             <LoadingState rows={3} />
           ) : staffQuery.data?.length ? (
-            <DataFade className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <DataFade className="stagger-children flex flex-wrap justify-center gap-4">
               {staffQuery.data.map((person) => (
                 <article
                   key={person.id}
-                  className="group overflow-hidden rounded-[30px] border border-white/80 bg-white/[0.82] shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft"
+                  className="group w-full overflow-hidden rounded-[30px] border border-white/80 bg-white/[0.82] shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)] lg:max-w-[390px]"
                 >
                   <div className="grid grid-cols-[116px_1fr] sm:block">
                     <div className="relative min-h-[156px] overflow-hidden bg-sand-100 sm:aspect-[4/3] sm:min-h-0">
