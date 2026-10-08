@@ -746,7 +746,7 @@ export function TeamPage() {
             </button>
 
             <div
-              className={`relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
+              className={`pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
                 galleryPhotoFront ? 'z-10' : 'z-20'
               }`}
               style={{ transformStyle: 'preserve-3d' }}
