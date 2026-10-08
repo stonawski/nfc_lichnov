@@ -638,11 +638,11 @@ img {
 }
 
 .team-gallery-panel-to-back {
-  animation: team-gallery-panel-to-back 1180ms linear both;
+  animation: team-gallery-panel-to-back 960ms linear both;
 }
 
 .team-gallery-panel-to-front {
-  animation: team-gallery-panel-to-front 1180ms linear both;
+  animation: team-gallery-panel-to-front 960ms linear both;
 }
 
 .team-gallery-photo {
@@ -658,11 +658,11 @@ img {
 }
 
 .team-gallery-photo-to-front {
-  animation: team-gallery-photo-to-front 1180ms linear both;
+  animation: team-gallery-photo-to-front 960ms linear both;
 }
 
 .team-gallery-photo-to-back {
-  animation: team-gallery-photo-to-back 1180ms linear both;
+  animation: team-gallery-photo-to-back 960ms linear both;
 }
 
 @keyframes team-gallery-panel-to-back {
@@ -672,15 +672,21 @@ img {
     opacity: 1;
   }
 
-  55% {
+  50% {
     z-index: 30;
-    transform: translate3d(-78%, 0, 40px) scale(0.985);
+    transform: translate3d(-76%, 0, 40px) scale(0.985);
     opacity: 0.98;
   }
 
-  55.01% {
+  62% {
+    z-index: 30;
+    transform: translate3d(-82%, 0, -210px) scale(0.95);
+    opacity: 0.92;
+  }
+
+  62.01% {
     z-index: 10;
-    transform: translate3d(-78%, 0, -210px) scale(0.965);
+    transform: translate3d(-82%, 0, -210px) scale(0.95);
     opacity: 0.92;
   }
 
@@ -698,15 +704,21 @@ img {
     opacity: 0.92;
   }
 
-  44.99% {
+  38% {
     z-index: 10;
-    transform: translate3d(-78%, 0, -210px) scale(0.965);
+    transform: translate3d(-82%, 0, -210px) scale(0.95);
     opacity: 0.92;
   }
 
-  45% {
+  50% {
+    z-index: 10;
+    transform: translate3d(-76%, 0, 40px) scale(0.985);
+    opacity: 0.98;
+  }
+
+  50.01% {
     z-index: 30;
-    transform: translate3d(-78%, 0, 40px) scale(0.985);
+    transform: translate3d(-76%, 0, 40px) scale(0.985);
     opacity: 0.98;
   }
 
@@ -719,7 +731,7 @@ img {
 
 @keyframes team-gallery-photo-to-front {
   0%,
-  55% {
+  62% {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
@@ -733,7 +745,7 @@ img {
     transform: translate3d(5.5%, 0, 150px) scale(1.014);
   }
 
-  45%,
+  38%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
