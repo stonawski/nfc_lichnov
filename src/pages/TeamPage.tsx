@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   ChevronRight,
-  CircleUserRound,
   Images,
   UsersRound,
 } from 'lucide-react'
@@ -420,7 +419,14 @@ export function TeamPage() {
           id="statistiky"
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_92%_18%,rgba(0,146,63,.055),transparent_26%)]" />
+          <div
+            className="pointer-events-none absolute -right-[18%] top-[10%] h-[620px] w-[760px] rounded-full"
+            style={{
+              background:
+                'radial-gradient(ellipse at center, rgba(0,146,63,.13) 0%, rgba(0,146,63,.065) 30%, rgba(0,146,63,.02) 52%, transparent 72%)',
+              filter: 'blur(26px)',
+            }}
+          />
 
           <div className="relative mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
@@ -433,6 +439,15 @@ export function TeamPage() {
               <p className="mt-4 max-w-sm text-sm leading-6 text-ink-500">
                 Přepni metriku a porovnej hráče podle výkonů v aktuální sezoně.
               </p>
+
+              <Link
+                to={`/galerie?team=${encodeURIComponent(team.slug)}`}
+                className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-brand-900 transition-colors hover:text-brand-500"
+              >
+                <Images size={14} />
+                Galerie {team.short_name || team.name}
+                <ArrowUpRight size={13} />
+              </Link>
 
               <div className="mt-6 flex max-w-md flex-wrap gap-2">
                 {SEASON_STAT_OPTIONS.map((option) => {
@@ -564,10 +579,12 @@ export function TeamPage() {
                                 className="h-full w-full object-cover object-top"
                               />
                             ) : (
-                              <CircleUserRound
-                                size={24}
-                                strokeWidth={1.7}
-                                className="text-brand-700/45"
+                              <img
+                                src="/player-placeholder.webp"
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                className="h-full w-full scale-[0.82] object-cover object-center"
                               />
                             )}
                           </div>
