@@ -422,11 +422,19 @@ export function TeamPage() {
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
           <div
-            className="pointer-events-none absolute left-[42%] top-[50%] h-[980px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="pointer-events-none absolute -left-[230px] top-[34%] h-[760px] w-[760px] rounded-full"
             style={{
               background:
-                'radial-gradient(circle, rgba(0,146,63,.145) 0%, rgba(0,146,63,.10) 18%, rgba(0,146,63,.055) 36%, rgba(0,146,63,.022) 52%, transparent 70%)',
-              filter: 'blur(18px)',
+                'radial-gradient(circle, rgba(0,146,63,.17) 0%, rgba(0,146,63,.105) 22%, rgba(0,146,63,.055) 42%, rgba(0,146,63,.018) 58%, transparent 72%)',
+              filter: 'blur(16px)',
+            }}
+          />
+          <div
+            className="pointer-events-none absolute -right-[110px] top-[4%] h-[560px] w-[560px] rounded-full"
+            style={{
+              background:
+                'radial-gradient(circle, rgba(20,83,45,.095) 0%, rgba(0,146,63,.052) 30%, rgba(0,146,63,.018) 52%, transparent 72%)',
+              filter: 'blur(22px)',
             }}
           />
 
@@ -648,55 +656,92 @@ export function TeamPage() {
 
       <section
         id="fotogalerie"
-        className="relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-14 md:px-8 md:py-20"
+        className="relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-16 md:px-8 md:py-24"
       >
-        <div className="mx-auto max-w-[1180px]">
-          <div className="overflow-hidden rounded-[36px] bg-brand-900 shadow-[0_22px_60px_rgba(24,53,42,.10)]">
-            <div className="grid lg:grid-cols-[1.45fr_.55fr]">
-              <div className="relative min-h-[340px] overflow-hidden sm:min-h-[430px] lg:min-h-[500px]">
-                <img
-                  src={teamHeroImage}
-                  alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover object-center"
-                  style={{ filter: 'saturate(.92) contrast(.96) brightness(.98)' }}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.72)_100%)] lg:block hidden" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_45%,rgba(24,53,42,.72)_100%)] lg:hidden" />
+        <div className="relative mx-auto max-w-[1180px]">
+          <div className="mb-6 flex items-end justify-between gap-5">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                Fotogalerie
               </div>
+              <div className="mt-2 text-sm font-semibold text-brand-900/55">
+                {teamGalleries.length > 0
+                  ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'} týmu ${team.name}`
+                  : `Momentky týmu ${team.name}`}
+              </div>
+            </div>
 
-              <div className="flex flex-col justify-between p-7 text-white sm:p-9 lg:p-10">
-                <div>
+            <div className="hidden text-right sm:block">
+              <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                Sezóna
+              </div>
+              <div className="mt-1 text-sm font-extrabold text-brand-900">
+                {team.season || 'aktuální'}
+              </div>
+            </div>
+          </div>
+
+          <div className="relative min-h-[610px] lg:min-h-[650px]">
+            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
+              <img
+                src={teamHeroImage}
+                alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                style={{ filter: 'saturate(.94) contrast(.97) brightness(.96)' }}
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
+
+              <div className="absolute bottom-6 right-6 hidden items-center gap-2 rounded-full border border-white/25 bg-white/12 px-3.5 py-2 text-[10px] font-bold text-white backdrop-blur-md sm:flex">
+                <Images size={13} />
+                {teamGalleries.length > 0
+                  ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
+                  : 'Fotogalerie'}
+              </div>
+            </div>
+
+            <div className="relative z-10 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+              <div className="w-full rounded-[34px] bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
+                    <Images size={18} />
+                  </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
-                    Fotogalerie
+                    Klub očima fotografií
                   </div>
-                  <h2 className="mt-3 text-4xl font-black leading-[.94] tracking-[-0.055em] sm:text-5xl">
-                    {team.name}
-                    <span className="block text-white/55">v obrazech.</span>
-                  </h2>
-                  <p className="mt-5 text-sm leading-6 text-white/60">
-                    Zápasy, týmové fotografie a momenty kolem mužstva na jednom místě.
-                  </p>
                 </div>
 
-                <div className="mt-9">
-                  <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">
-                    {teamGalleries.length > 0
-                      ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
-                      : 'Fotogalerie týmu'}
+                <h2 className="mt-7 text-4xl font-black leading-[.92] tracking-[-0.06em] sm:text-5xl">
+                  {team.name}
+                  <span className="block text-white/48">mimo tabulku.</span>
+                </h2>
+
+                <p className="mt-5 max-w-sm text-sm leading-6 text-white/60">
+                  Zápasy, týmové fotografie a momenty kolem mužstva v jednom přehledném archivu.
+                </p>
+
+                {teamGallery?.title && (
+                  <div className="mt-7 border-t border-white/12 pt-5">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">
+                      Poslední album
+                    </div>
+                    <div className="mt-2 line-clamp-2 text-sm font-extrabold leading-5 text-white/82">
+                      {teamGallery.title}
+                    </div>
                   </div>
-                  <Link
-                    to={`/galerie?team=${encodeURIComponent(team.slug)}#gallery-albums`}
-                    className="group inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50"
-                  >
-                    <Images size={16} />
-                    Otevřít fotogalerii
-                    <ArrowUpRight
-                      size={14}
-                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
-                  </Link>
-                </div>
+                )}
+
+                <Link
+                  to={`/galerie?team=${encodeURIComponent(team.slug)}#gallery-albums`}
+                  className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50"
+                >
+                  Otevřít fotogalerii
+                  <ArrowUpRight
+                    size={14}
+                    className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Link>
               </div>
             </div>
           </div>
