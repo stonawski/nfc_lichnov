@@ -331,25 +331,16 @@ export function TeamPage() {
           id="tabulka"
           className="data-fade-in relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-10 md:px-8 md:py-12"
         >
-          <div className="pointer-events-none absolute left-[1%] top-[-58px] whitespace-nowrap text-[clamp(9rem,20vw,20rem)] font-black leading-[0.82] tracking-[-0.10em] text-brand-500/[0.12]">
-            TABULKA
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover opacity-[0.10] grayscale"
+            />
+            <div className="absolute inset-0 bg-sand-100/[0.84]" />
+            <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,.18)_0%,rgba(245,243,236,.06)_48%,rgba(255,255,255,.24)_100%)]" />
           </div>
-          <div
-            className="pointer-events-none absolute right-[-260px] top-[18%] h-[520px] w-[760px]"
-            style={{
-              background:
-                'radial-gradient(ellipse at 50% 50%, rgba(0,146,63,.18) 0%, rgba(0,146,63,.10) 24%, rgba(0,146,63,.045) 42%, transparent 70%)',
-              filter: 'blur(10px)',
-            }}
-          />
-          <div
-            className="pointer-events-none absolute right-[-120px] top-[31%] h-[280px] w-[420px]"
-            style={{
-              background:
-                'radial-gradient(ellipse at 50% 50%, rgba(20,83,45,.095) 0%, rgba(20,83,45,.035) 38%, transparent 72%)',
-              filter: 'blur(18px)',
-            }}
-          />
 
           <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
             <div className="relative grid gap-6 lg:grid-cols-[.52fr_1.48fr] lg:items-start">
