@@ -769,15 +769,7 @@ export function TeamPage() {
             </button>
 
             <div
-              className={`team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
-                galleryPanelPhase === 'to-back'
-                  ? 'team-gallery-panel-layer-to-back'
-                  : galleryPanelPhase === 'back'
-                    ? 'team-gallery-panel-layer-back'
-                    : galleryPanelPhase === 'to-front'
-                      ? 'team-gallery-panel-layer-to-front'
-                      : ''
-              }`}
+              className="team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0"
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div
@@ -908,9 +900,13 @@ export function TeamPage() {
                           className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
                         />
                       ) : (
-                        <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(0,146,63,.2),transparent_40%)]">
-                          <UsersRound size={34} className="text-brand-700/50" />
-                        </div>
+                        <img
+                          src="/staff-placeholder.webp"
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover object-top"
+                        />
                       )}
                     </div>
 
