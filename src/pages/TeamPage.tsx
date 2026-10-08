@@ -769,7 +769,15 @@ export function TeamPage() {
             </button>
 
             <div
-              className="pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0"
+              className={`team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
+                galleryPanelPhase === 'to-back'
+                  ? 'team-gallery-panel-layer-to-back'
+                  : galleryPanelPhase === 'back'
+                    ? 'team-gallery-panel-layer-back'
+                    : galleryPanelPhase === 'to-front'
+                      ? 'team-gallery-panel-layer-to-front'
+                      : ''
+              }`}
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div
