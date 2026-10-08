@@ -345,6 +345,7 @@ export function TeamPage() {
           >
             {standings.length > 0 && <SectionLink href="#tabulka">Tabulka</SectionLink>}
             {players.length > 0 && <SectionLink href="#statistiky">Statistiky</SectionLink>}
+            <SectionLink href="#fotogalerie">Galerie</SectionLink>
             <SectionLink href="#hraci">Hráči</SectionLink>
             <SectionLink href="#realizacni-tym">Realizační tým</SectionLink>
             <Link
@@ -440,29 +441,6 @@ export function TeamPage() {
               <p className="mt-4 max-w-sm text-sm leading-6 text-ink-500">
                 Přepni metriku a porovnej hráče podle výkonů v aktuální sezoně.
               </p>
-
-              <Link
-                to={`/galerie?team=${encodeURIComponent(team.slug)}#gallery-albums`}
-                className="group mt-6 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-brand-900 px-4 py-3 text-white shadow-[0_12px_30px_rgba(24,53,42,.14)] transition hover:bg-brand-700"
-              >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-white/10">
-                  <Images size={15} />
-                </span>
-                <span className="min-w-0 text-left">
-                  <span className="block text-xs font-extrabold">
-                    Fotogalerie {team.short_name || team.name}
-                  </span>
-                  <span className="mt-0.5 block text-[10px] font-semibold text-white/55">
-                    {teamGalleries.length > 0
-                      ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
-                      : 'Zobrazit alba týmu'}
-                  </span>
-                </span>
-                <ArrowUpRight
-                  size={14}
-                  className="ml-1 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                />
-              </Link>
 
               <div className="mt-6 flex max-w-md flex-wrap gap-2">
                 {SEASON_STAT_OPTIONS.map((option) => {
@@ -667,6 +645,63 @@ export function TeamPage() {
           </div>
         </section>
       )}
+
+      <section
+        id="fotogalerie"
+        className="relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-14 md:px-8 md:py-20"
+      >
+        <div className="mx-auto max-w-[1180px]">
+          <div className="overflow-hidden rounded-[36px] bg-brand-900 shadow-[0_22px_60px_rgba(24,53,42,.10)]">
+            <div className="grid lg:grid-cols-[1.45fr_.55fr]">
+              <div className="relative min-h-[340px] overflow-hidden sm:min-h-[430px] lg:min-h-[500px]">
+                <img
+                  src={teamHeroImage}
+                  alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  style={{ filter: 'saturate(.92) contrast(.96) brightness(.98)' }}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.72)_100%)] lg:block hidden" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_45%,rgba(24,53,42,.72)_100%)] lg:hidden" />
+              </div>
+
+              <div className="flex flex-col justify-between p-7 text-white sm:p-9 lg:p-10">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                    Fotogalerie
+                  </div>
+                  <h2 className="mt-3 text-4xl font-black leading-[.94] tracking-[-0.055em] sm:text-5xl">
+                    {team.name}
+                    <span className="block text-white/55">v obrazech.</span>
+                  </h2>
+                  <p className="mt-5 text-sm leading-6 text-white/60">
+                    Zápasy, týmové fotografie a momenty kolem mužstva na jednom místě.
+                  </p>
+                </div>
+
+                <div className="mt-9">
+                  <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">
+                    {teamGalleries.length > 0
+                      ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
+                      : 'Fotogalerie týmu'}
+                  </div>
+                  <Link
+                    to={`/galerie?team=${encodeURIComponent(team.slug)}#gallery-albums`}
+                    className="group inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50"
+                  >
+                    <Images size={16} />
+                    Otevřít fotogalerii
+                    <ArrowUpRight
+                      size={14}
+                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="hraci" className="relative scroll-mt-28 bg-white py-16 md:py-24">
         <div className="relative px-5 md:px-8">
