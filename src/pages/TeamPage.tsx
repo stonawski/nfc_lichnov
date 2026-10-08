@@ -124,6 +124,22 @@ export function TeamPage() {
       return (b.matches_count ?? 0) - (a.matches_count ?? 0)
     })[0]
 
+  const scorers = [...players]
+    .filter((player) => (player.goals_count ?? 0) > 0)
+    .sort((a, b) => {
+      const goalDifference = (b.goals_count ?? 0) - (a.goals_count ?? 0)
+      if (goalDifference !== 0) return goalDifference
+
+      const matchDifference = (a.matches_count ?? 0) - (b.matches_count ?? 0)
+      if (matchDifference !== 0) return matchDifference
+
+      return playerName(a).localeCompare(playerName(b), 'cs')
+    })
+  const teamGoals = scorers.reduce(
+    (sum, player) => sum + (player.goals_count ?? 0),
+    0,
+  )
+
   const teamGallery = (galleriesQuery.data ?? []).find(
     (gallery) => gallery.team_id === team.id,
   )
@@ -314,6 +330,7 @@ export function TeamPage() {
             className="relative z-20 mt-4 flex gap-2 overflow-x-auto rounded-[24px] border border-white/75 bg-white/82 p-2 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl [scrollbar-width:none] md:sticky md:top-24 [&::-webkit-scrollbar]:hidden"
           >
             {standings.length > 0 && <SectionLink href="#tabulka">Tabulka</SectionLink>}
+            {scorers.length > 0 && <SectionLink href="#strelci">Střelci</SectionLink>}
             <SectionLink href="#hraci">Hráči</SectionLink>
             <SectionLink href="#realizacni-tym">Realizační tým</SectionLink>
             <Link
@@ -379,6 +396,123 @@ export function TeamPage() {
               <div className="rounded-[26px] bg-[#fbfaf6] p-1.5 text-ink-900 shadow-[0_18px_55px_rgba(0,0,0,.12)] sm:p-2">
                 <StandingsTable rows={standings} dense />
               </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {scorers.length > 0 && (
+        <section
+          id="strelci"
+          className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_92%_18%,rgba(0,146,63,.055),transparent_26%)]" />
+
+          <div className="relative mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-start">
+            <div className="lg:sticky lg:top-28">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                Sezóna {team.season || 'aktuální'}
+              </div>
+              <h2 className="mt-3 text-4xl font-black leading-[.96] tracking-[-0.055em] text-brand-900 sm:text-5xl">
+                Střelci sezony.
+              </h2>
+              <p className="mt-4 max-w-sm text-sm leading-6 text-ink-500">
+                Aktuální pořadí hráčů podle počtu vstřelených branek v této sezoně.
+              </p>
+
+              <div className="mt-7 grid max-w-sm grid-cols-2 gap-3">
+                <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
+                    Gólů celkem
+                  </div>
+                  <div className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900">
+                    {teamGoals}
+                  </div>
+                </div>
+                <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
+                    Střelců
+                  </div>
+                  <div className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900">
+                    {scorers.length}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_50px_rgba(24,53,42,.055)]">
+              <div className="grid grid-cols-[42px_minmax(0,1fr)_62px_62px_64px] items-center gap-2 border-b border-sand-200 px-4 py-3 text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500 sm:grid-cols-[50px_minmax(0,1fr)_76px_76px_78px] sm:px-5">
+                <div>#</div>
+                <div>Hráč</div>
+                <div className="text-center">Z</div>
+                <div className="text-center">G</div>
+                <div className="text-right">G / Z</div>
+              </div>
+
+              {scorers.map((player, index) => {
+                const matchesCount = player.matches_count ?? 0
+                const goalsCount = player.goals_count ?? 0
+                const rate =
+                  matchesCount > 0 ? (goalsCount / matchesCount).toFixed(2) : '—'
+
+                return (
+                  <div
+                    key={player.id}
+                    className={`grid grid-cols-[42px_minmax(0,1fr)_62px_62px_64px] items-center gap-2 border-b border-sand-200/70 px-4 py-3.5 text-sm last:border-b-0 sm:grid-cols-[50px_minmax(0,1fr)_76px_76px_78px] sm:px-5 ${
+                      index < 3 ? 'bg-brand-50/45' : 'bg-white'
+                    }`}
+                  >
+                    <div
+                      className={`font-black ${
+                        index === 0
+                          ? 'text-brand-500'
+                          : index < 3
+                            ? 'text-brand-900'
+                            : 'text-ink-500'
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-sand-200 bg-sand-100">
+                        {player.photo_url || player.facr_photo_url ? (
+                          <img
+                            src={player.photo_url || player.facr_photo_url || ''}
+                            alt=""
+                            loading="lazy"
+                            className="h-full w-full object-cover object-top"
+                          />
+                        ) : (
+                          <div className="grid h-full place-items-center text-[9px] font-black text-brand-900">
+                            {initials(playerName(player))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate font-extrabold text-brand-900">
+                          {playerName(player)}
+                        </div>
+                        {player.position && (
+                          <div className="mt-0.5 truncate text-[10px] font-semibold text-ink-500">
+                            {player.position}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="text-center font-semibold text-ink-500">
+                      {matchesCount || '—'}
+                    </div>
+                    <div className="text-center text-lg font-black text-brand-900">
+                      {goalsCount}
+                    </div>
+                    <div className="text-right text-xs font-bold text-ink-500">
+                      {rate}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>
