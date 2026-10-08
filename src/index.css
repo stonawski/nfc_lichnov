@@ -623,11 +623,44 @@ img {
 
 
 .team-gallery-panel-layer {
+  z-index: 30;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-left: max(1.25rem, calc((100vw - 1180px) / 2));
+  padding-right: max(1.25rem, calc((100vw - 1180px) / 2));
+  --gallery-photo-left: 1.25rem;
+  --gallery-clip-right: calc(100vw - var(--gallery-photo-left));
+  clip-path: inset(0 0 0 0);
   transform-style: preserve-3d;
+  will-change: clip-path;
+}
+
+@media (min-width: 1024px) and (max-width: 1219px) {
+  .team-gallery-panel-layer {
+    --gallery-photo-left: calc(16vw + 13.6px);
+  }
+}
+
+@media (min-width: 1220px) {
+  .team-gallery-panel-layer {
+    --gallery-photo-left: calc(50vw - 401.2px);
+  }
+}
+
+.team-gallery-panel-layer-back {
+  clip-path: inset(0 var(--gallery-clip-right) 0 0);
+}
+
+.team-gallery-panel-layer-to-back {
+  animation: team-gallery-layer-to-back 800ms linear both;
+}
+
+.team-gallery-panel-layer-to-front {
+  animation: team-gallery-layer-to-front 800ms linear both;
 }
 
 .team-gallery-panel {
-  z-index: 30;
   transform: translate3d(0, 0, 40px) scale(1);
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
@@ -638,8 +671,7 @@ img {
 }
 
 .team-gallery-panel-back {
-  z-index: 10;
-  transform: translate3d(-64px, 10px, -210px) scale(0.94);
+  transform: translate3d(-110px, 10px, -210px) scale(0.94);
   opacity: 0.92;
 }
 
@@ -673,137 +705,129 @@ img {
   animation: team-gallery-photo-to-back 800ms linear both;
 }
 
+@keyframes team-gallery-layer-to-back {
+  0%,
+  56% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  68%,
+  100% {
+    clip-path: inset(0 var(--gallery-clip-right) 0 0);
+  }
+}
+
+@keyframes team-gallery-layer-to-front {
+  0%,
+  32% {
+    clip-path: inset(0 var(--gallery-clip-right) 0 0);
+  }
+
+  44%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 @keyframes team-gallery-panel-to-back {
   0% {
-    z-index: 30;
     transform: translate3d(0, 0, 40px) scale(1);
     opacity: 1;
   }
 
   12% {
-    z-index: 30;
     transform: translate3d(-20%, -4px, 24px) scale(0.982);
     opacity: 0.992;
   }
 
   24% {
-    z-index: 30;
     transform: translate3d(-40%, -9px, -10px) scale(0.958);
     opacity: 0.98;
   }
 
   36% {
-    z-index: 30;
     transform: translate3d(-60%, -15px, -62px) scale(0.93);
     opacity: 0.962;
   }
 
   48% {
-    z-index: 30;
     transform: translate3d(-80%, -23px, -132px) scale(0.902);
     opacity: 0.942;
   }
 
   58% {
-    z-index: 30;
-    transform: translate3d(-104%, -30px, -210px) scale(0.88);
-    opacity: 0.92;
-  }
-
-  58.01% {
-    z-index: 10;
     transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
   68% {
-    z-index: 10;
     transform: translate3d(-84%, -24px, -210px) scale(0.889);
     opacity: 0.92;
   }
 
   80% {
-    z-index: 10;
     transform: translate3d(-58%, -13px, -210px) scale(0.907);
     opacity: 0.92;
   }
 
   90% {
-    z-index: 10;
     transform: translate3d(-34%, -1px, -210px) scale(0.925);
     opacity: 0.92;
   }
 
   100% {
-    z-index: 10;
-    transform: translate3d(-64px, 10px, -210px) scale(0.94);
+    transform: translate3d(-110px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
 }
 
 @keyframes team-gallery-panel-to-front {
   0% {
-    z-index: 10;
-    transform: translate3d(-64px, 10px, -210px) scale(0.94);
+    transform: translate3d(-110px, 10px, -210px) scale(0.94);
     opacity: 0.92;
   }
 
   10% {
-    z-index: 10;
     transform: translate3d(-34%, -1px, -210px) scale(0.925);
     opacity: 0.92;
   }
 
   20% {
-    z-index: 10;
     transform: translate3d(-58%, -13px, -210px) scale(0.907);
     opacity: 0.92;
   }
 
   32% {
-    z-index: 10;
     transform: translate3d(-84%, -24px, -210px) scale(0.889);
     opacity: 0.92;
   }
 
-  41.99% {
-    z-index: 10;
-    transform: translate3d(-104%, -30px, -210px) scale(0.88);
-    opacity: 0.92;
-  }
-
   42% {
-    z-index: 30;
     transform: translate3d(-104%, -30px, -210px) scale(0.88);
     opacity: 0.92;
   }
 
   52% {
-    z-index: 30;
     transform: translate3d(-80%, -23px, -132px) scale(0.902);
     opacity: 0.942;
   }
 
   64% {
-    z-index: 30;
     transform: translate3d(-60%, -15px, -62px) scale(0.93);
     opacity: 0.962;
   }
 
   76% {
-    z-index: 30;
     transform: translate3d(-40%, -9px, -10px) scale(0.958);
     opacity: 0.98;
   }
 
   88% {
-    z-index: 30;
     transform: translate3d(-20%, -4px, 24px) scale(0.982);
     opacity: 0.992;
   }
 
   100% {
-    z-index: 30;
     transform: translate3d(0, 0, 40px) scale(1);
     opacity: 1;
   }
