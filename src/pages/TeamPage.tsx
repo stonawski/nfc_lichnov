@@ -167,6 +167,8 @@ export function TeamPage() {
           galleryHref={galleryHref}
         />
 
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_46%,rgba(0,146,63,.07),transparent_28%)]" />
+
         <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1240px] flex-1 flex-col px-5 md:px-8">
           <div className="flex flex-1 flex-col justify-between py-8 sm:py-10 lg:py-12 xl:py-14">
             <div className="flex items-start justify-between gap-5">
@@ -324,14 +326,17 @@ export function TeamPage() {
       {standings.length > 0 && (
         <section
           id="tabulka"
-          className="data-fade-in relative scroll-mt-28 bg-sand-100 px-5 py-16 md:px-8 md:py-24"
+          className="data-fade-in relative scroll-mt-28 overflow-hidden bg-sand-100 px-5 py-10 md:px-8 md:py-12"
         >
-          <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[42px] bg-brand-900 p-6 text-white shadow-soft sm:p-8 md:p-10">
+          <div className="pointer-events-none absolute -left-28 top-8 h-[460px] w-[460px] rounded-full bg-brand-500/[0.055] blur-3xl" />
+          <div className="pointer-events-none absolute -right-32 bottom-[-120px] h-[420px] w-[420px] rounded-full bg-brand-700/[0.045] blur-3xl" />
+
+          <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[38px] bg-brand-900 p-5 text-white shadow-soft sm:p-6 md:p-7">
             <div className="pointer-events-none absolute right-4 top-4 text-[110px] font-black leading-none tracking-[-0.08em] text-white/[0.025]">
               {lichnovStanding?.rank ?? 'NFC'}
             </div>
 
-            <div className="relative grid gap-8 lg:grid-cols-[.58fr_1.42fr] lg:items-start">
+            <div className="relative grid gap-6 lg:grid-cols-[.52fr_1.48fr] lg:items-start">
               <div className="lg:sticky lg:top-28">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
                   Soutěž
@@ -339,12 +344,12 @@ export function TeamPage() {
                 <h2 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
                   Tabulka
                 </h2>
-                <p className="mt-4 max-w-sm text-sm leading-6 text-white/[0.58]">
+                <p className="mt-3 max-w-sm text-sm leading-6 text-white/[0.58]">
                   Aktuální pořadí týmu v soutěži. NFC Lichnov je zvýrazněný,
                   abys jeho pozici našel okamžitě.
                 </p>
 
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {team.season && (
                     <span className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/65">
                       Sezóna {team.season}
@@ -358,8 +363,8 @@ export function TeamPage() {
                 </div>
               </div>
 
-              <div className="rounded-[30px] bg-[#fbfaf6] p-2 text-ink-900 shadow-[0_18px_55px_rgba(0,0,0,.12)] sm:p-3">
-                <StandingsTable rows={standings} />
+              <div className="rounded-[26px] bg-[#fbfaf6] p-1.5 text-ink-900 shadow-[0_18px_55px_rgba(0,0,0,.12)] sm:p-2">
+                <StandingsTable rows={standings} dense />
               </div>
             </div>
           </div>
@@ -580,50 +585,53 @@ function TeamHeroPhoto({
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute right-0 top-0 h-[min(74svh,620px)] w-full overflow-hidden sm:h-[min(78svh,660px)] lg:h-[min(72svh,650px)] lg:w-[82%] xl:w-[80%]">
-        {!hasTeamPhoto && (
-          <img
-            src="/hero-lichnov-field.webp"
-            alt=""
-            loading="eager"
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
-            style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
-          />
-        )}
+      <div className="absolute right-0 top-0 h-[min(74svh,620px)] w-full sm:h-[min(78svh,660px)] lg:h-[min(72svh,650px)] lg:w-[82%] xl:w-[80%]">
+        <div className="absolute inset-0 overflow-hidden">
+          {!hasTeamPhoto && (
+            <img
+              src="/hero-lichnov-field.webp"
+              alt=""
+              loading="eager"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
+              style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
+            />
+          )}
 
-        {hasTeamPhoto && (
-          <img
-            key={src}
-            src={src}
-            alt={alt}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            onLoad={() => setLoaded(true)}
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-[opacity,transform] duration-1000 ease-out ${
-              loaded
-                ? 'scale-100 opacity-100'
-                : 'scale-[1.012] opacity-0'
-            }`}
-            style={{ filter: 'saturate(.94) contrast(.96) brightness(1.04)' }}
-          />
-        )}
+          {hasTeamPhoto && (
+            <img
+              key={src}
+              src={src}
+              alt={alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              onLoad={() => setLoaded(true)}
+              className={`absolute inset-0 h-full w-full object-cover object-center transition-[opacity,transform] duration-1000 ease-out ${
+                loaded ? 'scale-100 opacity-100' : 'scale-[1.012] opacity-0'
+              }`}
+              style={{ filter: 'saturate(.94) contrast(.96) brightness(1.04)' }}
+            />
+          )}
 
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.66) 20%, rgba(250,248,243,.22) 44%, rgba(250,248,243,.05) 68%, rgba(250,248,243,0) 100%)',
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(250,248,243,0) 0%, rgba(250,248,243,.03) 52%, rgba(250,248,243,.40) 80%, rgba(250,248,243,.96) 100%)',
-          }}
-        />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(250,248,243,.96) 0%, rgba(250,248,243,.50) 16%, rgba(250,248,243,.14) 34%, rgba(250,248,243,0) 58%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(250,248,243,0) 0%, rgba(250,248,243,.02) 58%, rgba(250,248,243,.30) 78%, rgba(250,248,243,.95) 100%)',
+            }}
+          />
+        </div>
+
+        <div className="pointer-events-none absolute inset-y-0 -left-20 w-36 bg-gradient-to-r from-sand-50 via-sand-50/75 to-transparent blur-[2px] lg:block hidden" />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-10 h-32 bg-gradient-to-b from-transparent via-sand-50/60 to-sand-50 blur-[2px]" />
 
         {hasTeamPhoto && galleryHref && loaded && (
           <Link
@@ -640,7 +648,7 @@ function TeamHeroPhoto({
         )}
       </div>
 
-      <div className="hero-glow absolute inset-0 opacity-25" />
+      <div className="hero-glow absolute inset-0 opacity-20" />
     </div>
   )
 }
