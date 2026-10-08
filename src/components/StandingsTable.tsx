@@ -1,7 +1,15 @@
 import type { Standing } from '../lib/types'
 import { ClubLogo } from './ClubLogo'
 
-export function StandingsTable({ rows, compact = false }: { rows: Standing[]; compact?: boolean }) {
+export function StandingsTable({
+  rows,
+  compact = false,
+  dense = false,
+}: {
+  rows: Standing[]
+  compact?: boolean
+  dense?: boolean
+}) {
   if (!rows.length) return null
   return (
     <div
@@ -9,7 +17,12 @@ export function StandingsTable({ rows, compact = false }: { rows: Standing[]; co
       aria-label="Tabulka soutěže"
       className="content-enter overflow-hidden rounded-4xl border border-sand-200 bg-white"
     >
-      <div role="row" className="grid grid-cols-[42px_1fr_48px_54px] items-center gap-2 border-b border-sand-200 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500 sm:grid-cols-[50px_1fr_64px_64px_80px]">
+      <div
+        role="row"
+        className={`grid grid-cols-[42px_1fr_48px_54px] items-center gap-2 border-b border-sand-200 px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-500 sm:grid-cols-[50px_1fr_64px_64px_80px] ${
+          dense ? 'py-2' : 'py-3'
+        }`}
+      >
         <span role="columnheader">#</span>
         <span role="columnheader">Tým</span>
         <span role="columnheader" className="text-center">Z</span>
@@ -19,10 +32,20 @@ export function StandingsTable({ rows, compact = false }: { rows: Standing[]; co
       {rows.map((row) => {
         const lichnov = /lichnov/i.test(row.team_name || row.club_name || '')
         return (
-          <div role="row" key={row.id} className={`grid grid-cols-[42px_1fr_48px_54px] items-center gap-2 border-b border-sand-200/70 px-4 py-3 text-sm last:border-b-0 sm:grid-cols-[50px_1fr_64px_64px_80px] ${lichnov ? 'bg-brand-50' : ''}`}>
+          <div
+            role="row"
+            key={row.id}
+            className={`grid grid-cols-[42px_1fr_48px_54px] items-center gap-2 border-b border-sand-200/70 px-4 text-sm last:border-b-0 sm:grid-cols-[50px_1fr_64px_64px_80px] ${
+              dense ? 'py-1.5' : 'py-3'
+            } ${lichnov ? 'bg-brand-50' : ''}`}
+          >
             <div role="cell" className={`font-extrabold ${lichnov ? 'text-brand-500' : 'text-ink-500'}`}>{row.rank ?? '—'}</div>
             <div role="cell" className="flex min-w-0 items-center gap-2.5">
-              {!compact && <ClubLogo src={row.club_logo} name={row.team_name} size="sm" />}
+              {!compact && (
+                <div className={dense ? '-my-0.5 scale-[0.88]' : ''}>
+                  <ClubLogo src={row.club_logo} name={row.team_name} size="sm" />
+                </div>
+              )}
               <span className={`truncate font-semibold ${lichnov ? 'text-brand-900' : 'text-ink-900'}`}>{row.team_name || row.club_name}</span>
             </div>
             <div role="cell" className="text-center text-ink-500">{row.matches_count ?? '—'}</div>
