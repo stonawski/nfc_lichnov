@@ -768,7 +768,15 @@ export function TeamPage() {
             </button>
 
             <div
-              className="team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0"
+              className={`team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
+                galleryPanelPhase === 'to-back'
+                  ? 'team-gallery-panel-layer-to-back'
+                  : galleryPanelPhase === 'back'
+                    ? 'team-gallery-panel-layer-back'
+                    : galleryPanelPhase === 'to-front'
+                      ? 'team-gallery-panel-layer-to-front'
+                      : ''
+              }`}
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div
@@ -890,7 +898,7 @@ export function TeamPage() {
                   className="group w-full overflow-hidden rounded-[30px] border border-white/80 bg-white/[0.82] shadow-[0_12px_34px_rgba(24,53,42,.055)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-soft sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)] lg:max-w-[390px]"
                 >
                   <div className="grid grid-cols-[116px_1fr] sm:block">
-                    <div className="relative min-h-[156px] overflow-hidden bg-sand-100 sm:aspect-[4/3] sm:min-h-0">
+                    <div className="relative min-h-[184px] overflow-hidden bg-sand-100 sm:aspect-[4/4.2] sm:min-h-0">
                       {person.photo_url ? (
                         <img
                           src={person.photo_url}
@@ -904,7 +912,7 @@ export function TeamPage() {
                           alt=""
                           aria-hidden="true"
                           loading="lazy"
-                          className="absolute inset-0 h-full w-full object-cover object-top"
+                          className="absolute inset-0 h-full w-full object-contain object-bottom"
                         />
                       )}
                     </div>
