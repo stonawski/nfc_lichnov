@@ -4,8 +4,8 @@ import {
   ArrowRight,
   ArrowUpRight,
   ChevronRight,
+  CircleUserRound,
   Images,
-  UserRound,
   UsersRound,
 } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
@@ -38,6 +38,7 @@ export function TeamPage() {
   const returnTo = locationPath(location.pathname, location.search)
   const [seasonStatMetric, setSeasonStatMetric] =
     useState<SeasonStatMetric>('goals')
+  const [showAllSeasonStats, setShowAllSeasonStats] = useState(false)
 
   const teamQuery = useQuery({
     queryKey: ['team', slug],
@@ -149,6 +150,9 @@ export function TeamPage() {
   const statLeaderValue = statLeader
     ? formatSeasonStatValue(statLeader, seasonStatMetric)
     : '—'
+  const visibleSeasonStats = showAllSeasonStats
+    ? seasonStats
+    : seasonStats.slice(0, 6)
 
   const teamGallery = (galleriesQuery.data ?? []).find(
     (gallery) => gallery.team_id === team.id,
@@ -438,7 +442,10 @@ export function TeamPage() {
                     <button
                       key={option.id}
                       type="button"
-                      onClick={() => setSeasonStatMetric(option.id)}
+                      onClick={() => {
+                        setSeasonStatMetric(option.id)
+                        setShowAllSeasonStats(false)
+                      }}
                       className={`rounded-full px-3.5 py-2 text-[10px] font-bold transition ${
                         active
                           ? 'bg-brand-900 text-white'
@@ -514,7 +521,7 @@ export function TeamPage() {
                     />
                   </div>
 
-                  {seasonStats.map((player, index) => {
+                  {visibleSeasonStats.map((player, index) => {
                     const matchesCount = player.matches_count ?? 0
                     const goalsCount = player.goals_count ?? 0
                     const yellowCards = player.yellow_cards ?? 0
@@ -557,7 +564,11 @@ export function TeamPage() {
                                 className="h-full w-full object-cover object-top"
                               />
                             ) : (
-                              <UserRound size={19} className="text-brand-700/55" />
+                              <CircleUserRound
+                                size={24}
+                                strokeWidth={1.7}
+                                className="text-brand-700/45"
+                              />
                             )}
                           </div>
                           <div className="min-w-0">
@@ -600,6 +611,20 @@ export function TeamPage() {
                   })}
                 </div>
               </div>
+
+              {seasonStats.length > 6 && (
+                <div className="flex justify-center border-t border-sand-200 bg-[#fbfaf6] px-5 py-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSeasonStats((current) => !current)}
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900/10 bg-white px-4 py-2.5 text-xs font-bold text-brand-900 transition hover:border-brand-500/25 hover:bg-brand-50"
+                  >
+                    {showAllSeasonStats
+                      ? 'Zobrazit méně'
+                      : `Zobrazit všechny (${seasonStats.length})`}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>
