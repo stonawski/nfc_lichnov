@@ -36,6 +36,8 @@ export function TeamPage() {
   const { slug = '' } = useParams()
   const location = useLocation()
   const returnTo = locationPath(location.pathname, location.search)
+  const [seasonStatMetric, setSeasonStatMetric] =
+    useState<SeasonStatMetric>('goals')
 
   const teamQuery = useQuery({
     queryKey: ['team', slug],
@@ -125,21 +127,28 @@ export function TeamPage() {
       return (b.matches_count ?? 0) - (a.matches_count ?? 0)
     })[0]
 
-  const scorers = [...players]
-    .filter((player) => (player.goals_count ?? 0) > 0)
-    .sort((a, b) => {
-      const goalDifference = (b.goals_count ?? 0) - (a.goals_count ?? 0)
-      if (goalDifference !== 0) return goalDifference
+  const seasonStats = [...players].sort((a, b) => {
+    const difference =
+      seasonStatValue(b, seasonStatMetric) -
+      seasonStatValue(a, seasonStatMetric)
 
-      const matchDifference = (a.matches_count ?? 0) - (b.matches_count ?? 0)
-      if (matchDifference !== 0) return matchDifference
+    if (difference !== 0) return difference
 
-      return playerName(a).localeCompare(playerName(b), 'cs')
-    })
-  const teamGoals = scorers.reduce(
-    (sum, player) => sum + (player.goals_count ?? 0),
-    0,
-  )
+    const goalDifference = (b.goals_count ?? 0) - (a.goals_count ?? 0)
+    if (goalDifference !== 0) return goalDifference
+
+    const matchDifference = (b.matches_count ?? 0) - (a.matches_count ?? 0)
+    if (matchDifference !== 0) return matchDifference
+
+    return playerName(a).localeCompare(playerName(b), 'cs')
+  })
+  const selectedStat = SEASON_STAT_OPTIONS.find(
+    (option) => option.id === seasonStatMetric,
+  )!
+  const statLeader = seasonStats[0]
+  const statLeaderValue = statLeader
+    ? formatSeasonStatValue(statLeader, seasonStatMetric)
+    : '—'
 
   const teamGallery = (galleriesQuery.data ?? []).find(
     (gallery) => gallery.team_id === team.id,
@@ -331,7 +340,7 @@ export function TeamPage() {
             className="relative z-20 mt-4 flex gap-2 overflow-x-auto rounded-[24px] border border-white/75 bg-white/82 p-2 shadow-[0_14px_40px_rgba(24,53,42,.07)] backdrop-blur-xl [scrollbar-width:none] md:sticky md:top-24 [&::-webkit-scrollbar]:hidden"
           >
             {standings.length > 0 && <SectionLink href="#tabulka">Tabulka</SectionLink>}
-            {scorers.length > 0 && <SectionLink href="#strelci">Střelci</SectionLink>}
+            {players.length > 0 && <SectionLink href="#statistiky">Statistiky</SectionLink>}
             <SectionLink href="#hraci">Hráči</SectionLink>
             <SectionLink href="#realizacni-tym">Realizační tým</SectionLink>
             <Link
@@ -402,9 +411,9 @@ export function TeamPage() {
         </section>
       )}
 
-      {scorers.length > 0 && (
+      {players.length > 0 && (
         <section
-          id="strelci"
+          id="statistiky"
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_92%_18%,rgba(0,146,63,.055),transparent_26%)]" />
@@ -415,46 +424,97 @@ export function TeamPage() {
                 Sezóna {team.season || 'aktuální'}
               </div>
               <h2 className="mt-3 text-4xl font-black leading-[.96] tracking-[-0.055em] text-brand-900 sm:text-5xl">
-                Střelci sezony.
+                Statistiky sezony.
               </h2>
               <p className="mt-4 max-w-sm text-sm leading-6 text-ink-500">
-                Aktuální pořadí hráčů podle počtu vstřelených branek v této sezoně.
+                Přepni metriku a porovnej hráče podle výkonů v aktuální sezoně.
               </p>
+
+              <div className="mt-6 flex max-w-md flex-wrap gap-2">
+                {SEASON_STAT_OPTIONS.map((option) => {
+                  const active = seasonStatMetric === option.id
+
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setSeasonStatMetric(option.id)}
+                      className={`rounded-full px-3.5 py-2 text-[10px] font-bold transition ${
+                        active
+                          ? 'bg-brand-900 text-white'
+                          : 'border border-brand-900/10 bg-[#fbfaf6] text-ink-500 hover:border-brand-500/25 hover:text-brand-900'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  )
+                })}
+              </div>
 
               <div className="mt-7 grid max-w-sm grid-cols-2 gap-3">
                 <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
                   <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
-                    Gólů celkem
+                    Lídr
                   </div>
-                  <div className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900">
-                    {teamGoals}
+                  <div className="mt-2 truncate text-lg font-black tracking-[-0.04em] text-brand-900">
+                    {statLeader ? playerName(statLeader) : '—'}
                   </div>
                 </div>
                 <div className="rounded-[22px] border border-sand-200 bg-[#fbfaf6] p-4">
                   <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
-                    Střelců
+                    {selectedStat.shortLabel}
                   </div>
                   <div className="mt-2 text-3xl font-black tracking-[-0.05em] text-brand-900">
-                    {scorers.length}
+                    {statLeaderValue}
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6] shadow-[0_18px_50px_rgba(24,53,42,.055)]">
+              <div className="border-b border-sand-200 px-5 py-4">
+                <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
+                  Řazení podle
+                </div>
+                <div className="mt-1 text-sm font-extrabold text-brand-900">
+                  {selectedStat.title}
+                </div>
+              </div>
+
               <div className="overflow-x-auto [scrollbar-width:thin]">
                 <div className="min-w-[760px]">
                   <div className="grid grid-cols-[46px_minmax(220px,1fr)_58px_58px_58px_58px_68px] items-center gap-2 border-b border-sand-200 px-5 py-3 text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
                     <div>#</div>
                     <div>Hráč</div>
-                    <div className="text-center">Z</div>
-                    <div className="text-center">G</div>
-                    <div className="text-center">ŽK</div>
-                    <div className="text-center">ČK</div>
-                    <div className="text-right">G / Z</div>
+                    <StatHeader
+                      label="Z"
+                      active={seasonStatMetric === 'matches'}
+                      title="Odehrané zápasy"
+                    />
+                    <StatHeader
+                      label="G"
+                      active={seasonStatMetric === 'goals'}
+                      title="Góly"
+                    />
+                    <StatHeader
+                      label="ŽK"
+                      active={seasonStatMetric === 'yellow'}
+                      title="Žluté karty"
+                    />
+                    <StatHeader
+                      label="ČK"
+                      active={seasonStatMetric === 'red'}
+                      title="Červené karty"
+                    />
+                    <StatHeader
+                      label="G / Z"
+                      active={seasonStatMetric === 'rate'}
+                      title="Góly na zápas"
+                      align="right"
+                    />
                   </div>
 
-                  {scorers.map((player, index) => {
+                  {seasonStats.map((player, index) => {
                     const matchesCount = player.matches_count ?? 0
                     const goalsCount = player.goals_count ?? 0
                     const yellowCards = player.yellow_cards ?? 0
@@ -512,25 +572,29 @@ export function TeamPage() {
                           </div>
                         </div>
 
-                        <div className="text-center font-semibold text-ink-500">
-                          {matchesCount || '—'}
-                        </div>
-                        <div className="text-center text-lg font-black text-brand-900">
-                          {goalsCount}
-                        </div>
-                        <div className="text-center">
-                          <span className="inline-flex min-w-7 items-center justify-center rounded-lg bg-amber-50 px-2 py-1 text-xs font-black text-amber-700">
-                            {yellowCards}
-                          </span>
-                        </div>
-                        <div className="text-center">
-                          <span className="inline-flex min-w-7 items-center justify-center rounded-lg bg-red-50 px-2 py-1 text-xs font-black text-red-700">
-                            {redCards}
-                          </span>
-                        </div>
-                        <div className="text-right text-xs font-bold tabular-nums text-ink-500">
-                          {rate}
-                        </div>
+                        <StatValue
+                          value={matchesCount || '—'}
+                          active={seasonStatMetric === 'matches'}
+                        />
+                        <StatValue
+                          value={goalsCount}
+                          active={seasonStatMetric === 'goals'}
+                        />
+                        <StatValue
+                          value={yellowCards}
+                          active={seasonStatMetric === 'yellow'}
+                          tone="yellow"
+                        />
+                        <StatValue
+                          value={redCards}
+                          active={seasonStatMetric === 'red'}
+                          tone="red"
+                        />
+                        <StatValue
+                          value={rate}
+                          active={seasonStatMetric === 'rate'}
+                          align="right"
+                        />
                       </div>
                     )
                   })}
@@ -734,6 +798,127 @@ function teamMatchOutcome(match: Match): 'V' | 'R' | 'P' | null {
   if (scored > conceded) return 'V'
   if (scored < conceded) return 'P'
   return 'R'
+}
+
+type SeasonStatMetric = 'goals' | 'yellow' | 'red' | 'matches' | 'rate'
+
+const SEASON_STAT_OPTIONS: Array<{
+  id: SeasonStatMetric
+  label: string
+  title: string
+  shortLabel: string
+}> = [
+  { id: 'goals', label: 'Góly', title: 'Nejvíce gólů', shortLabel: 'Góly' },
+  {
+    id: 'yellow',
+    label: 'Žluté karty',
+    title: 'Nejvíce žlutých karet',
+    shortLabel: 'ŽK',
+  },
+  {
+    id: 'red',
+    label: 'Červené karty',
+    title: 'Nejvíce červených karet',
+    shortLabel: 'ČK',
+  },
+  {
+    id: 'matches',
+    label: 'Zápasy',
+    title: 'Nejvíce odehraných zápasů',
+    shortLabel: 'Zápasy',
+  },
+  {
+    id: 'rate',
+    label: 'Góly / zápas',
+    title: 'Nejlepší gólový průměr',
+    shortLabel: 'G / Z',
+  },
+]
+
+function seasonStatValue(
+  player: {
+    matches_count: number | null
+    goals_count: number | null
+    yellow_cards: number | null
+    red_cards: number | null
+  },
+  metric: SeasonStatMetric,
+) {
+  const matches = player.matches_count ?? 0
+  const goals = player.goals_count ?? 0
+
+  if (metric === 'goals') return goals
+  if (metric === 'yellow') return player.yellow_cards ?? 0
+  if (metric === 'red') return player.red_cards ?? 0
+  if (metric === 'matches') return matches
+  return matches > 0 ? goals / matches : 0
+}
+
+function formatSeasonStatValue(
+  player: {
+    matches_count: number | null
+    goals_count: number | null
+    yellow_cards: number | null
+    red_cards: number | null
+  },
+  metric: SeasonStatMetric,
+) {
+  const value = seasonStatValue(player, metric)
+  return metric === 'rate' ? value.toFixed(2) : String(value)
+}
+
+function StatHeader({
+  label,
+  active,
+  title,
+  align = 'center',
+}: {
+  label: string
+  active: boolean
+  title: string
+  align?: 'center' | 'right'
+}) {
+  return (
+    <div
+      title={title}
+      className={`${align === 'right' ? 'text-right' : 'text-center'} ${
+        active ? 'font-black text-brand-500' : ''
+      }`}
+    >
+      {label}
+    </div>
+  )
+}
+
+function StatValue({
+  value,
+  active,
+  tone,
+  align = 'center',
+}: {
+  value: string | number
+  active: boolean
+  tone?: 'yellow' | 'red'
+  align?: 'center' | 'right'
+}) {
+  const toneClass =
+    tone === 'yellow'
+      ? 'bg-amber-50 text-amber-700'
+      : tone === 'red'
+        ? 'bg-red-50 text-red-700'
+        : ''
+
+  return (
+    <div className={align === 'right' ? 'text-right' : 'text-center'}>
+      <span
+        className={`inline-flex min-w-7 items-center justify-center rounded-lg px-2 py-1 tabular-nums ${
+          toneClass || (active ? 'bg-brand-50 text-brand-900' : 'text-ink-500')
+        } ${active ? 'font-black ring-1 ring-brand-500/20' : 'font-semibold'}`}
+      >
+        {value}
+      </span>
+    </div>
+  )
 }
 
 function TeamHeroPhoto({
