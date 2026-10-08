@@ -42,6 +42,8 @@ export function TeamPage() {
     useState<'front' | 'to-back' | 'back' | 'to-front'>('front')
   const galleryPhotoFront =
     galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
+  const galleryPhotoEmphasized =
+    galleryPanelPhase === 'to-back' || galleryPanelPhase === 'back'
   const galleryAnimating =
     galleryPanelPhase === 'to-back' || galleryPanelPhase === 'to-front'
 
@@ -738,14 +740,14 @@ export function TeamPage() {
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover object-center transition-[filter] duration-500 motion-reduce:transition-none"
                 style={{
-                  filter: galleryPhotoFront
+                  filter: galleryPhotoEmphasized
                     ? 'saturate(.98) contrast(.99) brightness(1)'
                     : 'saturate(.94) contrast(.97) brightness(.96)',
                 }}
               />
               <div
                 className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
-                  galleryPhotoFront ? 'opacity-35' : 'opacity-100'
+                  galleryPhotoEmphasized ? 'opacity-35' : 'opacity-100'
                 }`}
               >
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
