@@ -164,6 +164,7 @@ export function TeamPage() {
           src={teamHeroImage}
           alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
           hasTeamPhoto={hasTeamPhoto}
+          galleryHref={galleryHref}
         />
 
         <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1240px] flex-1 flex-col px-5 md:px-8">
@@ -564,10 +565,12 @@ function TeamHeroPhoto({
   src,
   alt,
   hasTeamPhoto,
+  galleryHref,
 }: {
   src: string
   alt: string
   hasTeamPhoto: boolean
+  galleryHref: string | null
 }) {
   const [loaded, setLoaded] = useState(!hasTeamPhoto)
 
@@ -577,17 +580,17 @@ function TeamHeroPhoto({
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="hero-field-image-frame absolute right-0 top-0 overflow-hidden">
-        <img
-          src="/hero-lichnov-field.webp"
-          alt=""
-          loading="eager"
-          decoding="async"
-          className={`absolute inset-0 h-full w-full object-cover object-[66%_center] transition-opacity duration-1000 ease-out ${
-            loaded && hasTeamPhoto ? 'opacity-0' : 'opacity-100'
-          }`}
-          style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
-        />
+      <div className="absolute right-0 top-0 h-[min(74svh,620px)] w-full overflow-hidden sm:h-[min(78svh,660px)] lg:h-[min(72svh,650px)] lg:w-[82%] xl:w-[80%]">
+        {!hasTeamPhoto && (
+          <img
+            src="/hero-lichnov-field.webp"
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-[66%_center]"
+            style={{ filter: 'saturate(.82) contrast(.92) brightness(1.08)' }}
+          />
+        )}
 
         {hasTeamPhoto && (
           <img
@@ -601,9 +604,9 @@ function TeamHeroPhoto({
             className={`absolute inset-0 h-full w-full object-cover object-center transition-[opacity,transform] duration-1000 ease-out ${
               loaded
                 ? 'scale-100 opacity-100'
-                : 'scale-[1.015] opacity-0'
+                : 'scale-[1.012] opacity-0'
             }`}
-            style={{ filter: 'saturate(.92) contrast(.95) brightness(1.04)' }}
+            style={{ filter: 'saturate(.94) contrast(.96) brightness(1.04)' }}
           />
         )}
 
@@ -611,19 +614,33 @@ function TeamHeroPhoto({
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.72) 22%, rgba(250,248,243,.28) 48%, rgba(250,248,243,.08) 72%, rgba(250,248,243,.02) 100%)',
+              'linear-gradient(90deg, rgba(250,248,243,.98) 0%, rgba(250,248,243,.66) 20%, rgba(250,248,243,.22) 44%, rgba(250,248,243,.05) 68%, rgba(250,248,243,0) 100%)',
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(180deg, rgba(250,248,243,.02) 0%, rgba(250,248,243,.06) 48%, rgba(250,248,243,.58) 78%, rgba(250,248,243,1) 100%)',
+              'linear-gradient(180deg, rgba(250,248,243,0) 0%, rgba(250,248,243,.03) 52%, rgba(250,248,243,.40) 80%, rgba(250,248,243,.96) 100%)',
           }}
         />
+
+        {hasTeamPhoto && galleryHref && loaded && (
+          <Link
+            to={galleryHref}
+            aria-label="Otevřít týmovou fotogalerii"
+            className="group pointer-events-auto absolute inset-y-0 right-0 z-[2] w-[62%] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+          >
+            <span className="absolute bottom-8 right-8 inline-flex translate-y-1 items-center gap-2 rounded-full border border-white/45 bg-white/80 px-3.5 py-2 text-[10px] font-bold text-brand-900 opacity-0 shadow-[0_10px_30px_rgba(24,53,42,.10)] backdrop-blur-md transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+              <Images size={13} />
+              Otevřít galerii
+              <ArrowUpRight size={12} />
+            </span>
+          </Link>
+        )}
       </div>
 
-      <div className="hero-glow absolute inset-0 opacity-35" />
+      <div className="hero-glow absolute inset-0 opacity-25" />
     </div>
   )
 }
