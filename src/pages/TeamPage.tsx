@@ -38,6 +38,7 @@ export function TeamPage() {
   const [seasonStatMetric, setSeasonStatMetric] =
     useState<SeasonStatMetric>('goals')
   const [showAllSeasonStats, setShowAllSeasonStats] = useState(false)
+  const [galleryPhotoFront, setGalleryPhotoFront] = useState(false)
 
   const teamQuery = useQuery({
     queryKey: ['team', slug],
@@ -421,23 +422,6 @@ export function TeamPage() {
           id="statistiky"
           className="relative scroll-mt-28 overflow-hidden bg-white px-5 py-14 md:px-8 md:py-20"
         >
-          <div
-            className="pointer-events-none absolute -left-[230px] top-[34%] h-[760px] w-[760px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(0,146,63,.17) 0%, rgba(0,146,63,.105) 22%, rgba(0,146,63,.055) 42%, rgba(0,146,63,.018) 58%, transparent 72%)',
-              filter: 'blur(16px)',
-            }}
-          />
-          <div
-            className="pointer-events-none absolute -right-[110px] top-[4%] h-[560px] w-[560px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(20,83,45,.095) 0%, rgba(0,146,63,.052) 30%, rgba(0,146,63,.018) 52%, transparent 72%)',
-              filter: 'blur(22px)',
-            }}
-          />
-
           <div className="relative mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[.62fr_1.38fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
@@ -494,8 +478,26 @@ export function TeamPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]/95 shadow-[0_24px_60px_rgba(24,53,42,.08)] backdrop-blur-[1px]">
-              <div className="border-b border-sand-200 px-5 py-4">
+            <div className="relative isolate">
+              <div
+                className="pointer-events-none absolute -left-[190px] bottom-[-170px] -z-10 h-[650px] w-[650px] rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(0,146,63,.30) 0%, rgba(0,146,63,.19) 20%, rgba(0,146,63,.105) 38%, rgba(0,146,63,.04) 57%, transparent 74%)',
+                  filter: 'blur(20px)',
+                }}
+              />
+              <div
+                className="pointer-events-none absolute -right-[150px] top-[-145px] -z-10 h-[500px] w-[500px] rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(0,146,63,.22) 0%, rgba(20,83,45,.13) 28%, rgba(0,146,63,.055) 50%, transparent 73%)',
+                  filter: 'blur(18px)',
+                }}
+              />
+
+              <div className="relative z-10 overflow-hidden rounded-[30px] border border-sand-200 bg-[#fbfaf6]/95 shadow-[0_24px_60px_rgba(24,53,42,.08)] backdrop-blur-[1px]">
+                <div className="border-b border-sand-200 px-5 py-4">
                 <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-ink-500">
                   Řazení podle
                 </div>
@@ -636,19 +638,20 @@ export function TeamPage() {
                 </div>
               </div>
 
-              {seasonStats.length > 6 && (
-                <div className="flex justify-center border-t border-sand-200 bg-[#fbfaf6] px-5 py-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowAllSeasonStats((current) => !current)}
-                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900/10 bg-white px-4 py-2.5 text-xs font-bold text-brand-900 transition hover:border-brand-500/25 hover:bg-brand-50"
-                  >
-                    {showAllSeasonStats
-                      ? 'Zobrazit méně'
-                      : `Zobrazit všechny (${seasonStats.length})`}
-                  </button>
-                </div>
-              )}
+                {seasonStats.length > 6 && (
+                  <div className="flex justify-center border-t border-sand-200 bg-[#fbfaf6] px-5 py-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAllSeasonStats((current) => !current)}
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900/10 bg-white px-4 py-2.5 text-xs font-bold text-brand-900 transition hover:border-brand-500/25 hover:bg-brand-50"
+                    >
+                      {showAllSeasonStats
+                        ? 'Zobrazit méně'
+                        : `Zobrazit všechny (${seasonStats.length})`}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -681,28 +684,82 @@ export function TeamPage() {
             </div>
           </div>
 
-          <div className="relative min-h-[610px] lg:min-h-[650px]">
-            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
+          <div
+            className="relative min-h-[610px] lg:min-h-[650px]"
+            style={{ perspective: '1800px', transformStyle: 'preserve-3d' }}
+          >
+            <button
+              type="button"
+              aria-pressed={galleryPhotoFront}
+              aria-label={
+                galleryPhotoFront
+                  ? 'Vrátit informace galerie do popředí'
+                  : 'Přesunout týmovou fotografii do popředí'
+              }
+              onClick={() => setGalleryPhotoFront((current) => !current)}
+              className={`group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none transition-[transform,opacity,box-shadow,filter] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 motion-reduce:transition-none lg:w-[84%] ${
+                galleryPhotoFront
+                  ? 'z-30 shadow-[0_34px_90px_rgba(24,53,42,.24)]'
+                  : 'z-0 shadow-[0_24px_70px_rgba(24,53,42,.12)]'
+              }`}
+              style={{
+                transform: galleryPhotoFront
+                  ? 'translate3d(-3%, 0, 110px) rotateY(-1.5deg) scale(1.015)'
+                  : 'translate3d(0, 0, 0) rotateY(-5deg) scale(.985)',
+                transformStyle: 'preserve-3d',
+                transformOrigin: '58% 50%',
+              }}
+            >
               <img
                 src={teamHeroImage}
                 alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover object-center"
-                style={{ filter: 'saturate(.94) contrast(.97) brightness(.96)' }}
+                className={`absolute inset-0 h-full w-full object-cover object-center transition-[filter,transform] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] motion-reduce:transition-none ${
+                  galleryPhotoFront ? 'scale-[1.008]' : 'scale-100'
+                }`}
+                style={{
+                  filter: galleryPhotoFront
+                    ? 'saturate(.98) contrast(.99) brightness(1)'
+                    : 'saturate(.94) contrast(.97) brightness(.96)',
+                }}
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
-
-              <div className="absolute bottom-6 right-6 hidden items-center gap-2 rounded-full border border-white/25 bg-white/12 px-3.5 py-2 text-[10px] font-bold text-white backdrop-blur-md sm:flex">
-                <Images size={13} />
-                {teamGalleries.length > 0
-                  ? `${teamGalleries.length} ${teamGalleries.length === 1 ? 'album' : teamGalleries.length < 5 ? 'alba' : 'alb'}`
-                  : 'Fotogalerie'}
+              <div
+                className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
+                  galleryPhotoFront ? 'opacity-35' : 'opacity-100'
+                }`}
+              >
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
               </div>
-            </div>
 
-            <div className="relative z-10 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
-              <div className="w-full rounded-[34px] bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
+              <div
+                className={`absolute bottom-6 right-6 flex items-center gap-2 rounded-full border border-white/25 bg-brand-900/40 px-3.5 py-2 text-[10px] font-bold text-white backdrop-blur-md transition-all duration-500 motion-reduce:transition-none ${
+                  galleryPhotoFront
+                    ? 'translate-y-0 opacity-100'
+                    : 'translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100'
+                }`}
+              >
+                <Images size={13} />
+                {galleryPhotoFront ? 'Vrátit info dopředu' : 'Fotku do popředí'}
+              </div>
+            </button>
+
+            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+              <div
+                className={`w-full rounded-[34px] border border-white/10 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] backdrop-blur-xl transition-[transform,opacity,background-color,box-shadow] duration-700 ease-[cubic-bezier(.22,.75,.18,1)] motion-reduce:transition-none sm:p-9 lg:w-[430px] lg:p-10 ${
+                  galleryPhotoFront
+                    ? 'pointer-events-none bg-brand-900/58 shadow-[0_18px_45px_rgba(24,53,42,.12)]'
+                    : 'pointer-events-auto bg-brand-900'
+                }`}
+                style={{
+                  transform: galleryPhotoFront
+                    ? 'translate3d(96px, 18px, -120px) rotateY(11deg) scale(.92)'
+                    : 'translate3d(0, 0, 40px) rotateY(0deg) scale(1)',
+                  opacity: galleryPhotoFront ? 0.62 : 1,
+                  transformStyle: 'preserve-3d',
+                  transformOrigin: '45% 50%',
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
                     <Images size={18} />
