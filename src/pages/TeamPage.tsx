@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   ChevronRight,
   Images,
-  UsersRound,
 } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ClubLogo } from '../components/ClubLogo'
