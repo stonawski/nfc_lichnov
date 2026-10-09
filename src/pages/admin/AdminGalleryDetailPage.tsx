@@ -57,15 +57,6 @@ export function AdminGalleryDetailPage() {
 
   const deleteImageMutation = useMutation({
     mutationFn: async (image: { id: string; image_url: string }) => {
-      const objectKey = mediaObjectKeyFromUrl(image.image_url)
-      await deleteMediaObjects({
-        scope: 'gallery',
-        resourceId: id,
-        objectKeys: [objectKey],
-      })
-
-      await deleteGalleryImage(image.id)
-
       if (gallery?.cover_image === image.image_url) {
         const replacement = images.find((item) => item.id !== image.id)?.image_url ?? null
         if (replacement) {
@@ -73,6 +64,24 @@ export function AdminGalleryDetailPage() {
         } else {
           await clearGalleryCover(id)
         }
+      }
+
+      await deleteGalleryImage(image.id)
+
+      try {
+        const objectKey = mediaObjectKeyFromUrl(image.image_url)
+        if (objectKey.startsWith(`galleries/${id}/`)) {
+          await deleteMediaObjects({
+            scope: 'gallery',
+            resourceId: id,
+            objectKeys: [objectKey],
+          })
+        }
+      } catch (error) {
+        // The photo is already removed from the album. R2 cleanup must not
+        // block CMS deletion for legacy/external URLs or a temporarily
+        // unavailable media-delete function.
+        console.warn('Gallery image could not be removed from R2', error)
       }
     },
     onSuccess: async () => {
@@ -246,8 +255,8 @@ export function AdminGalleryDetailPage() {
 
       {deleteImageMutation.isError && (
         <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          Fotografii se nepodařilo smazat. Zkontroluj, že je nasazená Edge Function
-          <code className="mx-1">media-delete</code>.
+          Fotografii se nepodařilo odstranit z alba. Zkontroluj oprávnění editora
+          a zkus akci zopakovat.
         </div>
       )}
 
