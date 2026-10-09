@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, type PointerEvent as ReactPointerEvent } from "react";
-import { ArrowRight, ArrowUpRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Images, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
 import { DataFade } from "../components/DataFade";
@@ -448,7 +448,7 @@ export function HomePage() {
               <div className="w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
-                    <ArrowUpRight size={18} />
+                    <Images size={18} />
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
                     Klub očima fotografií
