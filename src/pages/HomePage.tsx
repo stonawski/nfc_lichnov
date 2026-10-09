@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef, type PointerEvent as ReactPointerEvent } from "react";
+import { useMemo, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { ArrowRight, ArrowUpRight, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
@@ -13,6 +13,7 @@ import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
   fetchGalleries,
+  fetchGalleryImages,
   fetchHomepageMatchSummaries,
   fetchPublishedNews,
   fetchStandingsByTeam,
@@ -48,6 +49,12 @@ export function HomePage() {
     queryFn: fetchGalleries,
     retry: false,
   });
+  const galleryImagesQuery = useQuery({
+    queryKey: ["gallery-images", "home-random"],
+    queryFn: () => fetchGalleryImages(),
+    enabled: galleriesQuery.isSuccess,
+    retry: false,
+  });
 
   const men = teamsQuery.data?.find((team) => team.slug === "muzi");
   const standingsQuery = useQuery({
@@ -65,7 +72,73 @@ export function HomePage() {
 
   const news = newsQuery.data ?? [];
   const galleries = galleriesQuery.data ?? [];
-  const galleryPreview = galleries.slice(0, 2);
+  const galleryPreview = useMemo(() => {
+    const publishedById = new Map(
+      (galleriesQuery.data ?? []).map((gallery) => [gallery.id, gallery]),
+    );
+    const pool = (galleryImagesQuery.data ?? [])
+      .map((image) => {
+        const gallery = publishedById.get(image.gallery_id);
+        return gallery ? { gallery, image } : null;
+      })
+      .filter(
+        (
+          item,
+        ): item is {
+          gallery: NonNullable<typeof galleriesQuery.data>[number];
+          image: NonNullable<typeof galleryImagesQuery.data>[number];
+        } => Boolean(item),
+      );
+
+    if (!pool.length) {
+      return (galleriesQuery.data ?? [])
+        .filter((gallery) => gallery.cover_image)
+        .slice(0, 2)
+        .map((gallery) => ({
+          gallery,
+          image: {
+            id: `cover-${gallery.id}`,
+            gallery_id: gallery.id,
+            image_url: gallery.cover_image!,
+            caption: null,
+            sort_order: 0,
+            created_at: gallery.created_at,
+            updated_at: gallery.updated_at,
+          },
+        }));
+    }
+
+    const shuffled = [...pool];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [
+        shuffled[swapIndex],
+        shuffled[index],
+      ];
+    }
+
+    const selected = [];
+    const usedAlbums = new Set<string>();
+
+    for (const item of shuffled) {
+      if (selected.length >= 2) break;
+      if (!usedAlbums.has(item.gallery.id)) {
+        selected.push(item);
+        usedAlbums.add(item.gallery.id);
+      }
+    }
+
+    if (selected.length < 2) {
+      for (const item of shuffled) {
+        if (selected.length >= 2) break;
+        if (!selected.some((entry) => entry.image.id === item.image.id)) {
+          selected.push(item);
+        }
+      }
+    }
+
+    return selected;
+  }, [galleriesQuery.data, galleryImagesQuery.data]);
   const upcomingMatches = upcomingQuery.data ?? [];
   const upcomingSummaries: TeamMatchSummary[] = upcomingMatches.flatMap((match) =>
     match.team
@@ -332,8 +405,8 @@ export function HomePage() {
                 Fotbal nejsou jen výsledky.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-                Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Poslední
-                galerie ukazují klub tak, jak skutečně žije.
+                Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Náhodné
+                momenty z klubových alb ukazují NFC tak, jak skutečně žije.
               </p>
 
               <Link
@@ -344,23 +417,25 @@ export function HomePage() {
               </Link>
             </div>
 
-            {galleriesQuery.isLoading ? (
+            {galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
               <div className="rounded-[30px] bg-white/[0.06] p-3">
                 <LoadingState rows={2} />
               </div>
             ) : galleryPreview.length ? (
               <DataFade className="grid grid-cols-2 gap-3">
-                {galleryPreview.map((gallery, index) => (
+                {galleryPreview.map(({ gallery, image }, index) => (
                   <Link
-                    key={gallery.id}
-                    to={`/galerie/${gallery.slug || gallery.id}`}
+                    key={image.id}
+                    to={`/galerie?album=${encodeURIComponent(
+                      gallery.slug || gallery.id,
+                    )}`}
                     className={`group relative aspect-[4/3] overflow-hidden rounded-[28px] border border-white/10 bg-[#10291f] ${
                       index === 1 ? "mt-8" : ""
                     }`}
                   >
                     <img
-                      src={gallery.cover_image || "/hero-lichnov-field.webp"}
-                      alt=""
+                      src={image.image_url}
+                      alt={image.caption || gallery.title}
                       loading="lazy"
                       className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
                     />
