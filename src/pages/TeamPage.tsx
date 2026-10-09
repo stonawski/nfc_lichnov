@@ -37,34 +37,6 @@ export function TeamPage() {
   const [seasonStatMetric, setSeasonStatMetric] =
     useState<SeasonStatMetric>('goals')
   const [showAllSeasonStats, setShowAllSeasonStats] = useState(false)
-  const [galleryPanelPhase, setGalleryPanelPhase] =
-    useState<'front' | 'to-back' | 'back' | 'to-front'>('front')
-  const galleryPhotoFront =
-    galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
-  const galleryPhotoEmphasized =
-    galleryPanelPhase === 'to-back' || galleryPanelPhase === 'back'
-  const galleryAnimating =
-    galleryPanelPhase === 'to-back' || galleryPanelPhase === 'to-front'
-
-  const toggleGalleryLayers = () => {
-    if (galleryPanelPhase === 'front') {
-      setGalleryPanelPhase('to-back')
-      return
-    }
-
-    if (galleryPanelPhase === 'back') {
-      setGalleryPanelPhase('to-front')
-    }
-  }
-
-  const finishGalleryPanelMotion = () => {
-    if (galleryPanelPhase === 'to-back') {
-      setGalleryPanelPhase('back')
-    } else if (galleryPanelPhase === 'to-front') {
-      setGalleryPanelPhase('front')
-    }
-  }
-
   const teamQuery = useQuery({
     queryKey: ['team', slug],
     queryFn: () => fetchTeamBySlug(slug),
@@ -709,88 +681,23 @@ export function TeamPage() {
             </div>
           </div>
 
-          <div
-            className="relative min-h-[610px] lg:min-h-[650px]"
-            style={{ perspective: '1800px', transformStyle: 'preserve-3d' }}
-          >
-            <button
-              type="button"
-              aria-pressed={galleryPhotoFront}
-              aria-label={
-                galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
-                  ? 'Vrátit informace galerie do popředí'
-                  : 'Přesunout týmovou fotografii do popředí'
-              }
-              onClick={toggleGalleryLayers}
-              disabled={galleryAnimating}
-              className={`team-gallery-photo group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 text-left outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-sand-100 lg:w-[84%] ${
-                galleryPanelPhase === 'to-back'
-                  ? 'team-gallery-photo-to-front shadow-[0_34px_90px_rgba(24,53,42,.24)]'
-                  : galleryPanelPhase === 'back'
-                    ? 'team-gallery-photo-front shadow-[0_34px_90px_rgba(24,53,42,.24)]'
-                    : galleryPanelPhase === 'to-front'
-                      ? 'team-gallery-photo-to-back shadow-[0_34px_90px_rgba(24,53,42,.24)]'
-                      : 'shadow-[0_24px_70px_rgba(24,53,42,.12)]'
-              }`}
-            >
+          <div className="relative min-h-[610px] lg:min-h-[650px]">
+            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
               <img
                 src={teamHeroImage}
                 alt={hasTeamPhoto ? `${team.name} NFC Lichnov` : ''}
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover object-center transition-[filter] duration-500 motion-reduce:transition-none"
+                className="absolute inset-0 h-full w-full object-cover object-center"
                 style={{
-                  filter: galleryPhotoEmphasized
-                    ? 'saturate(.98) contrast(.99) brightness(1)'
-                    : 'saturate(.94) contrast(.97) brightness(.96)',
+                  filter: 'saturate(.94) contrast(.97) brightness(.96)',
                 }}
               />
-              <div
-                className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${
-                  galleryPhotoEmphasized ? 'opacity-35' : 'opacity-100'
-                }`}
-              >
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
-              </div>
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
+            </div>
 
-              <div
-                className={`absolute bottom-6 right-6 flex items-center gap-2 rounded-full border border-white/25 bg-brand-900/40 px-3.5 py-2 text-[10px] font-bold text-white backdrop-blur-md transition-all duration-500 motion-reduce:transition-none ${
-                  galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
-                    ? 'translate-y-0 opacity-100'
-                    : 'translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100'
-                }`}
-              >
-                <Images size={13} />
-                {galleryPanelPhase === 'back' || galleryPanelPhase === 'to-front'
-                  ? 'Vrátit info dopředu'
-                  : 'Fotku do popředí'}
-              </div>
-            </button>
-
-            <div
-              className={`team-gallery-panel-layer pointer-events-none relative flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0 ${
-                galleryPanelPhase === 'to-back'
-                  ? 'team-gallery-panel-layer-to-back'
-                  : galleryPanelPhase === 'back'
-                    ? 'team-gallery-panel-layer-back'
-                    : galleryPanelPhase === 'to-front'
-                      ? 'team-gallery-panel-layer-to-front'
-                      : ''
-              }`}
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              <div
-                onAnimationEnd={finishGalleryPanelMotion}
-                className={`team-gallery-panel relative w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10 ${
-                  galleryPanelPhase === 'to-back'
-                    ? 'team-gallery-panel-to-back pointer-events-none'
-                    : galleryPanelPhase === 'back'
-                      ? 'team-gallery-panel-back pointer-events-none shadow-[0_14px_38px_rgba(24,53,42,.10)]'
-                      : galleryPanelPhase === 'to-front'
-                        ? 'team-gallery-panel-to-front pointer-events-none'
-                        : 'pointer-events-auto'
-                }`}
-              >
+            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+              <div className="w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
                     <Images size={18} />
