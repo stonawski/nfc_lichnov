@@ -5,6 +5,7 @@ export type Team = {
   slug: string
   category: string | null
   logo_url: string | null
+  hero_image_url: string | null
   active: boolean
   sort_order: number | null
   season: string | null

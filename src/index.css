@@ -621,6 +621,37 @@ img {
   }
 }
 
+
+.home-gallery-image-in {
+  animation: home-gallery-image-in 1050ms linear both;
+  will-change: opacity;
+}
+
+.home-gallery-image-out {
+  animation: home-gallery-image-out 1050ms linear both;
+  will-change: opacity;
+}
+
+@keyframes home-gallery-image-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes home-gallery-image-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

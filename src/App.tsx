@@ -59,6 +59,11 @@ const AdminDashboardPage = lazy(() =>
     default: module.AdminDashboardPage,
   })),
 )
+const AdminTeamsPage = lazy(() =>
+  import('./pages/admin/AdminTeamsPage').then((module) => ({
+    default: module.AdminTeamsPage,
+  })),
+)
 const AdminClubStatsPage = lazy(() =>
   import('./pages/admin/AdminClubStatsPage').then((module) => ({
     default: module.AdminClubStatsPage,
@@ -183,6 +188,7 @@ export default function App() {
             }
           >
             <Route index element={<Suspense fallback={<AdminLoading />}><AdminDashboardPage /></Suspense>} />
+            <Route path="tymy" element={<Suspense fallback={<AdminLoading />}><AdminTeamsPage /></Suspense>} />
             <Route path="galerie" element={<Suspense fallback={<AdminLoading />}><AdminGalleriesPage /></Suspense>} />
             <Route path="galerie/:id" element={<Suspense fallback={<AdminLoading />}><AdminGalleryDetailPage /></Suspense>} />
             <Route path="aktuality" element={<Suspense fallback={<AdminLoading />}><AdminNewsPage /></Suspense>} />

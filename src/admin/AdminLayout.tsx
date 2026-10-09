@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Trophy,
   UserRound,
+  Users,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -18,6 +19,7 @@ import { Seo } from '../components/Seo'
 
 const navItems = [
   { to: '/admin', label: 'Přehled', icon: LayoutDashboard, end: true },
+  { to: '/admin/tymy', label: 'Týmy', icon: Users },
   { to: '/admin/galerie', label: 'Galerie', icon: Images },
   { to: '/admin/aktuality', label: 'Aktuality', icon: Newspaper },
   { to: '/admin/hraci', label: 'Hráči', icon: UserRound },

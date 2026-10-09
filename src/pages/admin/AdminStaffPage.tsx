@@ -368,7 +368,10 @@ function CreateStaffDialog({
 
           {createMutation.isError && (
             <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              Člena realizačního týmu se nepodařilo vytvořit.
+              <div>Člena realizačního týmu se nepodařilo vytvořit.</div>
+              <div className="mt-1 break-words text-xs font-normal text-red-700/75">
+                {formatMutationError(createMutation.error)}
+              </div>
             </div>
           )}
 
@@ -395,6 +398,25 @@ function CreateStaffDialog({
     </div>
   )
 }
+
+function formatMutationError(error: unknown) {
+  if (error instanceof Error) return error.message
+
+  if (error && typeof error === 'object') {
+    const record = error as Record<string, unknown>
+    const parts = [
+      typeof record.message === 'string' ? record.message : null,
+      typeof record.details === 'string' ? record.details : null,
+      typeof record.hint === 'string' ? record.hint : null,
+      typeof record.code === 'string' ? `kód: ${record.code}` : null,
+    ].filter(Boolean)
+
+    if (parts.length) return parts.join(' · ')
+  }
+
+  return 'Neznámá chyba databáze.'
+}
+
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (

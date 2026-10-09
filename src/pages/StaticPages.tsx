@@ -379,49 +379,104 @@ export function ArealPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="grid overflow-hidden rounded-[38px] border border-sand-200 bg-[#fbfaf6] lg:grid-cols-[1.15fr_.85fr]">
-            <div className="relative min-h-[360px] overflow-hidden">
-              <img
-                src={arealGallery?.cover_image || '/hero-lichnov-field.webp'}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-brand-900/12 via-transparent to-brand-900/10" />
+      <section className="relative overflow-hidden bg-white px-5 py-16 md:px-8 md:py-24">
+        <div className="relative mx-auto max-w-[1180px]">
+          <div className="mb-6 flex items-end justify-between gap-5">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                Fotogalerie
+              </div>
+              <div className="mt-2 text-sm font-semibold text-brand-900/55">
+                {arealGallery
+                  ? imagesQuery.isLoading
+                    ? 'Album Areál'
+                    : `${arealImages.length} ${arealImages.length === 1 ? 'fotografie' : arealImages.length < 5 ? 'fotografie' : 'fotografií'} stadionu`
+                  : 'Fotky stadionu a klubového zázemí'}
+              </div>
             </div>
 
-            <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
-              <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500">
-                <Images size={14} />
-                Fotky z areálu
+            <div className="hidden text-right sm:block">
+              <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                Místo
               </div>
-              <h2 className="mt-3 text-4xl font-black leading-[.98] tracking-[-0.055em] text-brand-900">
-                Projdi si stadion i obrazem.
-              </h2>
-              <p className="mt-5 max-w-lg text-sm leading-7 text-ink-500">
-                V galerii najdeš fotografie hlavní plochy, tribuny i okolí stadionu.
-                Album Areál můžeš otevřít přímo tady bez opuštění stránky.
-              </p>
+              <div className="mt-1 text-sm font-extrabold text-brand-900">
+                NFC Lichnov aréna
+              </div>
+            </div>
+          </div>
 
-              {arealGallery ? (
-                <button
-                  type="button"
-                  onClick={() => setAlbumOpen(true)}
-                  disabled={imagesQuery.isLoading}
-                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-[15px] bg-brand-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
-                >
-                  {imagesQuery.isLoading ? 'Načítám fotky…' : 'Otevřít album Areál'}
-                  <ArrowRight size={14} />
-                </button>
-              ) : (
-                <Link
-                  to="/galerie"
-                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-[15px] bg-brand-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700"
-                >
-                  Otevřít galerii <ArrowRight size={14} />
-                </Link>
-              )}
+          <div className="relative min-h-[610px] lg:min-h-[650px]">
+            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
+              <img
+                src={arealGallery?.cover_image || '/hero-lichnov-field.webp'}
+                alt="Stadion NFC Lichnov"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                style={{
+                  filter: 'saturate(.94) contrast(.97) brightness(.96)',
+                }}
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
+            </div>
+
+            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+              <div className="w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
+                    <Images size={18} />
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                    Klub očima fotografií
+                  </div>
+                </div>
+
+                <h2 className="mt-7 text-4xl font-black leading-[.92] tracking-[-0.06em] sm:text-5xl">
+                  Stadion
+                  <span className="block text-white/48">zblízka.</span>
+                </h2>
+
+                <p className="mt-5 max-w-sm text-sm leading-6 text-white/60">
+                  Hlavní plocha, tribuna i klubové zázemí NFC Lichnov v jednom fotografickém albu.
+                </p>
+
+                {arealGallery?.title && (
+                  <div className="mt-7 border-t border-white/12 pt-5">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">
+                      Album
+                    </div>
+                    <div className="mt-2 line-clamp-2 text-sm font-extrabold leading-5 text-white/82">
+                      {arealGallery.title}
+                    </div>
+                  </div>
+                )}
+
+                {arealGallery ? (
+                  <button
+                    type="button"
+                    onClick={() => setAlbumOpen(true)}
+                    disabled={imagesQuery.isLoading}
+                    className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {imagesQuery.isLoading ? 'Načítám fotky…' : 'Otevřít fotogalerii'}
+                    <ArrowUpRight
+                      size={14}
+                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </button>
+                ) : (
+                  <Link
+                    to="/galerie"
+                    className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50"
+                  >
+                    Otevřít fotogalerii
+                    <ArrowUpRight
+                      size={14}
+                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>

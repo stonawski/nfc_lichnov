@@ -24,15 +24,36 @@ function ensureConfigured() {
 
 export async function fetchTeams(): Promise<Team[]> {
   ensureConfigured()
-  const { data, error } = await supabase
+
+  const baseSelect = 'id,name,short_name,slug,category,logo_url,active,sort_order,season'
+  const withHero = await supabase
     .from('teams')
-    .select('id,name,short_name,slug,category,logo_url,active,sort_order,season')
+    .select(`${baseSelect},hero_image_url`)
     .eq('active', true)
     .order('sort_order', { ascending: true })
 
-  if (error) throw error
+  let rows: Array<Record<string, unknown>>
 
-  const teams = (data ?? []) as Team[]
+  if (withHero.error && /hero_image_url/i.test(withHero.error.message || '')) {
+    const fallback = await supabase
+      .from('teams')
+      .select(baseSelect)
+      .eq('active', true)
+      .order('sort_order', { ascending: true })
+
+    if (fallback.error) throw fallback.error
+    rows = (fallback.data ?? []) as Array<Record<string, unknown>>
+  } else {
+    if (withHero.error) throw withHero.error
+    rows = (withHero.data ?? []) as Array<Record<string, unknown>>
+  }
+
+  const teams = rows.map((team) => ({
+    ...team,
+    hero_image_url:
+      typeof team.hero_image_url === 'string' ? team.hero_image_url : null,
+  })) as Team[]
+
   const clubLogo =
     teams.find((team) => team.slug === 'muzi' && team.logo_url)?.logo_url ??
     teams.find((team) => team.logo_url)?.logo_url ??
