@@ -134,73 +134,73 @@ export function MatchDetailPage() {
         description={`Detail zápasu ${match.home_team_name} – ${match.away_team_name}: termín, výsledek, sestava a průběh utkání.`}
         canonicalPath={`/zapasy/${match.id}`}
       />
-      <section className="relative -mt-[84px] overflow-hidden px-5 pb-8 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-10 md:pt-[144px]">
+      <section className="relative -mt-[84px] overflow-hidden px-5 pb-5 pt-[120px] sm:-mt-[88px] sm:pt-[132px] md:px-8 md:pt-[136px] lg:pb-4">
         <HeroFieldBackdrop />
 
-        <div className="relative mx-auto w-full max-w-[1180px]">
+        <div className="relative mx-auto w-full max-w-[1180px] lg:flex lg:h-[calc(100svh-150px)] lg:min-h-[760px] lg:max-h-[880px] lg:flex-col">
           <Link
             to={backTo}
-            className="inline-flex items-center gap-2 text-sm font-bold text-ink-500 transition hover:text-brand-900"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-bold text-ink-500 transition hover:text-brand-900"
           >
             <ArrowLeft size={16} />
             {backTo.startsWith('/zapasy') ? 'Zpět na zápasy' : 'Zpět'}
           </Link>
 
-          <MatchHero
-            match={match}
-            team={team}
-            homeLogo={homeLogo}
-            awayLogo={awayLogo}
-          />
-        </div>
-      </section>
+          <div className="mt-4 overflow-hidden rounded-[34px] border border-brand-900/10 bg-[#fbfaf6]/95 shadow-[0_24px_70px_rgba(24,53,42,.11)] backdrop-blur-[2px] lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+            <MatchHero
+              match={match}
+              team={team}
+              homeLogo={homeLogo}
+              awayLogo={awayLogo}
+            />
 
-      <section className="relative bg-transparent px-5 py-10 md:px-8 md:py-12">
-        <div className="mx-auto grid max-w-[1180px] gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
-          <div className="overflow-hidden rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
-            <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
+            <div className="grid min-h-0 flex-1 border-t border-sand-200 lg:grid-cols-[minmax(0,7fr)_minmax(300px,3fr)]">
+              <div className="flex min-h-0 flex-col p-5 sm:p-6 lg:border-r lg:border-sand-200 lg:p-5">
+                <CompactSectionHeader label="Sestava" icon={<UsersRound size={18} />} />
 
-            {participantsQuery.isLoading ? (
-              <div className="mt-6">
-                <LoadingState rows={5} />
+                {participantsQuery.isLoading ? (
+                  <div className="mt-5">
+                    <LoadingState rows={5} />
+                  </div>
+                ) : clubParticipants.length ? (
+                  <DataFade className="flex min-h-0 flex-1 flex-col">
+                    <FormationPitch
+                      teamName={clubName}
+                      participants={clubParticipants}
+                      events={timeline}
+                    />
+                  </DataFade>
+                ) : (
+                  <DataFade className="mt-5">
+                    <EmptyState
+                      title="Sestava není k dispozici"
+                      text="Pro tento zápas zatím backend nevrací údaje o hráčích."
+                    />
+                  </DataFade>
+                )}
               </div>
-            ) : clubParticipants.length ? (
-              <DataFade>
-                <FormationPitch
-                  teamName={clubName}
-                  participants={clubParticipants}
-                  events={timeline}
-                />
-              </DataFade>
-            ) : (
-              <DataFade className="mt-6">
-                <EmptyState
-                  title="Sestava není k dispozici"
-                  text="Pro tento zápas zatím backend nevrací údaje o hráčích."
-                />
-              </DataFade>
-            )}
-          </div>
 
-          <div className="rounded-[32px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-7">
-            <CompactSectionHeader label="Průběh" icon={<Clock3 size={18} />} />
+              <div className="flex min-h-0 flex-col border-t border-sand-200 p-5 sm:p-6 lg:border-t-0 lg:p-5">
+                <CompactSectionHeader label="Průběh" icon={<Clock3 size={18} />} />
 
-            {timelineQuery.isLoading ? (
-              <div className="mt-6">
-                <LoadingState rows={5} />
+                {timelineQuery.isLoading ? (
+                  <div className="mt-5">
+                    <LoadingState rows={5} />
+                  </div>
+                ) : timeline.length ? (
+                  <DataFade className="flex min-h-0 flex-1 flex-col">
+                    <Timeline events={timeline} />
+                  </DataFade>
+                ) : (
+                  <DataFade className="mt-5">
+                    <EmptyState
+                      title="Průběh není k dispozici"
+                      text="Pro tento zápas zatím backend nevrací události zápasu."
+                    />
+                  </DataFade>
+                )}
               </div>
-            ) : timeline.length ? (
-              <DataFade>
-                <Timeline events={timeline} />
-              </DataFade>
-            ) : (
-              <DataFade className="mt-6">
-                <EmptyState
-                  title="Průběh není k dispozici"
-                  text="Pro tento zápas zatím backend nevrací události zápasu."
-                />
-              </DataFade>
-            )}
+            </div>
           </div>
         </div>
       </section>
@@ -230,7 +230,7 @@ function MatchHero({
   )
 
   return (
-    <div className="relative mt-6 overflow-hidden rounded-[32px] bg-brand-900 px-5 py-6 text-white shadow-[0_24px_68px_rgba(24,53,42,.15)] sm:px-7 sm:py-7 lg:px-9 lg:py-8">
+    <div className="relative shrink-0 overflow-hidden bg-brand-900 px-5 py-4 text-white sm:px-7 sm:py-5 lg:px-8 lg:py-5">
       <img
         src="/hero-lichnov-field.webp"
         alt=""
@@ -245,12 +245,12 @@ function MatchHero({
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
           <HeroTeam name={match.home_team_name} logo={homeLogo} align="right" />
 
           <div className="text-center">
             {upcoming ? (
-              <div className="inline-block rounded-[26px] border border-white/10 bg-white/[0.07] px-6 py-5">
+              <div className="inline-block rounded-[22px] border border-white/10 bg-white/[0.07] px-5 py-3.5">
                 <div className="text-3xl font-black tracking-[-0.055em]">
                   {formatMatchTime(match.playing_at)}
                 </div>
@@ -260,7 +260,7 @@ function MatchHero({
               </div>
             ) : (
               <div>
-                <div className="text-4xl font-black tracking-[-0.07em] sm:text-5xl">
+                <div className="text-4xl font-black tracking-[-0.07em]">
                   {score ?? match.final_score ?? '—'}
                 </div>
                 {(match.penalty_score_home != null || match.penalty_score_away != null) && (
@@ -275,7 +275,7 @@ function MatchHero({
           <HeroTeam name={match.away_team_name} logo={awayLogo} align="left" />
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-xs text-white/55">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 border-t border-white/10 pt-3 text-[11px] text-white/55 sm:text-xs">
           {match.competition_name && (
             <span className="inline-flex items-center gap-1.5">
               <Trophy size={14} />
@@ -325,7 +325,7 @@ function HeroTeam({
         reverse ? 'flex-row-reverse text-right' : 'text-left'
       }`}
     >
-      <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-[20px] bg-white/95 ring-1 ring-white/20 sm:h-20 sm:w-20">
+      <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-[18px] bg-white/95 ring-1 ring-white/20 sm:h-16 sm:w-16">
         {logo ? (
           <img src={logo} alt="" className="h-full w-full object-contain p-3" />
         ) : (
@@ -333,7 +333,7 @@ function HeroTeam({
         )}
       </div>
 
-      <div className="text-lg font-black leading-tight tracking-[-0.045em] sm:text-2xl">
+      <div className="text-lg font-black leading-tight tracking-[-0.045em] sm:text-xl lg:text-2xl">
         {name}
       </div>
     </div>
@@ -365,8 +365,8 @@ function FormationPitch({
   const placements = assignFourFourTwo(starters)
 
   return (
-    <div className="mt-6">
-      <div className="mb-4 flex items-center justify-between gap-4">
+    <div className="mt-4 flex min-h-0 flex-1 flex-col">
+      <div className="mb-3 flex shrink-0 items-center justify-between gap-4">
         <div>
           <div className="text-sm font-extrabold text-brand-900">{teamName}</div>
           <div className="mt-1 text-xs text-ink-500">
@@ -379,7 +379,7 @@ function FormationPitch({
         </div>
       </div>
 
-      <div className="relative -mx-5 min-h-[590px] overflow-hidden bg-[#c9d8ce] sm:-mx-7 sm:min-h-[690px]">
+      <div className="relative -mx-5 min-h-[540px] overflow-hidden bg-[#c9d8ce] sm:-mx-6 sm:min-h-[590px] lg:min-h-[360px] lg:flex-1">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#e7ece8_0%,#d6e0d9_30%,#bfd1c5_68%,#afc7b7_100%)]" />
         <div className="absolute inset-x-0 top-0 h-[34%] bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,.95),rgba(255,255,255,.32)_46%,transparent_76%)]" />
 
@@ -443,15 +443,15 @@ function FormationPitch({
       </div>
 
       {substitutes.length > 0 && (
-        <div className="mt-5">
-          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-500">
+        <div className="mt-3 shrink-0 lg:max-h-[92px] lg:overflow-x-auto lg:pb-1">
+          <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-500">
             Náhradníci
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:flex lg:w-max">
             {substitutes.map((person) => (
               <div
                 key={person.id}
-                className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2.5 ring-1 ring-sand-200"
+                className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 ring-1 ring-sand-200 lg:w-[220px]"
               >
                 <PlayerAvatar player={person} small />
                 <div className="min-w-0 flex-1">
@@ -489,11 +489,11 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[116px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[138px]"
+      className="absolute z-10 w-[108px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[124px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div className="relative mx-auto w-fit">
-        <div className="flex h-14 w-14 items-end justify-center overflow-hidden rounded-[18px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[68px] sm:w-[68px]">
+        <div className="flex h-12 w-12 items-end justify-center overflow-hidden rounded-[16px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
           {player.photo_url ? (
             <img
               src={player.photo_url}
@@ -821,10 +821,10 @@ function eventKind(event: MatchTimelineEvent): TimelineEventKind {
 
 function Timeline({ events }: { events: MatchTimelineEvent[] }) {
   return (
-    <div className="relative mt-6 min-h-[700px] sm:min-h-[720px]">
-      <div className="absolute bottom-7 left-[28px] top-8 w-px bg-sand-200 sm:left-1/2" />
+    <div className="relative mt-4 min-h-[520px] lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
+      <div className="absolute bottom-6 left-[24px] top-6 w-px bg-sand-200 sm:left-1/2" />
 
-      <div className="relative flex min-h-[700px] flex-col justify-evenly gap-4 sm:min-h-[720px]">
+      <div className="relative flex min-h-full flex-col justify-evenly gap-3 lg:py-1">
         {events.map((event) => (
           <TimelineItem key={event.id} event={event} />
         ))}
@@ -836,8 +836,8 @@ function Timeline({ events }: { events: MatchTimelineEvent[] }) {
 
 function TimelineEnd() {
   return (
-    <div className="relative grid min-h-14 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[minmax(0,1fr)_50px_minmax(0,1fr)] sm:gap-2">
-      <div className="relative z-10 grid h-12 w-12 place-items-center self-center rounded-full border-4 border-[#fbfaf6] bg-brand-900 text-center text-white shadow-sm sm:col-start-2 sm:mx-auto">
+    <div className="relative grid min-h-12 grid-cols-[48px_1fr] gap-2 sm:grid-cols-[minmax(0,1fr)_44px_minmax(0,1fr)] sm:gap-2">
+      <div className="relative z-10 grid h-10 w-10 place-items-center self-center rounded-full border-[3px] border-[#fbfaf6] bg-brand-900 text-center text-white shadow-sm sm:col-start-2 sm:mx-auto">
         <div className="text-xs font-black">90'</div>
       </div>
 
@@ -877,7 +877,7 @@ function TimelineItem({ event }: { event: MatchTimelineEvent }) {
         : 'bg-brand-900 text-white'
 
   return (
-    <div className="relative grid min-h-16 grid-cols-[56px_1fr] gap-3 sm:grid-cols-[minmax(0,1fr)_50px_minmax(0,1fr)] sm:gap-2">
+    <div className="relative grid min-h-12 grid-cols-[48px_1fr] gap-2 sm:grid-cols-[minmax(0,1fr)_44px_minmax(0,1fr)] sm:gap-2">
       <div
         className={`hidden sm:block ${
           isAway ? 'sm:col-start-3' : 'sm:col-start-1 sm:row-start-1'
@@ -889,7 +889,7 @@ function TimelineItem({ event }: { event: MatchTimelineEvent }) {
       </div>
 
       <div
-        className={`relative z-10 grid h-12 w-12 place-items-center self-center rounded-full border-4 border-[#fbfaf6] text-center shadow-sm sm:col-start-2 sm:row-start-1 sm:mx-auto ${minuteClass}`}
+        className={`relative z-10 grid h-10 w-10 place-items-center self-center rounded-full border-[3px] border-[#fbfaf6] text-center shadow-sm sm:col-start-2 sm:row-start-1 sm:mx-auto ${minuteClass}`}
       >
         <div className="text-xs font-black">
           {event.minute != null ? `${event.minute}'` : '•'}
@@ -924,7 +924,7 @@ function EventCard({
 
   return (
     <div className={align === 'right' ? 'text-right' : 'text-left'}>
-      <div className="inline-block max-w-full rounded-2xl bg-white px-3 py-2.5 ring-1 ring-sand-200">
+      <div className="inline-block max-w-full rounded-[14px] bg-white px-3 py-2 ring-1 ring-sand-200">
         <div
           className={`flex items-center gap-2 ${
             align === 'right' ? 'justify-end' : 'justify-start'
@@ -1011,7 +1011,7 @@ function CompactSectionHeader({
         {label}
       </div>
 
-      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-50 text-brand-700">
+      <div className="grid h-9 w-9 place-items-center rounded-[14px] bg-brand-50 text-brand-700">
         {icon}
       </div>
     </div>
