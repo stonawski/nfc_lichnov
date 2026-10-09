@@ -394,73 +394,99 @@ export function HomePage() {
       
       <FanshopShowcase />
 
-<section className="border-y border-sand-200/70 bg-sand-100 px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 p-7 text-white sm:p-10 md:p-14">
-          <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
+      <section className="relative overflow-hidden bg-sand-100 px-5 py-16 md:px-8 md:py-24">
+        <div className="relative mx-auto max-w-[1180px]">
+          <div className="mb-6 flex items-end justify-between gap-5">
             <div>
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">
-                Život klubu
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                Fotogalerie
               </div>
-              <h2 className="mt-4 max-w-xl text-4xl font-extrabold leading-[.98] tracking-[-0.055em] md:text-6xl">
-                Fotbal nejsou jen výsledky.
-              </h2>
-              <p className="mt-5 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-                Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Náhodné
-                momenty z klubových alb ukazují NFC tak, jak skutečně žije.
-              </p>
-
-              <Link
-                to="/galerie"
-                className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-brand-900 transition hover:-translate-y-0.5"
-              >
-                Všechny galerie <ArrowRight size={16} />
-              </Link>
+              <div className="mt-2 text-sm font-semibold text-brand-900/55">
+                {galleries.length
+                  ? `${galleries.length} ${galleries.length === 1 ? "album" : galleries.length < 5 ? "alba" : "alb"} v klubovém archivu`
+                  : "Momentky ze života NFC Lichnov"}
+              </div>
             </div>
 
-            {galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
-              <div className="rounded-[30px] bg-white/[0.06] p-3">
-                <LoadingState rows={2} />
+            <div className="hidden text-right sm:block">
+              <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
+                Klub
               </div>
-            ) : galleryPreview.length ? (
-              <DataFade className="grid grid-cols-2 gap-3">
-                {galleryPreview.map(({ gallery, image }, index) => (
-                  <Link
-                    key={image.id}
-                    to={`/galerie?album=${encodeURIComponent(
-                      gallery.slug || gallery.id,
-                    )}`}
-                    className={`group relative aspect-[4/3] overflow-hidden rounded-[28px] border border-white/10 bg-[#10291f] ${
-                      index === 1 ? "mt-8" : ""
-                    }`}
-                  >
-                    <img
-                      src={image.image_url}
-                      alt={image.caption || gallery.title}
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/18 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                      <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/50">
-                        {formatDate(gallery.event_date || gallery.created_at)}
-                      </div>
-                      <div className="mt-1 line-clamp-2 text-sm font-extrabold leading-tight text-white sm:text-base">
-                        {gallery.title}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </DataFade>
-            ) : (
-              <DataFade className="overflow-hidden rounded-[30px] border border-white/10">
+              <div className="mt-1 text-sm font-extrabold text-brand-900">
+                NFC Lichnov
+              </div>
+            </div>
+          </div>
+
+          <div className="relative min-h-[610px] lg:min-h-[650px]">
+            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
+              {galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
+                <div className="absolute inset-0 p-6">
+                  <LoadingState rows={3} />
+                </div>
+              ) : (
                 <img
-                  src="/hero-lichnov-field.webp"
-                  alt=""
-                  aria-hidden="true"
-                  className="aspect-[16/8] h-full w-full object-cover opacity-70"
+                  src={galleryPreview[0]?.image.image_url || "/hero-lichnov-field.webp"}
+                  alt={
+                    galleryPreview[0]
+                      ? galleryPreview[0].image.caption ||
+                        galleryPreview[0].gallery.title
+                      : ""
+                  }
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  style={{
+                    filter: "saturate(.94) contrast(.97) brightness(.96)",
+                  }}
                 />
-              </DataFade>
-            )}
+              )}
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
+            </div>
+
+            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+              <div className="w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
+                    <ArrowUpRight size={18} />
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-500">
+                    Klub očima fotografií
+                  </div>
+                </div>
+
+                <h2 className="mt-7 text-4xl font-black leading-[.92] tracking-[-0.06em] sm:text-5xl">
+                  Život klubu
+                  <span className="block text-white/48">v obrazech.</span>
+                </h2>
+
+                <p className="mt-5 max-w-sm text-sm leading-6 text-white/60">
+                  Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Při každém načtení vybíráme moment napříč klubovými alby.
+                </p>
+
+                {galleryPreview[0]?.gallery && (
+                  <div className="mt-7 border-t border-white/12 pt-5">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">
+                      Vybraný moment
+                    </div>
+                    <div className="mt-2 line-clamp-2 text-sm font-extrabold leading-5 text-white/82">
+                      {galleryPreview[0].gallery.title}
+                    </div>
+                  </div>
+                )}
+
+                <Link
+                  to="/galerie"
+                  className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-brand-900 transition hover:bg-brand-50"
+                >
+                  Otevřít fotogalerii
+                  <ArrowUpRight
+                    size={14}
+                    className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
