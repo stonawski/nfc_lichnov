@@ -120,29 +120,40 @@ export function HomePage() {
   const [galleryPreviousIndex, setGalleryPreviousIndex] = useState<number | null>(
     null,
   );
+  const galleryActiveIndexRef = useRef(0);
   const galleryFadeTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!galleryMoments.length) return;
+
+    const initialIndex = Math.floor(Math.random() * galleryMoments.length);
+    galleryActiveIndexRef.current = initialIndex;
+    setGalleryActiveIndex(initialIndex);
+    setGalleryPreviousIndex(null);
+  }, [galleryMoments.length]);
 
   useEffect(() => {
     if (galleryMoments.length <= 1) return;
 
     const intervalId = window.setInterval(() => {
-      setGalleryActiveIndex((currentIndex) => {
-        let nextIndex = currentIndex;
-        while (nextIndex === currentIndex) {
-          nextIndex = Math.floor(Math.random() * galleryMoments.length);
-        }
+      const currentIndex = galleryActiveIndexRef.current;
+      let nextIndex = currentIndex;
 
-        setGalleryPreviousIndex(currentIndex);
-        if (galleryFadeTimeoutRef.current != null) {
-          window.clearTimeout(galleryFadeTimeoutRef.current);
-        }
-        galleryFadeTimeoutRef.current = window.setTimeout(() => {
-          setGalleryPreviousIndex(null);
-          galleryFadeTimeoutRef.current = null;
-        }, 1050);
+      while (nextIndex === currentIndex) {
+        nextIndex = Math.floor(Math.random() * galleryMoments.length);
+      }
 
-        return nextIndex;
-      });
+      setGalleryPreviousIndex(currentIndex);
+      galleryActiveIndexRef.current = nextIndex;
+      setGalleryActiveIndex(nextIndex);
+
+      if (galleryFadeTimeoutRef.current != null) {
+        window.clearTimeout(galleryFadeTimeoutRef.current);
+      }
+      galleryFadeTimeoutRef.current = window.setTimeout(() => {
+        setGalleryPreviousIndex(null);
+        galleryFadeTimeoutRef.current = null;
+      }, 1050);
     }, 5200);
 
     return () => {
