@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useRef, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { ArrowRight, ArrowUpRight, Images, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
@@ -72,7 +78,7 @@ export function HomePage() {
 
   const news = newsQuery.data ?? [];
   const galleries = galleriesQuery.data ?? [];
-  const galleryPreview = useMemo(() => {
+  const galleryMoments = useMemo(() => {
     const publishedById = new Map(
       (galleriesQuery.data ?? []).map((gallery) => [gallery.id, gallery]),
     );
@@ -93,7 +99,6 @@ export function HomePage() {
     if (!pool.length) {
       return (galleriesQuery.data ?? [])
         .filter((gallery) => gallery.cover_image)
-        .slice(0, 2)
         .map((gallery) => ({
           gallery,
           image: {
@@ -108,37 +113,54 @@ export function HomePage() {
         }));
     }
 
-    const shuffled = [...pool];
-    for (let index = shuffled.length - 1; index > 0; index -= 1) {
-      const swapIndex = Math.floor(Math.random() * (index + 1));
-      [shuffled[index], shuffled[swapIndex]] = [
-        shuffled[swapIndex],
-        shuffled[index],
-      ];
-    }
-
-    const selected = [];
-    const usedAlbums = new Set<string>();
-
-    for (const item of shuffled) {
-      if (selected.length >= 2) break;
-      if (!usedAlbums.has(item.gallery.id)) {
-        selected.push(item);
-        usedAlbums.add(item.gallery.id);
-      }
-    }
-
-    if (selected.length < 2) {
-      for (const item of shuffled) {
-        if (selected.length >= 2) break;
-        if (!selected.some((entry) => entry.image.id === item.image.id)) {
-          selected.push(item);
-        }
-      }
-    }
-
-    return selected;
+    return pool;
   }, [galleriesQuery.data, galleryImagesQuery.data]);
+
+  const [galleryActiveIndex, setGalleryActiveIndex] = useState(0);
+  const [galleryPreviousIndex, setGalleryPreviousIndex] = useState<number | null>(
+    null,
+  );
+  const galleryFadeTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (galleryMoments.length <= 1) return;
+
+    const intervalId = window.setInterval(() => {
+      setGalleryActiveIndex((currentIndex) => {
+        let nextIndex = currentIndex;
+        while (nextIndex === currentIndex) {
+          nextIndex = Math.floor(Math.random() * galleryMoments.length);
+        }
+
+        setGalleryPreviousIndex(currentIndex);
+        if (galleryFadeTimeoutRef.current != null) {
+          window.clearTimeout(galleryFadeTimeoutRef.current);
+        }
+        galleryFadeTimeoutRef.current = window.setTimeout(() => {
+          setGalleryPreviousIndex(null);
+          galleryFadeTimeoutRef.current = null;
+        }, 1050);
+
+        return nextIndex;
+      });
+    }, 5200);
+
+    return () => {
+      window.clearInterval(intervalId);
+      if (galleryFadeTimeoutRef.current != null) {
+        window.clearTimeout(galleryFadeTimeoutRef.current);
+        galleryFadeTimeoutRef.current = null;
+      }
+    };
+  }, [galleryMoments.length]);
+
+  const activeGalleryMoment =
+    galleryMoments[galleryActiveIndex] ?? galleryMoments[0] ?? null;
+  const previousGalleryMoment =
+    galleryPreviousIndex == null
+      ? null
+      : galleryMoments[galleryPreviousIndex] ?? null;
+
   const upcomingMatches = upcomingQuery.data ?? [];
   const upcomingSummaries: TeamMatchSummary[] = upcomingMatches.flatMap((match) =>
     match.team
@@ -425,20 +447,40 @@ export function HomePage() {
                   <LoadingState rows={3} />
                 </div>
               ) : (
-                <img
-                  src={galleryPreview[0]?.image.image_url || "/hero-lichnov-field.webp"}
-                  alt={
-                    galleryPreview[0]
-                      ? galleryPreview[0].image.caption ||
-                        galleryPreview[0].gallery.title
-                      : ""
-                  }
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover object-center"
-                  style={{
-                    filter: "saturate(.94) contrast(.97) brightness(.96)",
-                  }}
-                />
+                <>
+                  {previousGalleryMoment && (
+                    <img
+                      key={`previous-${previousGalleryMoment.image.id}`}
+                      src={previousGalleryMoment.image.image_url}
+                      alt=""
+                      aria-hidden="true"
+                      className="home-gallery-image-out absolute inset-0 h-full w-full object-cover object-center"
+                      style={{
+                        filter: "saturate(.94) contrast(.97) brightness(.96)",
+                      }}
+                    />
+                  )}
+                  <img
+                    key={activeGalleryMoment?.image.id || "gallery-fallback"}
+                    src={
+                      activeGalleryMoment?.image.image_url ||
+                      "/hero-lichnov-field.webp"
+                    }
+                    alt={
+                      activeGalleryMoment
+                        ? activeGalleryMoment.image.caption ||
+                          activeGalleryMoment.gallery.title
+                        : ""
+                    }
+                    loading="lazy"
+                    className={`absolute inset-0 h-full w-full object-cover object-center ${
+                      previousGalleryMoment ? "home-gallery-image-in" : ""
+                    }`}
+                    style={{
+                      filter: "saturate(.94) contrast(.97) brightness(.96)",
+                    }}
+                  />
+                </>
               )}
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,53,42,.52)_0%,rgba(24,53,42,.16)_28%,rgba(24,53,42,0)_58%)]" />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
@@ -461,16 +503,16 @@ export function HomePage() {
                 </h2>
 
                 <p className="mt-5 max-w-sm text-sm leading-6 text-white/60">
-                  Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Při každém načtení vybíráme moment napříč klubovými alby.
+                  Zápasy, turnaje, tréninky, mládež i chvíle mimo hřiště. Fotografie se průběžně střídají napříč klubovými alby.
                 </p>
 
-                {galleryPreview[0]?.gallery && (
+                {activeGalleryMoment?.gallery && (
                   <div className="mt-7 border-t border-white/12 pt-5">
                     <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">
                       Vybraný moment
                     </div>
                     <div className="mt-2 line-clamp-2 text-sm font-extrabold leading-5 text-white/82">
-                      {galleryPreview[0].gallery.title}
+                      {activeGalleryMoment.gallery.title}
                     </div>
                   </div>
                 )}
