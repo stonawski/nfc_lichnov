@@ -261,11 +261,13 @@ function MatchHero({
                 <div className="text-4xl font-black tracking-[-0.07em]">
                   {score ?? match.final_score ?? '—'}
                 </div>
-                {(match.penalty_score_home != null || match.penalty_score_away != null) && (
-                  <div className="mt-2 text-xs font-bold text-white/50">
-                    Penalty {match.penalty_score_home ?? 0}:{match.penalty_score_away ?? 0}
-                  </div>
-                )}
+                {match.penalty_score_home != null &&
+                  match.penalty_score_away != null &&
+                  (match.penalty_score_home > 0 || match.penalty_score_away > 0) && (
+                    <div className="mt-2 text-xs font-bold text-white/50">
+                      Penalty {match.penalty_score_home}:{match.penalty_score_away}
+                    </div>
+                  )}
               </div>
             )}
           </div>
