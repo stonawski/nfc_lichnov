@@ -15,6 +15,7 @@ import type {
 } from './types'
 import { TEAM_ORDER } from './format'
 import { isPlayerOwnedByDorost } from './playerIdentity'
+import { normalizeTacticalPosition } from './playerPosition'
 
 function ensureConfigured() {
   if (!isSupabaseConfigured) {
@@ -442,6 +443,21 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
   ensureConfigured()
 
   const clubPlayers = await fetchPlayersByTeam(match.team_id, true)
+  // The same FAČR player may have a second CMS profile in another age category.
+  // Only load additional profiles with an explicitly configured position.
+  const { data: positionedProfiles, error: positionedProfilesError } = await supabase
+    .from('players')
+    .select('id,team_id,facr_player_id,first_name,last_name,number,position,photo_url,active')
+    .not('position', 'is', null)
+  if (positionedProfilesError) throw positionedProfilesError
+
+  const allCmsPlayers = new Map<string, Player>(
+    clubPlayers.map((player) => [player.id, player]),
+  )
+  for (const player of (positionedProfiles ?? []) as Player[]) {
+    if (!allCmsPlayers.has(player.id)) allCmsPlayers.set(player.id, player)
+  }
+
   const normalizeParticipantName = (value: string) =>
     value
       .normalize('NFKD')
@@ -467,6 +483,55 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
       if (!clubPlayerByName.has(key)) clubPlayerByName.set(key, player)
       else if (clubPlayerByName.get(key)?.id !== player.id) clubPlayerByName.set(key, null)
     }
+  }
+
+  // Only explicit CMS positions populate these maps. Ambiguous names/IDs are
+  // intentionally ignored rather than assigning the wrong player's position.
+  const positionByFacrId = new Map<string, string>()
+  const positionByName = new Map<string, string>()
+  const conflictingFacrIds = new Set<string>()
+  const conflictingNames = new Set<string>()
+  const addPosition = (
+    map: Map<string, string>,
+    conflicts: Set<string>,
+    key: string,
+    position: string,
+  ) => {
+    if (conflicts.has(key)) return
+    const current = map.get(key)
+    if (current && current !== position) {
+      map.delete(key)
+      conflicts.add(key)
+    } else {
+      map.set(key, position)
+    }
+  }
+
+  for (const player of allCmsPlayers.values()) {
+    const position = normalizeTacticalPosition(player.position)
+    if (!position) continue
+    if (player.facr_player_id != null) {
+      addPosition(positionByFacrId, conflictingFacrIds, String(player.facr_player_id), position)
+    }
+    const names = [player.first_name, player.last_name].filter(Boolean)
+    if (names.length === 2) {
+      for (const name of [names.join(' '), [...names].reverse().join(' ')]) {
+        addPosition(positionByName, conflictingNames, normalizeParticipantName(name), position)
+      }
+    }
+  }
+
+  const resolveCmsPosition = (
+    player: Pick<Player, 'position' | 'facr_player_id'> | undefined,
+    playerName: string,
+  ) => {
+    const ownPosition = normalizeTacticalPosition(player?.position)
+    if (ownPosition) return ownPosition
+
+    const facrPosition = player?.facr_player_id != null
+      ? positionByFacrId.get(String(player.facr_player_id))
+      : undefined
+    return facrPosition || positionByName.get(normalizeParticipantName(playerName)) || null
   }
 
   const { data: matchPlayers, error: matchPlayersError } = await supabase
@@ -509,12 +574,18 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     )
 
     return rows.map((row) => {
-      const player = playerById.get(row.player_id)
+      const player =
+        playerById.get(row.player_id) ||
+        allCmsPlayers.get(row.player_id) ||
+        clubPlayerByFacrId.get(row.player_id)
       const cmsPlayer =
         clubPlayerById.get(row.player_id) ||
         (player?.facr_player_id != null
           ? clubPlayerByFacrId.get(String(player.facr_player_id))
           : undefined)
+      const playerName =
+        [player?.first_name, player?.last_name].filter(Boolean).join(' ').trim() ||
+        'Neznámý hráč'
       const lineupType = row.lineup_type?.toLocaleLowerCase('cs-CZ') ?? ''
       const substitute =
         lineupType.includes('sub') ||
@@ -530,14 +601,11 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
       return {
         id: row.id,
         player_id: row.player_id,
-        name:
-          [player?.first_name, player?.last_name].filter(Boolean).join(' ').trim() ||
-          'Neznámý hráč',
+        name: playerName,
         photo_url: player?.photo_url ?? null,
         number: row.number ?? player?.number ?? null,
         position:
-          cmsPlayer?.position?.trim() ||
-          player?.position?.trim() ||
+          resolveCmsPosition(cmsPlayer || player, playerName) ||
           row.position?.trim() ||
           null,
         side:
@@ -600,7 +668,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
           clubPlayer?.number ??
           null,
         position:
-          clubPlayer?.position?.trim() ||
+          resolveCmsPosition(clubPlayer ?? undefined, name) ||
           textValue(row, ['position', 'player_position'])?.trim() ||
           null,
         side: sideValue(row, match),
