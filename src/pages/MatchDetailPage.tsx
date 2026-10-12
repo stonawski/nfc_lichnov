@@ -239,13 +239,13 @@ function MatchHero({
 
       <div className="relative">
         <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
-          <span>{team?.name || 'NFC Lichnov'}</span>
+          <span className="hidden sm:inline">{team?.name || 'NFC Lichnov'}</span>
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:hidden">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5 sm:mt-5 sm:gap-3 md:hidden">
           <CompactHeroLogo name={match.home_team_name} logo={homeLogo} />
-          <div className="min-w-[86px] text-center">
+          <div className="min-w-[76px] text-center sm:min-w-[86px]">
             {upcoming ? (
               <>
                 <div className="text-3xl font-black tracking-[-0.055em]">
@@ -347,7 +347,7 @@ function CompactHeroLogo({
 }) {
   return (
     <div className="flex justify-center">
-      <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[20px] bg-white/95 ring-1 ring-white/20">
+      <div className="grid h-14 w-14 place-items-center overflow-hidden rounded-[18px] bg-white/95 ring-1 ring-white/20 min-[390px]:h-16 min-[390px]:w-16 min-[390px]:rounded-[20px]">
         {logo ? (
           <img src={logo} alt={`Logo ${name}`} className="h-full w-full object-contain p-2.5" />
         ) : (
@@ -416,7 +416,7 @@ function FormationPitch({
 
   return (
     <div>
-      <div className="relative min-h-[560px] overflow-hidden rounded-[30px] border border-white/80 bg-[#c9d8ce] shadow-[0_18px_50px_rgba(24,53,42,.08)] sm:min-h-[640px] lg:min-h-[700px]">
+      <div className="relative min-h-[600px] overflow-hidden rounded-[30px] border border-white/80 bg-[#c9d8ce] shadow-[0_18px_50px_rgba(24,53,42,.08)] sm:min-h-[640px] lg:min-h-[700px]">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#e7ece8_0%,#d6e0d9_30%,#bfd1c5_68%,#afc7b7_100%)]" />
         <div className="absolute left-4 top-4 z-20 rounded-[18px] border border-white/70 bg-white/82 px-4 py-3 shadow-[0_10px_28px_rgba(24,53,42,.08)] backdrop-blur-md sm:left-5 sm:top-5">
           <div className="text-sm font-extrabold text-brand-900">{teamName}</div>
@@ -537,11 +537,11 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[64px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[70px] sm:w-[116px] lg:w-[124px]"
+      className="absolute z-10 w-[56px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[64px] sm:w-[116px] lg:w-[124px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div className="relative mx-auto w-fit">
-        <div className="flex h-11 w-11 items-end justify-center overflow-hidden rounded-[15px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
+        <div className="flex h-10 w-10 items-end justify-center overflow-hidden rounded-[15px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
           {player.photo_url ? (
             <img
               src={player.photo_url}
@@ -555,10 +555,10 @@ function PitchPlayer({
           )}
         </div>
 
-        <div className="absolute -right-3 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1 sm:-right-5">
+        <div className="absolute -right-2 top-1/2 flex -translate-y-1/2 flex-col items-center gap-0.5 sm:-right-5 sm:gap-1">
           {player.captain && (
             <span
-              className="grid h-5 min-w-5 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5"
+              className="grid h-4 min-w-4 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5 sm:h-5 sm:min-w-5"
               title="Kapitán"
             >
               K
@@ -689,7 +689,7 @@ function formationRowX(count: number) {
   if (count <= 1) return [50]
   if (count === 2) return [33, 67]
   if (count === 3) return [20, 50, 80]
-  if (count === 4) return [8, 36, 64, 92]
+  if (count === 4) return [12.5, 37.5, 62.5, 87.5]
 
   const edge = 7
   const step = (100 - edge * 2) / Math.max(1, count - 1)
@@ -711,7 +711,9 @@ function assignFormation(starters: MatchParticipant[]) {
   const goalkeeperIndex = remaining.findIndex(
     (player) => normalizeTacticalPosition(player.position) === 'GK',
   )
-  const numberOneIndex = remaining.findIndex((player) => player.number === 1)
+  const numberOneIndex = remaining.findIndex(
+    (player) => player.number === 1 && !normalizeTacticalPosition(player.position),
+  )
   const selectedGoalkeeperIndex =
     goalkeeperIndex >= 0 ? goalkeeperIndex : numberOneIndex
 
