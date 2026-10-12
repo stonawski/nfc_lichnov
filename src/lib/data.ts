@@ -499,7 +499,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
           'Neznámý hráč',
         photo_url: player?.photo_url ?? null,
         number: row.number ?? player?.number ?? null,
-        position: player?.position ?? row.position ?? null,
+        position: player?.position?.trim() || row.position?.trim() || null,
         side:
           row.team_side === 'home'
             ? 'home'
@@ -518,6 +518,30 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     match,
   )
 
+  const clubPlayers = await fetchPlayersByTeam(match.team_id)
+  const normalizeParticipantName = (value: string) =>
+    value
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase('cs-CZ')
+      .trim()
+      .replace(/\s+/g, ' ')
+
+  const clubPlayerById = new Map(clubPlayers.map((player) => [player.id, player]))
+  const clubPlayerByFacrId = new Map(
+    clubPlayers
+      .filter((player) => player.facr_player_id != null)
+      .map((player) => [String(player.facr_player_id), player]),
+  )
+  const clubPlayerByName = new Map(
+    clubPlayers.map((player) => [
+      normalizeParticipantName(
+        [player.first_name, player.last_name].filter(Boolean).join(' '),
+      ),
+      player,
+    ]),
+  )
+
   return rows
     .map((row, index): MatchParticipant | null => {
       const firstName = textValue(row, ['first_name', 'firstname'])
@@ -527,6 +551,15 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         [firstName, lastName].filter(Boolean).join(' ').trim()
 
       if (!name) return null
+
+      const rawPlayerId = textValue(row, ['player_id'])
+      const rawFacrPlayerId =
+        textValue(row, ['facr_player_id', 'player_facr_id']) ||
+        String(numberValue(row, ['facr_player_id', 'player_facr_id']) ?? '')
+      const clubPlayer =
+        (rawPlayerId ? clubPlayerById.get(rawPlayerId) : undefined) ||
+        (rawFacrPlayerId ? clubPlayerByFacrId.get(rawFacrPlayerId) : undefined) ||
+        clubPlayerByName.get(normalizeParticipantName(name))
 
       const lineupType = textValue(row, ['lineup_type', 'role', 'lineup_role', 'status'])
         ?.toLocaleLowerCase('cs-CZ')
@@ -540,11 +573,18 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         id:
           textValue(row, ['id', 'player_id', 'facr_player_id']) ||
           `${match.id}-participant-${index}`,
-        player_id: textValue(row, ['player_id']),
+        player_id: clubPlayer?.id || rawPlayerId,
         name,
-        photo_url: textValue(row, ['photo_url', 'player_photo_url']),
-        number: numberValue(row, ['number', 'shirt_number', 'jersey_number']),
-        position: textValue(row, ['position', 'player_position']),
+        photo_url:
+          clubPlayer?.photo_url || textValue(row, ['photo_url', 'player_photo_url']),
+        number:
+          numberValue(row, ['number', 'shirt_number', 'jersey_number']) ??
+          clubPlayer?.number ??
+          null,
+        position:
+          clubPlayer?.position?.trim() ||
+          textValue(row, ['position', 'player_position'])?.trim() ||
+          null,
         side: sideValue(row, match),
         starter: substitute
           ? false
