@@ -110,10 +110,10 @@ export function MatchCarousel({
       >
         {active.match ? (
           <>
-            <div className="mt-9 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
+            <div className="mt-8 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:mt-9 sm:gap-6">
               <ClubSide name={active.match.home_team_name} logo={active.match.home_team_logo} align="right" />
 
-              <div className="min-w-[96px] text-center">
+              <div className="min-w-[76px] text-center sm:min-w-[96px]">
                 {active.kind === 'upcoming' ? (
                   <div>
                     <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">Výkop</div>
@@ -125,7 +125,7 @@ export function MatchCarousel({
                     </div>
                   </div>
                 ) : (
-                  <div className="text-5xl font-black tracking-[-0.07em] text-brand-900">{score ?? '—'}</div>
+                  <div className="text-4xl font-black tracking-[-0.07em] text-brand-900 sm:text-5xl">{score ?? '—'}</div>
                 )}
               </div>
 
@@ -184,7 +184,7 @@ function ClubSide({ name, logo, align }: { name: string; logo: string | null; al
   return (
     <div className={`flex min-w-0 flex-col items-center gap-2.5 text-center ${align === 'right' ? '' : ''}`}>
       <ClubLogo src={logo} name={name} />
-      <div className="line-clamp-2 min-h-[36px] max-w-[145px] text-sm font-bold leading-[1.15] text-ink-900">{name}</div>
+      <div className="hidden line-clamp-2 min-h-[36px] max-w-[145px] text-sm font-bold leading-[1.15] text-ink-900 min-[480px]:block">{name}</div>
     </div>
   )
 }
