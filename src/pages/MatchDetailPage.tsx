@@ -390,8 +390,6 @@ function HeroTeam({
   )
 }
 
-type FormationLine = 'goalkeeper' | 'defence' | 'midfield' | 'attack'
-
 function FormationPitch({
   teamName,
   participants,
@@ -412,7 +410,7 @@ function FormationPitch({
     (person) => person.starter === false || !starterIds.has(person.id),
   )
 
-  const placements = assignFormation(starters)
+  const { formation, placements } = assignFormation(starters)
 
   return (
     <div>
@@ -421,7 +419,7 @@ function FormationPitch({
         <div className="absolute left-4 top-4 z-20 rounded-[18px] border border-white/70 bg-white/82 px-4 py-3 shadow-[0_10px_28px_rgba(24,53,42,.08)] backdrop-blur-md sm:left-5 sm:top-5">
           <div className="text-sm font-extrabold text-brand-900">{teamName}</div>
           <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-500">
-            Základní sestava
+            Základní sestava · {formation}
           </div>
         </div>
 
@@ -667,118 +665,157 @@ function PlayerEventBadges({
   )
 }
 
-function positionLine(position: string | null): FormationLine | null {
-  const tactical = normalizeTacticalPosition(position)
-
-  if (tactical === 'GK') return 'goalkeeper'
-  if (['RB', 'RCB', 'CB', 'LCB', 'LB'].includes(tactical ?? '')) return 'defence'
-  if (['DM', 'RCM', 'CM', 'LCM', 'AM'].includes(tactical ?? '')) return 'midfield'
-  if (['RW', 'LW', 'ST'].includes(tactical ?? '')) return 'attack'
-
-  return null
+type FormationName = '4–4–2' | '4–2–3–1'
+type FormationSlot = {
+  line: 'goalkeeper' | 'defence' | 'midfield' | 'attackingMidfield' | 'attack'
+  x: number
+  y: number
 }
 
-const FORMATION_ROW_Y: Record<FormationLine, number> = {
-  goalkeeper: 89,
-  defence: 68,
-  midfield: 44,
-  attack: 19,
+// Fixed rows prevent match data from inventing an arbitrary formation.
+const DEFENCE_SLOTS: FormationSlot[] = [12.5, 37.5, 62.5, 87.5].map((x) => ({
+  line: 'defence',
+  x,
+  y: 68,
+}))
+
+const FORMATION_LAYOUTS: Record<FormationName, FormationSlot[]> = {
+  '4–4–2': [
+    { line: 'goalkeeper', x: 50, y: 89 },
+    ...DEFENCE_SLOTS,
+    ...[12.5, 37.5, 62.5, 87.5].map((x): FormationSlot => ({
+      line: 'midfield',
+      x,
+      y: 44,
+    })),
+    { line: 'attack', x: 33, y: 19 },
+    { line: 'attack', x: 67, y: 19 },
+  ],
+  '4–2–3–1': [
+    { line: 'goalkeeper', x: 50, y: 89 },
+    ...DEFENCE_SLOTS,
+    { line: 'midfield', x: 35, y: 55 },
+    { line: 'midfield', x: 65, y: 55 },
+    { line: 'attackingMidfield', x: 20, y: 34 },
+    { line: 'attackingMidfield', x: 50, y: 34 },
+    { line: 'attackingMidfield', x: 80, y: 34 },
+    { line: 'attack', x: 50, y: 15 },
+  ],
 }
 
-function formationRowX(count: number) {
-  if (count <= 1) return [50]
-  if (count === 2) return [33, 67]
-  if (count === 3) return [20, 50, 80]
-  if (count === 4) return [12.5, 37.5, 62.5, 87.5]
+function formationSlotCost(
+  player: MatchParticipant,
+  slot: FormationSlot,
+  formation: FormationName,
+) {
+  const position = normalizeTacticalPosition(player.position)
 
-  const edge = 7
-  const step = (100 - edge * 2) / Math.max(1, count - 1)
-  return Array.from({ length: count }, (_, index) => edge + step * index)
+  // Unassigned players only fill places left by the players with CMS positions.
+  if (!position) {
+    return player.number === 1 && slot.line !== 'goalkeeper' ? 100 : 0
+  }
+
+  const lateralX = tacticalPositionPoint(player.position)?.x ?? 50
+  const lateralCost = Math.abs(lateralX - slot.x) / 5
+
+  if (position === 'GK') {
+    return slot.line === 'goalkeeper' ? 0 : 4000
+  }
+  if (slot.line === 'goalkeeper') return 3500
+
+  if (['RB', 'RCB', 'CB', 'LCB', 'LB'].includes(position)) {
+    return (slot.line === 'defence' ? 0 : 2400) + lateralCost
+  }
+
+  if (position === 'ST') {
+    return (slot.line === 'attack'
+      ? 0
+      : slot.line === 'attackingMidfield'
+        ? 1100
+        : 2400) + lateralCost
+  }
+
+  if (position === 'RW' || position === 'LW') {
+    if (formation === '4–4–2') {
+      return (slot.line === 'midfield' ? 20 : slot.line === 'attack' ? 850 : 2400) + lateralCost
+    }
+    return (slot.line === 'attackingMidfield'
+      ? 0
+      : slot.line === 'attack' || slot.line === 'midfield'
+        ? 850
+        : 2400) + lateralCost
+  }
+
+  if (position === 'AM') {
+    if (formation === '4–4–2') {
+      return (slot.line === 'midfield' ? 20 : slot.line === 'attack' ? 850 : 2400) + lateralCost
+    }
+    return (slot.line === 'attackingMidfield' ? 0 : slot.line === 'midfield' ? 850 : 2400) + lateralCost
+  }
+
+  // DM / CM / RCM / LCM belong in the middle row of either formation.
+  return (slot.line === 'midfield'
+    ? 0
+    : slot.line === 'attackingMidfield'
+      ? 850
+      : 2400) + lateralCost
 }
 
-function playerLateralX(player: MatchParticipant) {
-  return tacticalPositionPoint(player.position)?.x ?? 50
+function placeInFormation(starters: MatchParticipant[], formation: FormationName) {
+  const slots = FORMATION_LAYOUTS[formation]
+  const cache = new Map<number, { cost: number; indices: number[] }>()
+
+  // Minimum-cost matching: recognized positions are expensive to move,
+  // so players with no position cannot take their assigned roles.
+  const solve = (index: number, occupied: number): { cost: number; indices: number[] } => {
+    if (index === starters.length) return { cost: 0, indices: [] }
+
+    const key = index * (1 << slots.length) + occupied
+    const cached = cache.get(key)
+    if (cached) return cached
+
+    let best: { cost: number; indices: number[] } = {
+      cost: Number.POSITIVE_INFINITY,
+      indices: [],
+    }
+
+    slots.forEach((slot, slotIndex) => {
+      if (occupied & (1 << slotIndex)) return
+
+      const next = solve(index + 1, occupied | (1 << slotIndex))
+      const cost = formationSlotCost(starters[index], slot, formation) + next.cost
+      if (cost < best.cost) {
+        best = { cost, indices: [slotIndex, ...next.indices] }
+      }
+    })
+
+    cache.set(key, best)
+    return best
+  }
+
+  const result = solve(0, 0)
+  return {
+    cost: result.cost,
+    placements: starters.map((player, index) => {
+      const slot = slots[result.indices[index]]
+      return { player, x: slot.x, y: slot.y }
+    }),
+  }
 }
 
 function assignFormation(starters: MatchParticipant[]) {
-  const remaining = [...starters]
-  const assignments: Array<{
-    player: MatchParticipant
-    x: number
-    y: number
-  }> = []
+  const standard = placeInFormation(starters.slice(0, 11), '4–4–2')
+  const attacking = placeInFormation(starters.slice(0, 11), '4–2–3–1')
 
-  const goalkeeperIndex = remaining.findIndex(
-    (player) => normalizeTacticalPosition(player.position) === 'GK',
-  )
-  const numberOneIndex = remaining.findIndex(
-    (player) => player.number === 1 && !normalizeTacticalPosition(player.position),
-  )
-  const selectedGoalkeeperIndex =
-    goalkeeperIndex >= 0 ? goalkeeperIndex : numberOneIndex
+  // 4-4-2 remains the default unless CMS positions clearly suit 4-2-3-1.
+  const formation: FormationName = attacking.cost + 30 < standard.cost
+    ? '4–2–3–1'
+    : '4–4–2'
 
-  if (selectedGoalkeeperIndex >= 0) {
-    const [goalkeeper] = remaining.splice(selectedGoalkeeperIndex, 1)
-    assignments.push({
-      player: goalkeeper,
-      x: 50,
-      y: FORMATION_ROW_Y.goalkeeper,
-    })
+  return {
+    formation,
+    placements: formation === '4–4–2' ? standard.placements : attacking.placements,
   }
-
-  const rows: Record<'defence' | 'midfield' | 'attack', MatchParticipant[]> = {
-    defence: [],
-    midfield: [],
-    attack: [],
-  }
-  const unknown: MatchParticipant[] = []
-
-  for (const player of remaining) {
-    const line = positionLine(player.position)
-    if (line === 'defence' || line === 'midfield' || line === 'attack') {
-      rows[line].push(player)
-    } else {
-      unknown.push(player)
-    }
-  }
-
-  const targetCounts = { defence: 4, midfield: 4, attack: 2 }
-  const rowOrder: Array<'defence' | 'midfield' | 'attack'> = [
-    'defence',
-    'midfield',
-    'attack',
-  ]
-
-  for (const player of unknown) {
-    const bestLine =
-      [...rowOrder].sort((a, b) => {
-        const aDeficit = targetCounts[a] - rows[a].length
-        const bDeficit = targetCounts[b] - rows[b].length
-        return bDeficit - aDeficit
-      })[0] ?? 'midfield'
-
-    rows[bestLine].push(player)
-  }
-
-  for (const line of rowOrder) {
-    const players = [...rows[line]].sort(
-      (a, b) =>
-        playerLateralX(a) - playerLateralX(b) ||
-        (a.number ?? Number.MAX_SAFE_INTEGER) -
-          (b.number ?? Number.MAX_SAFE_INTEGER),
-    )
-    const xs = formationRowX(players.length)
-
-    players.forEach((player, index) => {
-      assignments.push({
-        player,
-        x: xs[index] ?? 50,
-        y: FORMATION_ROW_Y[line],
-      })
-    })
-  }
-
-  return assignments
 }
 
 function shortPlayerName(name: string) {
