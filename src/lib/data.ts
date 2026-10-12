@@ -220,15 +220,17 @@ export async function fetchStandingsByTeam(teamId: string): Promise<Standing[]> 
   return (data ?? []) as Standing[]
 }
 
-export async function fetchPlayersByTeam(teamId: string): Promise<Player[]> {
+export async function fetchPlayersByTeam(teamId: string, includeInactive = false): Promise<Player[]> {
   ensureConfigured()
-  const { data, error } = await supabase
+  let query = supabase
     .from('players')
     .select('id,team_id,facr_player_id,first_name,last_name,birth_date,number,position,photo_url,facr_photo_url,bio,matches_count,goals_count,yellow_cards,red_cards,active,sort_order')
     .eq('team_id', teamId)
-    .eq('active', true)
     .order('sort_order', { ascending: true })
     .order('last_name', { ascending: true })
+
+  if (!includeInactive) query = query.eq('active', true)
+  const { data, error } = await query
 
   if (error) throw error
   return (data ?? []) as Player[]
@@ -439,6 +441,34 @@ async function fetchOptionalMatchRows(
 export async function fetchMatchParticipants(match: Match): Promise<MatchParticipant[]> {
   ensureConfigured()
 
+  const clubPlayers = await fetchPlayersByTeam(match.team_id, true)
+  const normalizeParticipantName = (value: string) =>
+    value
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase('cs-CZ')
+      .replace(/[.,]/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ')
+
+  const clubPlayerById = new Map(clubPlayers.map((player) => [player.id, player]))
+  const clubPlayerByFacrId = new Map(
+    clubPlayers
+      .filter((player) => player.facr_player_id != null)
+      .map((player) => [String(player.facr_player_id), player]),
+  )
+  // Only match names that identify a single CMS player. Accept both name orders.
+  const clubPlayerByName = new Map<string, Player | null>()
+  for (const player of clubPlayers) {
+    const names = [player.first_name, player.last_name].filter(Boolean)
+    if (names.length !== 2) continue
+    for (const name of [names.join(' '), [...names].reverse().join(' ')]) {
+      const key = normalizeParticipantName(name)
+      if (!clubPlayerByName.has(key)) clubPlayerByName.set(key, player)
+      else if (clubPlayerByName.get(key)?.id !== player.id) clubPlayerByName.set(key, null)
+    }
+  }
+
   const { data: matchPlayers, error: matchPlayersError } = await supabase
     .from('match_players')
     .select('id,match_id,player_id,team_side,lineup_type,number,position,captain')
@@ -460,7 +490,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     const { data: players, error: playersError } = playerIds.length
       ? await supabase
           .from('players')
-          .select('id,first_name,last_name,number,position,photo_url')
+          .select('id,facr_player_id,first_name,last_name,number,position,photo_url')
           .in('id', playerIds)
       : { data: [], error: null }
 
@@ -469,6 +499,7 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     const playerById = new Map(
       ((players ?? []) as Array<{
         id: string
+        facr_player_id: number | null
         first_name: string | null
         last_name: string | null
         number: number | null
@@ -479,6 +510,11 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
 
     return rows.map((row) => {
       const player = playerById.get(row.player_id)
+      const cmsPlayer =
+        clubPlayerById.get(row.player_id) ||
+        (player?.facr_player_id != null
+          ? clubPlayerByFacrId.get(String(player.facr_player_id))
+          : undefined)
       const lineupType = row.lineup_type?.toLocaleLowerCase('cs-CZ') ?? ''
       const substitute =
         lineupType.includes('sub') ||
@@ -499,7 +535,11 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
           'Neznámý hráč',
         photo_url: player?.photo_url ?? null,
         number: row.number ?? player?.number ?? null,
-        position: player?.position?.trim() || row.position?.trim() || null,
+        position:
+          cmsPlayer?.position?.trim() ||
+          player?.position?.trim() ||
+          row.position?.trim() ||
+          null,
         side:
           row.team_side === 'home'
             ? 'home'
@@ -518,30 +558,6 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
     match,
   )
 
-  const clubPlayers = await fetchPlayersByTeam(match.team_id)
-  const normalizeParticipantName = (value: string) =>
-    value
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLocaleLowerCase('cs-CZ')
-      .trim()
-      .replace(/\s+/g, ' ')
-
-  const clubPlayerById = new Map(clubPlayers.map((player) => [player.id, player]))
-  const clubPlayerByFacrId = new Map(
-    clubPlayers
-      .filter((player) => player.facr_player_id != null)
-      .map((player) => [String(player.facr_player_id), player]),
-  )
-  const clubPlayerByName = new Map(
-    clubPlayers.map((player) => [
-      normalizeParticipantName(
-        [player.first_name, player.last_name].filter(Boolean).join(' '),
-      ),
-      player,
-    ]),
-  )
-
   return rows
     .map((row, index): MatchParticipant | null => {
       const firstName = textValue(row, ['first_name', 'firstname'])
@@ -558,7 +574,9 @@ export async function fetchMatchParticipants(match: Match): Promise<MatchPartici
         String(numberValue(row, ['facr_player_id', 'player_facr_id']) ?? '')
       const clubPlayer =
         (rawPlayerId ? clubPlayerById.get(rawPlayerId) : undefined) ||
-        (rawFacrPlayerId ? clubPlayerByFacrId.get(rawFacrPlayerId) : undefined) ||
+        (rawFacrPlayerId || rawPlayerId
+          ? clubPlayerByFacrId.get(rawFacrPlayerId || rawPlayerId!)
+          : undefined) ||
         clubPlayerByName.get(normalizeParticipantName(name))
 
       const lineupType = textValue(row, ['lineup_type', 'role', 'lineup_role', 'status'])
