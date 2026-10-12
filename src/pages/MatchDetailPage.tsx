@@ -698,11 +698,12 @@ function assignFormation(starters: MatchParticipant[]) {
   ]
 
   for (const player of unknown) {
-    const bestLine = [...rowOrder].sort((a, b) => {
-      const aDeficit = targetCounts[a] - rows[a].length
-      const bDeficit = targetCounts[b] - rows[b].length
-      return bDeficit - aDeficit
-    })[0]
+    const bestLine =
+      [...rowOrder].sort((a, b) => {
+        const aDeficit = targetCounts[a] - rows[a].length
+        const bDeficit = targetCounts[b] - rows[b].length
+        return bDeficit - aDeficit
+      })[0] ?? 'midfield'
 
     rows[bestLine].push(player)
   }
