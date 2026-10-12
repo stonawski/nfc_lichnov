@@ -243,7 +243,37 @@ function MatchHero({
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4">
+        <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:hidden">
+          <CompactHeroLogo name={match.home_team_name} logo={homeLogo} />
+          <div className="min-w-[86px] text-center">
+            {upcoming ? (
+              <>
+                <div className="text-3xl font-black tracking-[-0.055em]">
+                  {formatMatchTime(match.playing_at)}
+                </div>
+                <div className="mt-1 text-[10px] font-bold text-white/55">
+                  {formatMatchDate(match.playing_at)}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-4xl font-black tracking-[-0.07em]">
+                  {score ?? match.final_score ?? '—'}
+                </div>
+                {match.penalty_score_home != null &&
+                  match.penalty_score_away != null &&
+                  (match.penalty_score_home > 0 || match.penalty_score_away > 0) && (
+                    <div className="mt-1.5 text-[10px] font-bold text-white/50">
+                      Pen. {match.penalty_score_home}:{match.penalty_score_away}
+                    </div>
+                  )}
+              </>
+            )}
+          </div>
+          <CompactHeroLogo name={match.away_team_name} logo={awayLogo} />
+        </div>
+
+        <div className="mt-5 hidden grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 md:grid">
           <HeroTeam name={match.home_team_name} logo={homeLogo} align="right" />
 
           <div className="text-center">
@@ -303,6 +333,26 @@ function MatchHero({
 
           {match.season && <span>Sezóna {match.season}</span>}
         </div>
+      </div>
+    </div>
+  )
+}
+
+function CompactHeroLogo({
+  name,
+  logo,
+}: {
+  name: string
+  logo: string | null
+}) {
+  return (
+    <div className="flex justify-center">
+      <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[20px] bg-white/95 ring-1 ring-white/20">
+        {logo ? (
+          <img src={logo} alt={`Logo ${name}`} className="h-full w-full object-contain p-2.5" />
+        ) : (
+          <span className="text-sm font-black text-brand-900">{initials(name)}</span>
+        )}
       </div>
     </div>
   )
@@ -487,7 +537,7 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[76px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[82px] sm:w-[116px] lg:w-[124px]"
+      className="absolute z-10 w-[64px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[70px] sm:w-[116px] lg:w-[124px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div className="relative mx-auto w-fit">
@@ -518,14 +568,14 @@ function PitchPlayer({
         </div>
       </div>
 
-      <div className="relative -mt-1.5 rounded-[10px] bg-brand-900/95 px-1.5 py-1.5 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm sm:rounded-xl sm:px-2.5 sm:py-2">
+      <div className="relative -mt-1 rounded-[9px] bg-brand-900/95 px-1 py-1.5 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm sm:rounded-xl sm:px-2.5 sm:py-2">
         <div className="flex min-w-0 items-center justify-center gap-1.5">
           {player.number != null && (
             <span className="grid h-4 min-w-4 shrink-0 place-items-center rounded bg-white/12 px-0.5 text-[8px] font-black text-white/80 sm:h-5 sm:min-w-5 sm:rounded-md sm:px-1 sm:text-[10px]">
               {player.number}
             </span>
           )}
-          <span className="truncate text-[9px] font-extrabold leading-none tracking-[-0.03em] min-[390px]:text-[10px] sm:text-xs">
+          <span className="truncate text-[8px] font-extrabold leading-none tracking-[-0.03em] min-[390px]:text-[9px] sm:text-xs">
             {shortPlayerName(player.name)}
           </span>
         </div>
@@ -637,9 +687,9 @@ const FORMATION_ROW_Y: Record<FormationLine, number> = {
 
 function formationRowX(count: number) {
   if (count <= 1) return [50]
-  if (count === 2) return [36, 64]
+  if (count === 2) return [33, 67]
   if (count === 3) return [20, 50, 80]
-  if (count === 4) return [11, 37, 63, 89]
+  if (count === 4) return [8, 36, 64, 92]
 
   const edge = 7
   const step = (100 - edge * 2) / Math.max(1, count - 1)
