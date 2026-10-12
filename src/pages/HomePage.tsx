@@ -451,8 +451,8 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="relative min-h-[610px] lg:min-h-[650px]">
-            <div className="absolute inset-y-0 right-0 w-full overflow-hidden rounded-[42px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] lg:w-[84%]">
+          <div className="relative min-h-[620px] overflow-hidden rounded-[34px] lg:min-h-[650px] lg:overflow-visible lg:rounded-none">
+            <div className="absolute inset-x-0 top-0 h-[390px] w-full overflow-hidden rounded-[34px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] sm:h-[430px] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-auto lg:w-[84%] lg:rounded-[42px]">
               {galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
                 <div className="absolute inset-0 p-6">
                   <LoadingState rows={3} />
@@ -497,7 +497,7 @@ export function HomePage() {
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,53,42,0)_48%,rgba(24,53,42,.18)_72%,rgba(24,53,42,.46)_100%)]" />
             </div>
 
-            <div className="relative z-20 flex min-h-[610px] items-end pb-7 pt-56 lg:min-h-[650px] lg:items-center lg:pb-0 lg:pt-0">
+            <div className="relative z-20 flex min-h-[620px] items-end px-3 pb-3 pt-[280px] sm:px-5 sm:pb-5 sm:pt-[320px] lg:min-h-[650px] lg:items-center lg:px-0 lg:pb-0 lg:pt-0">
               <div className="w-full rounded-[34px] border border-white/10 bg-brand-900 p-7 text-white shadow-[0_24px_70px_rgba(24,53,42,.22)] sm:p-9 lg:w-[430px] lg:p-10">
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10">
