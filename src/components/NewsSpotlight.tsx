@@ -40,9 +40,21 @@ export function NewsSpotlight({
             />
           ))}
 
-          {/* Fade the photograph into the same green at every edge. */}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#102b22_0%,rgba(16,43,34,.68)_13%,rgba(16,43,34,.16)_52%,#102b22_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,#102b22_0%,rgba(16,43,34,.14)_22%,rgba(16,43,34,.3)_55%,#102b22_100%)]" />
+          {/* Wide, asymmetric radial fades let the image dissolve into the section.
+              The upper edge is gentle and the lower edge disappears into green
+              without the straight, dark frame caused by linear gradients. */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: [
+                'radial-gradient(ellipse 110% 116% at 43% -31%, rgba(16,43,34,.98) 0%, rgba(16,43,34,.80) 27%, rgba(16,43,34,.38) 55%, rgba(16,43,34,.08) 78%, transparent 100%)',
+                'radial-gradient(ellipse 118% 104% at 57% 137%, #102b22 0%, rgba(16,43,34,.90) 29%, rgba(16,43,34,.52) 54%, rgba(16,43,34,.15) 76%, transparent 100%)',
+                'radial-gradient(ellipse 78% 117% at -26% 53%, rgba(16,43,34,.84) 0%, rgba(16,43,34,.48) 42%, rgba(16,43,34,.10) 76%, transparent 100%)',
+                'radial-gradient(ellipse 79% 125% at 132% 47%, #102b22 0%, rgba(16,43,34,.78) 35%, rgba(16,43,34,.26) 69%, transparent 100%)',
+                'linear-gradient(180deg, rgba(16,43,34,.04) 0%, transparent 36%, rgba(16,43,34,.05) 64%, rgba(16,43,34,.28) 86%, #102b22 100%)',
+              ].join(', '),
+            }}
+          />
         </div>
 
         <div className="relative z-10 flex min-h-[450px] flex-1 flex-col justify-between px-5 py-8 sm:min-h-[520px] sm:px-9 sm:py-10 lg:min-h-[600px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pr-10 lg:py-12">
