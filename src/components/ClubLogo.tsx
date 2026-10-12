@@ -11,7 +11,12 @@ export function ClubLogo({
   size?: 'sm' | 'md' | 'lg'
   loading?: 'lazy' | 'eager'
 }) {
-  const classes = size === 'sm' ? 'h-9 w-9' : size === 'lg' ? 'h-20 w-20' : 'h-12 w-12'
+  const classes =
+    size === 'sm'
+      ? 'h-9 w-9'
+      : size === 'lg'
+        ? 'h-16 w-16 sm:h-20 sm:w-20'
+        : 'h-12 w-12'
 
   return src ? (
     <img

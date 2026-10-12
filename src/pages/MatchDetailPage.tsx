@@ -27,7 +27,7 @@ import {
   matchScore,
   matchVenueMapUrl,
 } from '../lib/format'
-import { normalizeTacticalPosition } from '../lib/playerPosition'
+import { normalizeTacticalPosition, tacticalPositionPoint } from '../lib/playerPosition'
 import { safeReturnPath } from '../lib/navigationState'
 import type {
   Match,
@@ -239,11 +239,41 @@ function MatchHero({
 
       <div className="relative">
         <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
-          <span>{team?.name || 'NFC Lichnov'}</span>
+          <span className="hidden sm:inline">{team?.name || 'NFC Lichnov'}</span>
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5 sm:mt-5 sm:gap-3 md:hidden">
+          <CompactHeroLogo name={match.home_team_name} logo={homeLogo} />
+          <div className="min-w-[76px] text-center sm:min-w-[86px]">
+            {upcoming ? (
+              <>
+                <div className="text-3xl font-black tracking-[-0.055em]">
+                  {formatMatchTime(match.playing_at)}
+                </div>
+                <div className="mt-1 text-[10px] font-bold text-white/55">
+                  {formatMatchDate(match.playing_at)}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-4xl font-black tracking-[-0.07em]">
+                  {score ?? match.final_score ?? '—'}
+                </div>
+                {match.penalty_score_home != null &&
+                  match.penalty_score_away != null &&
+                  (match.penalty_score_home > 0 || match.penalty_score_away > 0) && (
+                    <div className="mt-1.5 text-[10px] font-bold text-white/50">
+                      Pen. {match.penalty_score_home}:{match.penalty_score_away}
+                    </div>
+                  )}
+              </>
+            )}
+          </div>
+          <CompactHeroLogo name={match.away_team_name} logo={awayLogo} />
+        </div>
+
+        <div className="mt-5 hidden grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 md:grid">
           <HeroTeam name={match.home_team_name} logo={homeLogo} align="right" />
 
           <div className="text-center">
@@ -308,6 +338,26 @@ function MatchHero({
   )
 }
 
+function CompactHeroLogo({
+  name,
+  logo,
+}: {
+  name: string
+  logo: string | null
+}) {
+  return (
+    <div className="flex justify-center">
+      <div className="grid h-14 w-14 place-items-center overflow-hidden rounded-[18px] bg-white/95 ring-1 ring-white/20 min-[390px]:h-16 min-[390px]:w-16 min-[390px]:rounded-[20px]">
+        {logo ? (
+          <img src={logo} alt={`Logo ${name}`} className="h-full w-full object-contain p-2.5" />
+        ) : (
+          <span className="text-sm font-black text-brand-900">{initials(name)}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function HeroTeam({
   name,
   logo,
@@ -321,8 +371,8 @@ function HeroTeam({
 
   return (
     <div
-      className={`flex items-center gap-4 ${
-        reverse ? 'flex-row-reverse text-right' : 'text-left'
+      className={`flex min-w-0 items-center justify-center gap-3 md:gap-4 ${
+        reverse ? 'md:flex-row-reverse md:justify-start md:text-right' : 'md:justify-start md:text-left'
       }`}
     >
       <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-[18px] bg-white/95 ring-1 ring-white/20 sm:h-16 sm:w-16">
@@ -333,14 +383,12 @@ function HeroTeam({
         )}
       </div>
 
-      <div className="text-lg font-black leading-tight tracking-[-0.045em] sm:text-xl lg:text-2xl">
+      <div className="hidden min-w-0 text-lg font-black leading-tight tracking-[-0.045em] md:block md:text-xl lg:text-2xl">
         {name}
       </div>
     </div>
   )
 }
-
-type FormationLine = 'goalkeeper' | 'defence' | 'midfield' | 'attack'
 
 function FormationPitch({
   teamName,
@@ -362,16 +410,16 @@ function FormationPitch({
     (person) => person.starter === false || !starterIds.has(person.id),
   )
 
-  const placements = assignFourFourTwo(starters)
+  const { formation, placements } = assignFormation(starters)
 
   return (
     <div>
-      <div className="relative min-h-[560px] overflow-hidden rounded-[30px] border border-white/80 bg-[#c9d8ce] shadow-[0_18px_50px_rgba(24,53,42,.08)] sm:min-h-[640px] lg:min-h-[700px]">
+      <div className="relative min-h-[600px] overflow-hidden rounded-[30px] border border-white/80 bg-[#c9d8ce] shadow-[0_18px_50px_rgba(24,53,42,.08)] sm:min-h-[640px] lg:min-h-[700px]">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#e7ece8_0%,#d6e0d9_30%,#bfd1c5_68%,#afc7b7_100%)]" />
         <div className="absolute left-4 top-4 z-20 rounded-[18px] border border-white/70 bg-white/82 px-4 py-3 shadow-[0_10px_28px_rgba(24,53,42,.08)] backdrop-blur-md sm:left-5 sm:top-5">
           <div className="text-sm font-extrabold text-brand-900">{teamName}</div>
           <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-500">
-            Základní sestava
+            Základní sestava · {formation}
           </div>
         </div>
 
@@ -487,11 +535,11 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[108px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[124px]"
+      className="absolute z-10 w-[56px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[64px] sm:w-[116px] lg:w-[124px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div className="relative mx-auto w-fit">
-        <div className="flex h-12 w-12 items-end justify-center overflow-hidden rounded-[16px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
+        <div className="flex h-10 w-10 items-end justify-center overflow-hidden rounded-[15px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
           {player.photo_url ? (
             <img
               src={player.photo_url}
@@ -505,10 +553,10 @@ function PitchPlayer({
           )}
         </div>
 
-        <div className="absolute -right-5 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1">
+        <div className="absolute -right-2 top-1/2 flex -translate-y-1/2 flex-col items-center gap-0.5 sm:-right-5 sm:gap-1">
           {player.captain && (
             <span
-              className="grid h-5 min-w-5 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5"
+              className="grid h-4 min-w-4 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5 sm:h-5 sm:min-w-5"
               title="Kapitán"
             >
               K
@@ -518,14 +566,14 @@ function PitchPlayer({
         </div>
       </div>
 
-      <div className="relative -mt-1.5 rounded-xl bg-brand-900/95 px-2.5 py-2 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm">
+      <div className="relative -mt-1 rounded-[9px] bg-brand-900/95 px-1 py-1.5 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm sm:rounded-xl sm:px-2.5 sm:py-2">
         <div className="flex min-w-0 items-center justify-center gap-1.5">
           {player.number != null && (
-            <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-md bg-white/12 px-1 text-[9px] font-black text-white/80 sm:text-[10px]">
+            <span className="grid h-4 min-w-4 shrink-0 place-items-center rounded bg-white/12 px-0.5 text-[8px] font-black text-white/80 sm:h-5 sm:min-w-5 sm:rounded-md sm:px-1 sm:text-[10px]">
               {player.number}
             </span>
           )}
-          <span className="truncate text-[11px] font-extrabold leading-none tracking-[-0.02em] sm:text-xs">
+          <span className="truncate text-[8px] font-extrabold leading-none tracking-[-0.03em] min-[390px]:text-[9px] sm:text-xs">
             {shortPlayerName(player.name)}
           </span>
         </div>
@@ -617,159 +665,157 @@ function PlayerEventBadges({
   )
 }
 
+type FormationName = '4–4–2' | '4–2–3–1'
 type FormationSlot = {
-  id: string
+  line: 'goalkeeper' | 'defence' | 'midfield' | 'attackingMidfield' | 'attack'
   x: number
   y: number
-  line: FormationLine
-  preferred: string[]
 }
 
-const FOUR_FOUR_TWO_SLOTS: FormationSlot[] = [
-  { id: 'gk', x: 50, y: 89, line: 'goalkeeper', preferred: ['GK'] },
+// Fixed rows prevent match data from inventing an arbitrary formation.
+const DEFENCE_SLOTS: FormationSlot[] = [12.5, 37.5, 62.5, 87.5].map((x) => ({
+  line: 'defence',
+  x,
+  y: 68,
+}))
 
-  { id: 'lb', x: 13, y: 67, line: 'defence', preferred: ['LB'] },
-  { id: 'lcb', x: 38, y: 67, line: 'defence', preferred: ['LCB', 'CB'] },
-  { id: 'rcb', x: 62, y: 67, line: 'defence', preferred: ['RCB', 'CB'] },
-  { id: 'rb', x: 87, y: 67, line: 'defence', preferred: ['RB'] },
-
-  { id: 'lm', x: 13, y: 42, line: 'midfield', preferred: ['LW', 'LCM'] },
-  { id: 'lcm', x: 38, y: 42, line: 'midfield', preferred: ['LCM', 'CM', 'DM', 'AM'] },
-  { id: 'rcm', x: 62, y: 42, line: 'midfield', preferred: ['RCM', 'CM', 'DM', 'AM'] },
-  { id: 'rm', x: 87, y: 42, line: 'midfield', preferred: ['RW', 'RCM'] },
-
-  { id: 'ls', x: 38, y: 18, line: 'attack', preferred: ['ST', 'LW'] },
-  { id: 'rs', x: 62, y: 18, line: 'attack', preferred: ['ST', 'RW'] },
-]
-
-function positionLine(position: string | null): FormationLine | null {
-  const tactical = normalizeTacticalPosition(position)
-
-  if (tactical === 'GK') return 'goalkeeper'
-  if (['RB', 'RCB', 'CB', 'LCB', 'LB'].includes(tactical ?? '')) return 'defence'
-  if (['DM', 'RCM', 'CM', 'LCM', 'AM'].includes(tactical ?? '')) return 'midfield'
-  if (['RW', 'LW', 'ST'].includes(tactical ?? '')) return 'attack'
-
-  return null
+const FORMATION_LAYOUTS: Record<FormationName, FormationSlot[]> = {
+  '4–4–2': [
+    { line: 'goalkeeper', x: 50, y: 89 },
+    ...DEFENCE_SLOTS,
+    ...[12.5, 37.5, 62.5, 87.5].map((x): FormationSlot => ({
+      line: 'midfield',
+      x,
+      y: 44,
+    })),
+    { line: 'attack', x: 33, y: 19 },
+    { line: 'attack', x: 67, y: 19 },
+  ],
+  '4–2–3–1': [
+    { line: 'goalkeeper', x: 50, y: 89 },
+    ...DEFENCE_SLOTS,
+    { line: 'midfield', x: 35, y: 55 },
+    { line: 'midfield', x: 65, y: 55 },
+    { line: 'attackingMidfield', x: 20, y: 34 },
+    { line: 'attackingMidfield', x: 50, y: 34 },
+    { line: 'attackingMidfield', x: 80, y: 34 },
+    { line: 'attack', x: 50, y: 15 },
+  ],
 }
 
-function formationSlotScore(player: MatchParticipant, slot: FormationSlot) {
-  const tactical = normalizeTacticalPosition(player.position)
-  const line = positionLine(player.position)
+function formationSlotCost(
+  player: MatchParticipant,
+  slot: FormationSlot,
+  formation: FormationName,
+) {
+  const position = normalizeTacticalPosition(player.position)
 
-  if (tactical) {
-    const exactIndex = slot.preferred.indexOf(tactical)
-    if (exactIndex >= 0) return exactIndex
-
-    if (line === slot.line) return 20
-
-    if (
-      (line === 'attack' && slot.line === 'midfield') ||
-      (line === 'midfield' && slot.line === 'attack')
-    ) {
-      return 45
-    }
-
-    if (
-      (line === 'defence' && slot.line === 'midfield') ||
-      (line === 'midfield' && slot.line === 'defence')
-    ) {
-      return 55
-    }
-
-    return slot.line === 'goalkeeper' ? 500 : 90
+  // Unassigned players only fill places left by the players with CMS positions.
+  if (!position) {
+    return player.number === 1 && slot.line !== 'goalkeeper' ? 100 : 0
   }
 
-  return slot.line === 'goalkeeper' ? 110 : 100
-}
+  const lateralX = tacticalPositionPoint(player.position)?.x ?? 50
+  const lateralCost = Math.abs(lateralX - slot.x) / 5
 
-function assignFourFourTwo(starters: MatchParticipant[]) {
-  const available = [...FOUR_FOUR_TWO_SLOTS]
-  const assignments: Array<{
-    player: MatchParticipant
-    x: number
-    y: number
-  }> = []
+  if (position === 'GK') {
+    return slot.line === 'goalkeeper' ? 0 : 4000
+  }
+  if (slot.line === 'goalkeeper') return 3500
 
-  const remaining = [...starters]
-
-  const goalkeeperIndex = remaining.findIndex(
-    (player) => normalizeTacticalPosition(player.position) === 'GK',
-  )
-  const numberOneIndex = remaining.findIndex((player) => player.number === 1)
-  const selectedGoalkeeperIndex =
-    goalkeeperIndex >= 0 ? goalkeeperIndex : numberOneIndex
-
-  if (selectedGoalkeeperIndex >= 0) {
-    const [goalkeeper] = remaining.splice(selectedGoalkeeperIndex, 1)
-    const goalkeeperSlot = available.find((slot) => slot.line === 'goalkeeper')!
-    available.splice(available.indexOf(goalkeeperSlot), 1)
-    assignments.push({
-      player: goalkeeper,
-      x: goalkeeperSlot.x,
-      y: goalkeeperSlot.y,
-    })
+  if (['RB', 'RCB', 'CB', 'LCB', 'LB'].includes(position)) {
+    return (slot.line === 'defence' ? 0 : 2400) + lateralCost
   }
 
-  const positioned = remaining
-    .filter((player) => normalizeTacticalPosition(player.position))
-    .sort((a, b) => {
-      const aLine = positionLine(a.position)
-      const bLine = positionLine(b.position)
-      const priority: Record<FormationLine, number> = {
-        goalkeeper: 0,
-        defence: 1,
-        midfield: 2,
-        attack: 3,
+  if (position === 'ST') {
+    return (slot.line === 'attack'
+      ? 0
+      : slot.line === 'attackingMidfield'
+        ? 1100
+        : 2400) + lateralCost
+  }
+
+  if (position === 'RW' || position === 'LW') {
+    if (formation === '4–4–2') {
+      return (slot.line === 'midfield' ? 20 : slot.line === 'attack' ? 850 : 2400) + lateralCost
+    }
+    return (slot.line === 'attackingMidfield'
+      ? 0
+      : slot.line === 'attack' || slot.line === 'midfield'
+        ? 850
+        : 2400) + lateralCost
+  }
+
+  if (position === 'AM') {
+    if (formation === '4–4–2') {
+      return (slot.line === 'midfield' ? 20 : slot.line === 'attack' ? 850 : 2400) + lateralCost
+    }
+    return (slot.line === 'attackingMidfield' ? 0 : slot.line === 'midfield' ? 850 : 2400) + lateralCost
+  }
+
+  // DM / CM / RCM / LCM belong in the middle row of either formation.
+  return (slot.line === 'midfield'
+    ? 0
+    : slot.line === 'attackingMidfield'
+      ? 850
+      : 2400) + lateralCost
+}
+
+function placeInFormation(starters: MatchParticipant[], formation: FormationName) {
+  const slots = FORMATION_LAYOUTS[formation]
+  const cache = new Map<number, { cost: number; indices: number[] }>()
+
+  // Minimum-cost matching: recognized positions are expensive to move,
+  // so players with no position cannot take their assigned roles.
+  const solve = (index: number, occupied: number): { cost: number; indices: number[] } => {
+    if (index === starters.length) return { cost: 0, indices: [] }
+
+    const key = index * (1 << slots.length) + occupied
+    const cached = cache.get(key)
+    if (cached) return cached
+
+    let best: { cost: number; indices: number[] } = {
+      cost: Number.POSITIVE_INFINITY,
+      indices: [],
+    }
+
+    slots.forEach((slot, slotIndex) => {
+      if (occupied & (1 << slotIndex)) return
+
+      const next = solve(index + 1, occupied | (1 << slotIndex))
+      const cost = formationSlotCost(starters[index], slot, formation) + next.cost
+      if (cost < best.cost) {
+        best = { cost, indices: [slotIndex, ...next.indices] }
       }
-      return (aLine ? priority[aLine] : 9) - (bLine ? priority[bLine] : 9)
     })
 
-  for (const player of positioned) {
-    if (!available.length) break
-
-    let bestSlot = available[0]
-    let bestScore = formationSlotScore(player, bestSlot)
-
-    for (const slot of available.slice(1)) {
-      const score = formationSlotScore(player, slot)
-      if (score < bestScore) {
-        bestSlot = slot
-        bestScore = score
-      }
-    }
-
-    assignments.push({ player, x: bestSlot.x, y: bestSlot.y })
-    available.splice(available.indexOf(bestSlot), 1)
-    remaining.splice(remaining.indexOf(player), 1)
+    cache.set(key, best)
+    return best
   }
 
-  const fallbackOrder: FormationLine[] = [
-    'goalkeeper',
-    'defence',
-    'midfield',
-    'attack',
-  ]
-
-  for (const line of fallbackOrder) {
-    const slots = available.filter((slot) => slot.line === line)
-
-    for (const slot of slots) {
-      const player = remaining.shift()
-      if (!player) break
-
-      assignments.push({ player, x: slot.x, y: slot.y })
-      available.splice(available.indexOf(slot), 1)
-    }
+  const result = solve(0, 0)
+  return {
+    cost: result.cost,
+    placements: starters.map((player, index) => {
+      const slot = slots[result.indices[index]]
+      return { player, x: slot.x, y: slot.y }
+    }),
   }
+}
 
-  while (remaining.length && available.length) {
-    const player = remaining.shift()!
-    const slot = available.shift()!
-    assignments.push({ player, x: slot.x, y: slot.y })
+function assignFormation(starters: MatchParticipant[]) {
+  const standard = placeInFormation(starters.slice(0, 11), '4–4–2')
+  const attacking = placeInFormation(starters.slice(0, 11), '4–2–3–1')
+
+  // 4-4-2 remains the default unless CMS positions clearly suit 4-2-3-1.
+  const formation: FormationName = attacking.cost + 30 < standard.cost
+    ? '4–2–3–1'
+    : '4–4–2'
+
+  return {
+    formation,
+    placements: formation === '4–4–2' ? standard.placements : attacking.placements,
   }
-
-  return assignments
 }
 
 function shortPlayerName(name: string) {

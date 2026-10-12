@@ -129,7 +129,7 @@ function ResultCard({ match }: { match: Match | null }) {
   )
 
   return (
-    <article className="home-match-card group relative min-h-[330px] rounded-[32px] border border-sand-200 bg-white/90 p-6 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur transition-shadow hover:shadow-[0_26px_68px_rgba(24,53,42,.12)] lg:col-span-7 sm:p-7">
+    <article className="home-match-card group relative min-h-[300px] rounded-[32px] border border-sand-200 bg-white/90 p-5 shadow-[0_22px_60px_rgba(24,53,42,.08)] backdrop-blur transition-shadow hover:shadow-[0_26px_68px_rgba(24,53,42,.12)] sm:min-h-[330px] sm:p-7 lg:col-span-7">
       <Link
         to={withReturnPath(`/zapasy/${match.id}`, '/')}
         className="absolute inset-0 z-[1] rounded-[32px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
@@ -144,14 +144,14 @@ function ResultCard({ match }: { match: Match | null }) {
         </div>
       </div>
 
-      <div className="home-match-card-main mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-7">
+      <div className="home-match-card-main mt-7 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:mt-8 sm:gap-7">
         <ClubSide name={match.home_team_name} logo={match.home_team_logo} />
 
-        <div className="min-w-[108px] text-center">
+        <div className="min-w-[82px] text-center sm:min-w-[108px]">
           <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-500">
             Konečný stav
           </div>
-          <div className="mt-2 text-5xl font-black tracking-[-0.075em] text-brand-900 sm:text-6xl">
+          <div className="mt-2 text-4xl font-black tracking-[-0.075em] text-brand-900 sm:text-6xl">
             {score ?? '—'}
           </div>
         </div>
@@ -180,7 +180,7 @@ function UpcomingCard({ match }: { match: Match | null }) {
   }
 
   return (
-    <article className="home-match-card group relative min-h-[330px] overflow-hidden rounded-[32px] bg-brand-900 p-6 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] transition-shadow hover:shadow-[0_28px_72px_rgba(24,53,42,.22)] lg:col-span-5 sm:p-7">
+    <article className="home-match-card group relative min-h-[300px] overflow-hidden rounded-[32px] bg-brand-900 p-5 text-white shadow-[0_22px_60px_rgba(24,53,42,.16)] transition-shadow hover:shadow-[0_28px_72px_rgba(24,53,42,.22)] sm:min-h-[330px] sm:p-7 lg:col-span-5">
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(circle_at_85%_12%,rgba(0,146,63,.34),transparent_34%)]"
@@ -200,14 +200,14 @@ function UpcomingCard({ match }: { match: Match | null }) {
           </div>
         </div>
 
-        <div className="home-match-card-main mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+        <div className="home-match-card-main mt-7 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:mt-8 sm:gap-5">
           <ClubSide
             name={match.home_team_name}
             logo={match.home_team_logo}
             dark
           />
 
-          <div className="min-w-[90px] text-center">
+          <div className="min-w-[76px] text-center sm:min-w-[90px]">
             <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">
               Výkop
             </div>
@@ -279,7 +279,7 @@ function ClubSide({
     <div className="flex min-w-0 flex-col items-center gap-3 text-center">
       <ClubLogo src={logo} name={name} size="lg" />
       <div
-        className={`line-clamp-2 min-h-[38px] max-w-[150px] text-sm font-extrabold leading-[1.15] ${
+        className={`hidden line-clamp-2 min-h-[38px] max-w-[150px] text-sm font-extrabold leading-[1.15] min-[480px]:block ${
           dark ? 'text-white' : 'text-ink-900'
         }`}
       >

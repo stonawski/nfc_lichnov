@@ -107,6 +107,7 @@ export function AdminPlayerEditorPage() {
         queryClient.invalidateQueries({ queryKey: ['admin-player', id] }),
         queryClient.invalidateQueries({ queryKey: ['admin-players'] }),
         queryClient.invalidateQueries({ queryKey: ['players'] }),
+        queryClient.invalidateQueries({ queryKey: ['match-participants'] }),
       ])
     },
   })
@@ -136,6 +137,7 @@ export function AdminPlayerEditorPage() {
         queryClient.invalidateQueries({ queryKey: ['admin-player', id] }),
         queryClient.invalidateQueries({ queryKey: ['admin-players'] }),
         queryClient.invalidateQueries({ queryKey: ['players'] }),
+        queryClient.invalidateQueries({ queryKey: ['match-participants'] }),
       ])
     },
   })
@@ -320,7 +322,7 @@ export function AdminPlayerEditorPage() {
                 ))}
               </select>
               <p className="mt-2 text-xs leading-5 text-ink-500">
-                Pozice je doporučení pro grafickou sestavu. Zápas se vždy zobrazí ve formaci 4–4–2 a volná místa se doplní automaticky.
+                Pozice z CMS určuje řadu a stranu hráče v grafické sestavě. Jen hráči bez rozpoznané pozice se doplní automaticky.
               </p>
             </Field>
 
