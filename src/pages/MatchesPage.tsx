@@ -384,10 +384,10 @@ function MatchCard({
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
         <TeamIdentity name={match.home_team_name} logo={match.home_team_logo} align="right" />
 
-        <div className="min-w-[76px] text-center">
+        <div className="min-w-[68px] text-center sm:min-w-[76px]">
           {upcoming ? (
             <div className="rounded-2xl bg-brand-50 px-3 py-2 ring-1 ring-brand-500/10">
               <div className="text-base font-black tracking-[-0.04em] text-brand-900">
@@ -449,6 +449,8 @@ function TeamIdentity({
 
       <div
         className={`min-w-0 font-extrabold tracking-[-0.035em] ${
+          !large ? 'hidden min-[480px]:block ' : ''
+        }${
           large ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-sm sm:text-base'
         }`}
       >
