@@ -569,7 +569,7 @@ export function TeamPage() {
                           {index + 1}
                         </div>
 
-                        <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                           <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-sand-200 bg-sand-100">
                             {player.photo_url ? (
                               <img
@@ -1245,7 +1245,7 @@ function HeroMatch({
   return (
     <Link
       to={withReturnPath(`/zapasy/${match.id}`, returnTo)}
-      className="group grid min-h-[58px] w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-4"
+      className="group grid min-h-[58px] w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2 sm:gap-4"
     >
       <div className="grid min-w-0 grid-rows-[12px_38px]">
         <div className="text-[8px] font-bold uppercase leading-3 tracking-[0.15em] text-ink-500">
@@ -1291,7 +1291,7 @@ function HeroClub({ name, logo }: { name: string; logo: string | null }) {
           <span className="text-[8px] font-black text-brand-900">{initials(name)}</span>
         )}
       </div>
-      <div className="line-clamp-2 max-w-[120px] text-[10px] font-bold leading-[1.15] text-brand-900/78">
+      <div className="hidden line-clamp-2 max-w-[120px] text-[10px] font-bold leading-[1.15] text-brand-900/78 min-[480px]:block">
         {name}
       </div>
     </div>
