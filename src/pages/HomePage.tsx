@@ -274,46 +274,38 @@ export function HomePage() {
 
       
 
-      <section className="relative overflow-hidden bg-sand-100 px-5 py-20 md:px-8 md:py-28">
-        <div className="relative mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Klubový deník"
-            title="Aktuálně z Lichnova"
-            text="Novinky z hřiště, kabiny i života klubu."
-          />
-
-          {newsQuery.isLoading ? (
-            <LoadingState rows={3} />
-          ) : news.length ? (
-            <DataFade>
-              <NewsSpotlight articles={news} />
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Aktuality zatím nejsou publikované"
-              text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
-              />
-            </DataFade>
-          )}
+      <section className="relative overflow-hidden bg-[#102b22] pb-10 pt-16 text-white sm:pb-16 sm:pt-20">
+        <div className="mx-auto mb-6 max-w-[1240px] px-5 sm:mb-9 md:px-8">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#91d3a6] sm:text-xs">
+            Klubový deník
+          </div>
+          <h2 className="mt-3 text-4xl font-black leading-[.96] tracking-[-0.055em] text-white sm:text-5xl">
+            Aktuálně z Lichnova
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">
+            Novinky z hřiště, kabiny i života klubu.
+          </p>
         </div>
-      </section>
 
-      {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
-        <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
-          <div className="mx-auto max-w-[1240px]">
+        {newsQuery.isLoading ? (
+          <div className="mx-auto max-w-[1240px] px-5 md:px-8">
             <LoadingState rows={3} />
           </div>
-        </section>
-      ) : men && menPlayersQuery.data?.length ? (
-        <DataFade>
-          <PlayerStripCarousel
-            team={men}
-            players={menPlayersQuery.data}
-            flush
-          />
-        </DataFade>
-      ) : null}
+        ) : news.length ? (
+          <DataFade>
+            <NewsSpotlight articles={news} />
+          </DataFade>
+        ) : (
+          <div className="mx-auto max-w-[1240px] px-5 md:px-8">
+            <div className="rounded-[22px] border border-white/10 p-6 text-white">
+              <h3 className="text-xl font-bold">Aktuality zatím nejsou publikované</h3>
+              <p className="mt-3 text-sm text-white/70">
+                Jakmile v administraci zveřejníš první článek, objeví se automaticky tady.
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
@@ -477,8 +469,21 @@ export function HomePage() {
         </div>
       </section>
 
-      
-
+      {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
+        <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <LoadingState rows={3} />
+          </div>
+        </section>
+      ) : men && menPlayersQuery.data?.length ? (
+        <DataFade>
+          <PlayerStripCarousel
+            team={men}
+            players={menPlayersQuery.data}
+            flush
+          />
+        </DataFade>
+      ) : null}
 
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">
