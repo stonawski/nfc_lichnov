@@ -27,7 +27,7 @@ import {
   matchScore,
   matchVenueMapUrl,
 } from '../lib/format'
-import { normalizeTacticalPosition } from '../lib/playerPosition'
+import { normalizeTacticalPosition, tacticalPositionPoint } from '../lib/playerPosition'
 import { safeReturnPath } from '../lib/navigationState'
 import type {
   Match,
@@ -243,7 +243,7 @@ function MatchHero({
           <span>{match.state || (upcoming ? 'Nadcházející utkání' : 'Odehráno')}</span>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4">
           <HeroTeam name={match.home_team_name} logo={homeLogo} align="right" />
 
           <div className="text-center">
@@ -321,8 +321,8 @@ function HeroTeam({
 
   return (
     <div
-      className={`flex items-center gap-4 ${
-        reverse ? 'flex-row-reverse text-right' : 'text-left'
+      className={`flex min-w-0 items-center justify-center gap-3 md:gap-4 ${
+        reverse ? 'md:flex-row-reverse md:justify-start md:text-right' : 'md:justify-start md:text-left'
       }`}
     >
       <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-[18px] bg-white/95 ring-1 ring-white/20 sm:h-16 sm:w-16">
@@ -333,7 +333,7 @@ function HeroTeam({
         )}
       </div>
 
-      <div className="text-lg font-black leading-tight tracking-[-0.045em] sm:text-xl lg:text-2xl">
+      <div className="hidden min-w-0 text-lg font-black leading-tight tracking-[-0.045em] md:block md:text-xl lg:text-2xl">
         {name}
       </div>
     </div>
@@ -362,7 +362,7 @@ function FormationPitch({
     (person) => person.starter === false || !starterIds.has(person.id),
   )
 
-  const placements = assignFourFourTwo(starters)
+  const placements = assignFormation(starters)
 
   return (
     <div>
@@ -487,11 +487,11 @@ function PitchPlayer({
 }) {
   return (
     <div
-      className="absolute z-10 w-[108px] -translate-x-1/2 -translate-y-1/2 text-center sm:w-[124px]"
+      className="absolute z-10 w-[76px] -translate-x-1/2 -translate-y-1/2 text-center min-[390px]:w-[82px] sm:w-[116px] lg:w-[124px]"
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div className="relative mx-auto w-fit">
-        <div className="flex h-12 w-12 items-end justify-center overflow-hidden rounded-[16px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
+        <div className="flex h-11 w-11 items-end justify-center overflow-hidden rounded-[15px] bg-white/72 shadow-[0_8px_18px_rgba(24,53,42,0.12)] ring-1 ring-white sm:h-[60px] sm:w-[60px]">
           {player.photo_url ? (
             <img
               src={player.photo_url}
@@ -505,7 +505,7 @@ function PitchPlayer({
           )}
         </div>
 
-        <div className="absolute -right-5 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1">
+        <div className="absolute -right-3 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1 sm:-right-5">
           {player.captain && (
             <span
               className="grid h-5 min-w-5 place-items-center rounded bg-[#e8d9a9] px-1 text-[8px] font-black text-brand-900 shadow-sm ring-1 ring-black/5"
@@ -518,14 +518,14 @@ function PitchPlayer({
         </div>
       </div>
 
-      <div className="relative -mt-1.5 rounded-xl bg-brand-900/95 px-2.5 py-2 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm">
+      <div className="relative -mt-1.5 rounded-[10px] bg-brand-900/95 px-1.5 py-1.5 text-white shadow-[0_8px_20px_rgba(24,53,42,0.24)] ring-1 ring-white/35 backdrop-blur-sm sm:rounded-xl sm:px-2.5 sm:py-2">
         <div className="flex min-w-0 items-center justify-center gap-1.5">
           {player.number != null && (
-            <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-md bg-white/12 px-1 text-[9px] font-black text-white/80 sm:text-[10px]">
+            <span className="grid h-4 min-w-4 shrink-0 place-items-center rounded bg-white/12 px-0.5 text-[8px] font-black text-white/80 sm:h-5 sm:min-w-5 sm:rounded-md sm:px-1 sm:text-[10px]">
               {player.number}
             </span>
           )}
-          <span className="truncate text-[11px] font-extrabold leading-none tracking-[-0.02em] sm:text-xs">
+          <span className="truncate text-[9px] font-extrabold leading-none tracking-[-0.03em] min-[390px]:text-[10px] sm:text-xs">
             {shortPlayerName(player.name)}
           </span>
         </div>
@@ -617,31 +617,6 @@ function PlayerEventBadges({
   )
 }
 
-type FormationSlot = {
-  id: string
-  x: number
-  y: number
-  line: FormationLine
-  preferred: string[]
-}
-
-const FOUR_FOUR_TWO_SLOTS: FormationSlot[] = [
-  { id: 'gk', x: 50, y: 89, line: 'goalkeeper', preferred: ['GK'] },
-
-  { id: 'lb', x: 13, y: 67, line: 'defence', preferred: ['LB'] },
-  { id: 'lcb', x: 38, y: 67, line: 'defence', preferred: ['LCB', 'CB'] },
-  { id: 'rcb', x: 62, y: 67, line: 'defence', preferred: ['RCB', 'CB'] },
-  { id: 'rb', x: 87, y: 67, line: 'defence', preferred: ['RB'] },
-
-  { id: 'lm', x: 13, y: 42, line: 'midfield', preferred: ['LW', 'LCM'] },
-  { id: 'lcm', x: 38, y: 42, line: 'midfield', preferred: ['LCM', 'CM', 'DM', 'AM'] },
-  { id: 'rcm', x: 62, y: 42, line: 'midfield', preferred: ['RCM', 'CM', 'DM', 'AM'] },
-  { id: 'rm', x: 87, y: 42, line: 'midfield', preferred: ['RW', 'RCM'] },
-
-  { id: 'ls', x: 38, y: 18, line: 'attack', preferred: ['ST', 'LW'] },
-  { id: 'rs', x: 62, y: 18, line: 'attack', preferred: ['ST', 'RW'] },
-]
-
 function positionLine(position: string | null): FormationLine | null {
   const tactical = normalizeTacticalPosition(position)
 
@@ -653,45 +628,35 @@ function positionLine(position: string | null): FormationLine | null {
   return null
 }
 
-function formationSlotScore(player: MatchParticipant, slot: FormationSlot) {
-  const tactical = normalizeTacticalPosition(player.position)
-  const line = positionLine(player.position)
-
-  if (tactical) {
-    const exactIndex = slot.preferred.indexOf(tactical)
-    if (exactIndex >= 0) return exactIndex
-
-    if (line === slot.line) return 20
-
-    if (
-      (line === 'attack' && slot.line === 'midfield') ||
-      (line === 'midfield' && slot.line === 'attack')
-    ) {
-      return 45
-    }
-
-    if (
-      (line === 'defence' && slot.line === 'midfield') ||
-      (line === 'midfield' && slot.line === 'defence')
-    ) {
-      return 55
-    }
-
-    return slot.line === 'goalkeeper' ? 500 : 90
-  }
-
-  return slot.line === 'goalkeeper' ? 110 : 100
+const FORMATION_ROW_Y: Record<FormationLine, number> = {
+  goalkeeper: 89,
+  defence: 68,
+  midfield: 44,
+  attack: 19,
 }
 
-function assignFourFourTwo(starters: MatchParticipant[]) {
-  const available = [...FOUR_FOUR_TWO_SLOTS]
+function formationRowX(count: number) {
+  if (count <= 1) return [50]
+  if (count === 2) return [36, 64]
+  if (count === 3) return [20, 50, 80]
+  if (count === 4) return [11, 37, 63, 89]
+
+  const edge = 7
+  const step = (100 - edge * 2) / Math.max(1, count - 1)
+  return Array.from({ length: count }, (_, index) => edge + step * index)
+}
+
+function playerLateralX(player: MatchParticipant) {
+  return tacticalPositionPoint(player.position)?.x ?? 50
+}
+
+function assignFormation(starters: MatchParticipant[]) {
+  const remaining = [...starters]
   const assignments: Array<{
     player: MatchParticipant
     x: number
     y: number
   }> = []
-
-  const remaining = [...starters]
 
   const goalkeeperIndex = remaining.findIndex(
     (player) => normalizeTacticalPosition(player.position) === 'GK',
@@ -702,71 +667,62 @@ function assignFourFourTwo(starters: MatchParticipant[]) {
 
   if (selectedGoalkeeperIndex >= 0) {
     const [goalkeeper] = remaining.splice(selectedGoalkeeperIndex, 1)
-    const goalkeeperSlot = available.find((slot) => slot.line === 'goalkeeper')!
-    available.splice(available.indexOf(goalkeeperSlot), 1)
     assignments.push({
       player: goalkeeper,
-      x: goalkeeperSlot.x,
-      y: goalkeeperSlot.y,
+      x: 50,
+      y: FORMATION_ROW_Y.goalkeeper,
     })
   }
 
-  const positioned = remaining
-    .filter((player) => normalizeTacticalPosition(player.position))
-    .sort((a, b) => {
-      const aLine = positionLine(a.position)
-      const bLine = positionLine(b.position)
-      const priority: Record<FormationLine, number> = {
-        goalkeeper: 0,
-        defence: 1,
-        midfield: 2,
-        attack: 3,
-      }
-      return (aLine ? priority[aLine] : 9) - (bLine ? priority[bLine] : 9)
-    })
+  const rows: Record<'defence' | 'midfield' | 'attack', MatchParticipant[]> = {
+    defence: [],
+    midfield: [],
+    attack: [],
+  }
+  const unknown: MatchParticipant[] = []
 
-  for (const player of positioned) {
-    if (!available.length) break
-
-    let bestSlot = available[0]
-    let bestScore = formationSlotScore(player, bestSlot)
-
-    for (const slot of available.slice(1)) {
-      const score = formationSlotScore(player, slot)
-      if (score < bestScore) {
-        bestSlot = slot
-        bestScore = score
-      }
+  for (const player of remaining) {
+    const line = positionLine(player.position)
+    if (line === 'defence' || line === 'midfield' || line === 'attack') {
+      rows[line].push(player)
+    } else {
+      unknown.push(player)
     }
-
-    assignments.push({ player, x: bestSlot.x, y: bestSlot.y })
-    available.splice(available.indexOf(bestSlot), 1)
-    remaining.splice(remaining.indexOf(player), 1)
   }
 
-  const fallbackOrder: FormationLine[] = [
-    'goalkeeper',
+  const targetCounts = { defence: 4, midfield: 4, attack: 2 }
+  const rowOrder: Array<'defence' | 'midfield' | 'attack'> = [
     'defence',
     'midfield',
     'attack',
   ]
 
-  for (const line of fallbackOrder) {
-    const slots = available.filter((slot) => slot.line === line)
+  for (const player of unknown) {
+    const bestLine = [...rowOrder].sort((a, b) => {
+      const aDeficit = targetCounts[a] - rows[a].length
+      const bDeficit = targetCounts[b] - rows[b].length
+      return bDeficit - aDeficit
+    })[0]
 
-    for (const slot of slots) {
-      const player = remaining.shift()
-      if (!player) break
-
-      assignments.push({ player, x: slot.x, y: slot.y })
-      available.splice(available.indexOf(slot), 1)
-    }
+    rows[bestLine].push(player)
   }
 
-  while (remaining.length && available.length) {
-    const player = remaining.shift()!
-    const slot = available.shift()!
-    assignments.push({ player, x: slot.x, y: slot.y })
+  for (const line of rowOrder) {
+    const players = [...rows[line]].sort(
+      (a, b) =>
+        playerLateralX(a) - playerLateralX(b) ||
+        (a.number ?? Number.MAX_SAFE_INTEGER) -
+          (b.number ?? Number.MAX_SAFE_INTEGER),
+    )
+    const xs = formationRowX(players.length)
+
+    players.forEach((player, index) => {
+      assignments.push({
+        player,
+        x: xs[index] ?? 50,
+        y: FORMATION_ROW_Y[line],
+      })
+    })
   }
 
   return assignments
