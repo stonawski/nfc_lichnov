@@ -695,8 +695,8 @@ function FanshopShowcase() {
           FANSHOP
         </div>
 
-        <div className="relative grid gap-9 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[330px_minmax(0,1fr)] xl:gap-10">
-          <div className="flex min-h-[570px] flex-col justify-between py-2 lg:min-h-[560px]">
+        <div className="relative grid items-start gap-9 md:grid-cols-[minmax(0,250px)_minmax(0,1fr)] md:gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[330px_minmax(0,1fr)] xl:gap-10">
+          <div className="flex flex-col justify-between py-2 md:min-h-[560px]">
             <div>
               <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-500 sm:text-xs">
                 <ShoppingBag size={15} />
@@ -707,7 +707,7 @@ function FanshopShowcase() {
                 NFC nosíme i mimo hřiště.
               </h2>
 
-              <div className="mt-10 max-w-[280px]">
+              <div className="mt-8 max-w-[280px] md:mt-10">
                 <div className="text-[9px] font-black uppercase tracking-[0.17em] text-brand-500">
                   Fanoušci NFC
                 </div>
