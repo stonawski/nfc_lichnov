@@ -569,7 +569,7 @@ export function TeamPage() {
                           {index + 1}
                         </div>
 
-                        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
                           <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-sand-200 bg-sand-100">
                             {player.photo_url ? (
                               <img
@@ -1251,7 +1251,7 @@ function HeroMatch({
         <div className="text-[8px] font-bold uppercase leading-3 tracking-[0.15em] text-ink-500">
           {label}
         </div>
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <HeroClub name={match.home_team_name} logo={match.home_team_logo} />
           <div className="shrink-0 text-center">
             {kind === 'result' ? (
