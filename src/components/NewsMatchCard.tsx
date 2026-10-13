@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ArrowUpRight, CalendarDays } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ClubLogo } from './ClubLogo'
-import { fetchMatchById } from '../lib/data'
+import { fetchMatchById, fetchTeams } from '../lib/data'
 import { formatMatchDate, isUpcomingMatch, matchScore } from '../lib/format'
 
 export function NewsMatchCard({
@@ -18,8 +18,17 @@ export function NewsMatchCard({
     enabled: Boolean(matchId),
     retry: false,
   })
+  const teamsQuery = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    retry: false,
+  })
   const match = query.data
   if (!match) return null
+
+  const clubLogo = teamsQuery.data?.find((team) => team.id === match.team_id)?.logo_url
+  const homeLogo = match.home_team_logo || (/lichnov/i.test(match.home_team_name) ? clubLogo : null)
+  const awayLogo = match.away_team_logo || (/lichnov/i.test(match.away_team_name) ? clubLogo : null)
 
   const upcoming = isUpcomingMatch(match.playing_at)
   const score = matchScore(
@@ -46,7 +55,7 @@ export function NewsMatchCard({
 
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-5">
         <div className="flex min-w-0 flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
-          <ClubLogo src={match.home_team_logo} name={match.home_team_name} size="sm" />
+          <ClubLogo src={homeLogo} name={match.home_team_name} size="sm" />
           <span className={`text-xs font-extrabold leading-snug sm:text-sm ${dark ? 'text-white' : 'text-brand-900'}`}>
             {match.home_team_name}
           </span>
@@ -55,7 +64,7 @@ export function NewsMatchCard({
           {upcoming ? 'VS' : score || '–'}
         </span>
         <div className="flex min-w-0 flex-col items-center gap-2 text-center sm:flex-row-reverse sm:text-right">
-          <ClubLogo src={match.away_team_logo} name={match.away_team_name} size="sm" />
+          <ClubLogo src={awayLogo} name={match.away_team_name} size="sm" />
           <span className={`text-xs font-extrabold leading-snug sm:text-sm ${dark ? 'text-white' : 'text-brand-900'}`}>
             {match.away_team_name}
           </span>
