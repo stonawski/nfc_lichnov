@@ -489,7 +489,7 @@ export function AdminNewsEditorPage() {
                   onChange={(event) => {
                     setTeamId(event.target.value)
                     setMatchId('')
-                  }
+                  }}
                   className="admin-input"
                 >
                   <option value="">Celý klub</option>
