@@ -9,6 +9,7 @@ import {
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
+import { NewsMatchCard } from '../components/NewsMatchCard'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchPublishedNews, fetchTeams } from '../lib/data'
@@ -383,7 +384,7 @@ function NewsCard({ article }: { article: NewsArticle }) {
       to={`/aktuality/${article.slug}`}
       className="group overflow-hidden rounded-[30px] border border-sand-200 bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-soft"
     >
-      <div className="aspect-[16/10] overflow-hidden bg-sand-100">
+      <div className="relative aspect-[16/10] overflow-hidden bg-sand-100">
         {article.cover_image ? (
           <img
             src={article.cover_image}
@@ -398,6 +399,9 @@ function NewsCard({ article }: { article: NewsArticle }) {
             aria-hidden="true"
             className="h-full w-full object-cover opacity-70"
           />
+        )}
+        {article.match_id && (
+          <NewsMatchCard matchId={article.match_id} variant="thumbnail" />
         )}
       </div>
 
