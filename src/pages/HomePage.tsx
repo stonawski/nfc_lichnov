@@ -301,7 +301,7 @@ export function HomePage() {
         </section>
       )}
 
-      <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
+      <section className="relative z-20 -mt-7 rounded-t-[30px] border-t border-white/50 bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
