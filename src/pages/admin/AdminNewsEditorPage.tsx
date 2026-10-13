@@ -6,6 +6,9 @@ import {
   Eye,
   EyeOff,
   Image as ImageIcon,
+  Film,
+  Images,
+  Plus,
   Save,
   Star,
   Trash2,
@@ -14,7 +17,11 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
+  addNewsMedia,
   deleteNewsArticle,
+  deleteNewsMedia,
+  fetchAdminNewsMedia,
+  fetchNewsMatchOptions,
   fetchAdminNewsById,
   setNewsCover,
   setNewsPublished,
@@ -22,7 +29,7 @@ import {
   type UpdateNewsInput,
 } from '../../lib/adminData'
 import { fetchTeams } from '../../lib/data'
-import { formatDate } from '../../lib/format'
+import { formatDate, formatMatchDate } from '../../lib/format'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
 
 function slugify(value: string) {
@@ -55,12 +62,28 @@ export function AdminNewsEditorPage() {
 
   const article = articleQuery.data
 
+  const matchOptionsQuery = useQuery({
+    queryKey: ['admin-news-match-options', teamId],
+    queryFn: () => fetchNewsMatchOptions(teamId || undefined),
+    retry: false,
+  })
+
+  const mediaQuery = useQuery({
+    queryKey: ['admin-news-media', id],
+    queryFn: () => fetchAdminNewsMedia(id),
+    enabled: Boolean(id),
+    retry: false,
+  })
+  const media = mediaQuery.data ?? []
+
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [content, setContent] = useState('')
   const [category, setCategory] = useState('')
   const [teamId, setTeamId] = useState('')
+  const [matchId, setMatchId] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
   const [featured, setFeatured] = useState(false)
   const [slugEdited, setSlugEdited] = useState(false)
 
@@ -73,6 +96,7 @@ export function AdminNewsEditorPage() {
     setContent(article.content ?? '')
     setCategory(article.category ?? '')
     setTeamId(article.team_id ?? '')
+    setMatchId(article.match_id ?? '')
     setFeatured(Boolean(article.featured))
   }, [article])
 
@@ -85,9 +109,10 @@ export function AdminNewsEditorPage() {
       cover_image: article?.cover_image ?? null,
       category: category || null,
       team_id: teamId || null,
+      match_id: matchId || null,
       featured,
     }),
-    [article?.cover_image, category, content, excerpt, featured, slug, teamId, title],
+    [article?.cover_image, category, content, excerpt, featured, matchId, slug, teamId, title],
   )
 
   const saveMutation = useMutation({
@@ -114,6 +139,62 @@ export function AdminNewsEditorPage() {
       ])
     },
   })
+
+  const mediaMutation = useMutation({
+    mutationFn: async ({ url, type }: { url: string; type: 'image' | 'video' }) =>
+      addNewsMedia(id, type, url),
+    onSuccess: async () => {
+      setVideoUrl('')
+      await queryClient.invalidateQueries({ queryKey: ['admin-news-media', id] })
+      await queryClient.invalidateQueries({ queryKey: ['news-media', id] })
+    },
+  })
+
+  const deleteMediaMutation = useMutation({
+    mutationFn: async ({ id: mediaId, url }: { id: string; url: string }) => {
+      await deleteNewsMedia(mediaId)
+      try {
+        const key = mediaObjectKeyFromUrl(url)
+        if (key.startsWith(`news/${id}/`)) {
+          await deleteMediaObjects({ scope: 'news', resourceId: id, objectKeys: [key] })
+        }
+      } catch (error) {
+        console.warn('Article media could not be deleted from R2', error)
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-news-media', id] })
+      await queryClient.invalidateQueries({ queryKey: ['news-media', id] })
+    },
+  })
+
+  async function handleAdditionalMediaUploaded({
+    publicUrl, originalFile,
+  }: {
+    publicUrl: string
+    originalFile: File
+  }) {
+    await mediaMutation.mutateAsync({
+      url: publicUrl,
+      type: originalFile.type.startsWith('video/') ? 'video' : 'image',
+    })
+  }
+
+  function saveVideoLink() {
+    try {
+      const url = new URL(videoUrl.trim())
+      const hostname = url.hostname.toLowerCase()
+      const validHost =
+        hostname === 'youtube.com' || hostname === 'www.youtube.com' ||
+        hostname === 'youtu.be' || hostname === 'vimeo.com' ||
+        hostname === 'www.vimeo.com' ||
+        /\\.(mp4|webm)$/i.test(url.pathname)
+      if (url.protocol !== 'https:' || !validHost) throw new Error('Unsupported URL')
+      mediaMutation.mutate({ type: 'video', url: url.toString() })
+    } catch {
+      window.alert('Vlož platnou HTTPS adresu YouTube, Vimeo nebo MP4/WebM videa.')
+    }
+  }
 
   const removeCoverMutation = useMutation({
     mutationFn: async () => {
@@ -156,6 +237,25 @@ export function AdminNewsEditorPage() {
             resourceId: id,
             objectKeys: [objectKey],
           })
+        }
+      }
+
+      // Also remove media owned by this news item from R2.
+      const objectKeys = media
+        .map((item) => {
+          try {
+            const key = mediaObjectKeyFromUrl(item.media_url)
+            return key.startsWith(`news/${id}/`) ? key : null
+          } catch {
+            return null
+          }
+        })
+        .filter((key): key is string => Boolean(key))
+      if (objectKeys.length) {
+        try {
+          await deleteMediaObjects({ scope: 'news', resourceId: id, objectKeys })
+        } catch (error) {
+          console.warn('News media cleanup failed', error)
         }
       }
 
@@ -385,7 +485,10 @@ export function AdminNewsEditorPage() {
               <Field label="Tým">
                 <select
                   value={teamId}
-                  onChange={(event) => setTeamId(event.target.value)}
+                  onChange={(event) => {
+                    setTeamId(event.target.value)
+                    setMatchId('')
+                  }
                   className="admin-input"
                 >
                   <option value="">Celý klub</option>
@@ -395,6 +498,41 @@ export function AdminNewsEditorPage() {
                     </option>
                   ))}
                 </select>
+              </Field>
+
+              <Field label="Přiřadit k zápasu (nepovinné)">
+                <select
+                  value={matchId}
+                  onChange={(event) => setMatchId(event.target.value)}
+                  className="admin-input"
+                  disabled={matchOptionsQuery.isLoading}
+                >
+                  <option value="">Bez přiřazeného zápasu</option>
+                  {matchId && !(matchOptionsQuery.data ?? []).some((match) => match.id === matchId) && (
+                    <option value={matchId}>Dříve přiřazený zápas</option>
+                  )}
+                  <optgroup label="Nadcházející zápasy">
+                    {(matchOptionsQuery.data ?? []).filter((match) => new Date(match.playing_at).getTime() > Date.now()).map((match) => (
+                      <option key={match.id} value={match.id}>
+                        {formatMatchDate(match.playing_at)} · {match.home_team_name} – {match.away_team_name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Odehrané zápasy">
+                    {(matchOptionsQuery.data ?? []).filter((match) => new Date(match.playing_at).getTime() <= Date.now()).map((match) => (
+                      <option key={match.id} value={match.id}>
+                        {formatMatchDate(match.playing_at)} · {match.home_team_name} – {match.away_team_name}
+                        {match.final_score ? ` (${match.final_score})` : ''}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <p className="mt-2 text-xs leading-5 text-ink-500">
+                  V aktualitě se objeví názvy a loga obou týmů, termín a případně výsledek.
+                </p>
+                {matchOptionsQuery.isError && (
+                  <p className="mt-2 text-xs text-red-600">Zápasy se nepodařilo načíst.</p>
+                )}
               </Field>
 
               <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-sand-200 bg-white p-4">
@@ -464,12 +602,86 @@ export function AdminNewsEditorPage() {
             </div>
           </section>
 
+          <section className="rounded-[30px] border border-sand-200 bg-[#fbfaf6] p-5 sm:p-6">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-brand-500">
+              <Images size={15} /> Galerie článku
+            </div>
+            <p className="mt-2 text-xs leading-5 text-ink-500">
+              Fotografie a videa se zobrazí pod obsahem článku, před dalšími aktualitami.
+            </p>
+
+            {media.length > 0 && (
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                {media.map((item) => (
+                  <div key={item.id} className="overflow-hidden rounded-2xl border border-sand-200 bg-white">
+                    <div className="relative aspect-[4/3] bg-sand-100">
+                      {item.media_type === 'image' ? (
+                        <img src={item.media_url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full flex-col items-center justify-center gap-2 px-2 text-center">
+                          <Film size={26} className="text-brand-700" />
+                          <span className="line-clamp-2 break-all text-[10px] text-ink-500">{item.media_url}</span>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      disabled={deleteMediaMutation.isPending}
+                      onClick={() => {
+                        if (window.confirm('Odstranit toto médium z aktuality?')) {
+                          deleteMediaMutation.mutate({ id: item.id, url: item.media_url })
+                        }
+                      }}
+                      className="flex w-full items-center justify-center gap-1.5 px-2 py-3 text-xs font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      <Trash2 size={13} /> Odstranit
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-5">
+              <MediaUploader
+                scope="news"
+                resourceId={id}
+                allowVideo
+                onUploaded={handleAdditionalMediaUploaded}
+              />
+            </div>
+
+            <div className="mt-5 border-t border-sand-200 pt-5">
+              <Field label="Nebo vložit odkaz na video">
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(event) => setVideoUrl(event.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=…"
+                  className="admin-input"
+                />
+              </Field>
+              <button
+                type="button"
+                disabled={!videoUrl.trim() || mediaMutation.isPending}
+                onClick={saveVideoLink}
+                className="mt-3 inline-flex items-center gap-2 rounded-xl bg-brand-900 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50"
+              >
+                <Plus size={14} /> Přidat video
+              </button>
+            </div>
+            {(mediaQuery.isError || mediaMutation.isError || deleteMediaMutation.isError) && (
+              <p className="mt-3 text-xs font-semibold text-red-600">
+                Média se nepodařilo načíst nebo uložit. Zkontroluj databázovou migraci a oprávnění.
+              </p>
+            )}
+          </section>
+
           <section className="rounded-[30px] border border-red-200 bg-red-50/60 p-5 sm:p-6">
             <div className="text-xs font-bold uppercase tracking-[0.15em] text-red-600">
               Nebezpečná zóna
             </div>
             <p className="mt-2 text-xs leading-5 text-red-700/75">
-              Smazání článku je nevratné a odstraní i titulní fotografii uloženou v R2.
+              Smazání článku je nevratné a odstraní také připojené fotografie a videa.
             </p>
 
             <button
