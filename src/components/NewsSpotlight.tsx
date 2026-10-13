@@ -80,8 +80,8 @@ export function NewsSpotlight({
       />
 
       <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
-        <div className="relative flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
-          <div className="max-w-[720px]">
+        <div className="relative flex min-h-[430px] min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
+          <div className="relative z-10 max-w-[720px]">
             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.14em] sm:text-xs">
               <span aria-hidden="true" className="h-[2px] w-9 rounded-full bg-[#6ad094]" />
               <span className="rounded-full border border-[#a3e9b8]/25 bg-[#174d35]/55 px-3 py-1.5 text-[#baf0c7] backdrop-blur-sm">
