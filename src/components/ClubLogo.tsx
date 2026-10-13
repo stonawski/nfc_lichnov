@@ -15,7 +15,7 @@ export function ClubLogo({
     size === 'sm'
       ? 'h-9 w-9'
       : size === 'hero'
-        ? 'h-28 w-28 sm:h-44 sm:w-44 lg:h-60 lg:w-60 xl:h-72 xl:w-72'
+        ? 'h-24 w-24 sm:h-40 sm:w-40 lg:h-52 lg:w-52 xl:h-56 xl:w-56'
         : size === 'lg'
           ? 'h-16 w-16 sm:h-20 sm:w-20'
           : 'h-12 w-12'
@@ -26,7 +26,7 @@ export function ClubLogo({
       alt={`Logo ${name}`}
       loading={loading}
       decoding="async"
-      className={`${classes} ${size === 'hero' ? 'object-contain drop-shadow-[0_12px_32px_rgba(0,0,0,.48)]' : 'rounded-full bg-white p-1 object-contain ring-1 ring-sand-200'}`}
+      className={`${classes} ${size === 'hero' ? 'rounded-full bg-white p-2.5 sm:p-3 object-contain ring-1 ring-white/80 shadow-[0_14px_36px_rgba(0,0,0,.28)]' : 'rounded-full bg-white p-1 object-contain ring-1 ring-sand-200'}`}
     />
   ) : (
     <div

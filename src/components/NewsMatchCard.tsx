@@ -52,7 +52,7 @@ export function NewsMatchCard({
           <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">
             <ClubLogo src={homeLogo} name={match.home_team_name} size={isHero ? 'hero' : 'lg'} />
           </div>
-          <span className={`text-center font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.85)] ${isHero ? 'min-w-[55px] text-4xl sm:text-5xl lg:text-6xl' : 'min-w-[70px] text-4xl sm:text-5xl'}`}>
+          <span className={`text-center font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.85)] ${isHero ? 'min-w-[55px] text-4xl sm:text-6xl lg:text-7xl' : 'min-w-[70px] text-4xl sm:text-5xl'}`}>
             {score}
           </span>
           <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">

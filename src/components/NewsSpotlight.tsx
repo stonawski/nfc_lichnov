@@ -81,17 +81,20 @@ export function NewsSpotlight({
 
       <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
         <div className="relative flex min-h-[430px] min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
-          {/* Use the same logo–score–logo composition as the archive thumbnail,
-              enlarged and faded behind the editorial copy rather than tucked in a corner. */}
+          {/* Keep the empty left edge as a soft emerald wash, not a logo zone. */}
+          <div
+            className="pointer-events-none absolute inset-y-0 left-0 z-0 w-[33%] bg-[linear-gradient(90deg,rgba(38,139,87,.66)_0%,rgba(31,118,78,.44)_51%,transparent_100%)]"
+            aria-hidden="true"
+          />
+          {/* Place both crests above the headline, leaving the left gradient empty.
+              Unlike the archive thumbnail, this stage has room for larger circular badges. */}
           {active.match_id && (
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-              <div className="absolute inset-x-0 top-[17%] h-[68%] opacity-[0.38] sm:opacity-[0.48] lg:opacity-[0.57]">
-                <div className="relative h-full w-full scale-[1.1] sm:scale-[1.22] lg:scale-[1.32]">
-                  <NewsMatchCard matchId={active.match_id} variant="hero" />
-                </div>
+              <div className="absolute left-[3%] right-[3%] top-[6%] h-[42%] sm:left-[15%] sm:right-[7%] sm:top-[7%] sm:h-[38%] lg:left-[23%] lg:right-[11%] lg:top-[9%] lg:h-[32%]">
+                <NewsMatchCard matchId={active.match_id} variant="hero" />
               </div>
               <div
-                className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,32,22,.62)_0%,rgba(8,32,22,.23)_35%,transparent_75%)]"
+                className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,32,22,.56)_0%,rgba(8,32,22,.18)_35%,transparent_70%)]"
                 aria-hidden="true"
               />
             </div>
