@@ -10,7 +10,7 @@ export function NewsMatchCard({
   variant = 'detail',
 }: {
   matchId: string
-  variant?: 'detail' | 'corner'
+  variant?: 'detail' | 'corner' | 'thumbnail'
 }) {
   const matchQuery = useQuery({
     queryKey: ['match', matchId],
@@ -40,19 +40,58 @@ export function NewsMatchCard({
     match.playing_at,
   ) ?? (upcoming ? null : match.final_score)
   const score = upcoming ? 'VS' : result || '–'
+  // The watermark belongs to the opponent, never our own club.
+  const opponentLogo = /lichnov/i.test(match.home_team_name)
+    ? awayLogo
+    : /lichnov/i.test(match.away_team_name)
+      ? homeLogo
+      : null
+
+  if (variant === 'thumbnail') {
+    return (
+      <div
+        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[linear-gradient(180deg,rgba(5,24,14,.10),rgba(5,24,14,.28)_48%,rgba(5,24,14,.50))] px-5 text-white"
+        role="img"
+        aria-label={`${match.home_team_name} ${score} ${match.away_team_name}`}
+      >
+        <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-5">
+          <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">
+            <ClubLogo src={homeLogo} name={match.home_team_name} size="lg" />
+          </div>
+          <span className="min-w-[70px] text-center text-4xl font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.85)] sm:text-5xl">
+            {score}
+          </span>
+          <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">
+            <ClubLogo src={awayLogo} name={match.away_team_name} size="lg" />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (variant === 'corner') {
     return (
-      <div
-        className="mt-8 flex w-fit shrink-0 self-end items-center gap-3 text-white lg:absolute lg:bottom-16 lg:right-8 lg:mt-0 xl:right-12"
-        aria-label={`${match.home_team_name} ${score} ${match.away_team_name}`}
-      >
-        <ClubLogo src={homeLogo} name={match.home_team_name} size="md" />
-        <span className="min-w-[60px] text-center text-3xl font-black tracking-[-0.045em] drop-shadow-[0_3px_12px_rgba(0,0,0,.55)] sm:text-4xl">
-          {score}
-        </span>
-        <ClubLogo src={awayLogo} name={match.away_team_name} size="md" />
-      </div>
+      <>
+        {opponentLogo && (
+          <img
+            src={opponentLogo}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-[10%] -right-[13%] z-0 aspect-square w-[min(68vw,650px)] select-none object-contain opacity-[0.12] grayscale brightness-150"
+            loading="lazy"
+          />
+        )}
+        <div
+          className="relative z-10 mt-8 flex w-fit shrink-0 self-end items-center gap-4 text-white xl:absolute xl:bottom-16 xl:right-12 xl:mt-0"
+          aria-label={`${match.home_team_name} ${score} ${match.away_team_name}`}
+        >
+          <ClubLogo src={homeLogo} name={match.home_team_name} size="lg" />
+          <span className="min-w-[78px] text-center text-4xl font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.75)] sm:text-[3.5rem]">
+            {score}
+          </span>
+          <ClubLogo src={awayLogo} name={match.away_team_name} size="lg" />
+        </div>
+      </>
     )
   }
 
