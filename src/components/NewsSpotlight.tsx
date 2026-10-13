@@ -80,13 +80,18 @@ export function NewsSpotlight({
       />
 
       <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
-        <div className="flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
+        <div className="relative flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
           <div className="max-w-[720px]">
             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.14em] sm:text-xs">
               <span aria-hidden="true" className="h-[2px] w-9 rounded-full bg-[#6ad094]" />
               <span className="rounded-full border border-[#a3e9b8]/25 bg-[#174d35]/55 px-3 py-1.5 text-[#baf0c7] backdrop-blur-sm">
                 {active.category || 'Aktualita'}
               </span>
+              {active.match_id && (
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-white/90 backdrop-blur-sm">
+                  K zápasu
+                </span>
+              )}
               <span className="text-white/75">{formatDate(active.published_at)}</span>
             </div>
             <h3 className="mt-5 max-w-[760px] text-[clamp(2.6rem,5vw,5.1rem)] font-black leading-[.94] tracking-[-0.058em] [text-shadow:0_3px_20px_rgba(0,0,0,.22)]">
@@ -97,7 +102,6 @@ export function NewsSpotlight({
                 {active.excerpt}
               </p>
             )}
-            {active.match_id && <NewsMatchCard matchId={active.match_id} variant="spotlight" />}
             <Link
               to={`/aktuality/${active.slug}`}
               className="mt-7 inline-flex items-center gap-3 rounded-[16px] border border-white/20 bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.09em] text-brand-900 shadow-[0_10px_28px_rgba(4,30,17,.2)] transition-colors hover:bg-[#def2e3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -105,6 +109,7 @@ export function NewsSpotlight({
               Přečíst <ArrowRight size={16} />
             </Link>
           </div>
+          {active.match_id && <NewsMatchCard matchId={active.match_id} variant="corner" />}
         </div>
 
         <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[800px] lg:border-l lg:border-white/[0.12]">
@@ -151,7 +156,9 @@ export function NewsSpotlight({
                       {formatDate(article.published_at)}
                     </span>
                     {article.match_id && (
-                      <NewsMatchCard matchId={article.match_id} variant="compact" tone="dark" />
+                      <span className="mt-2 inline-flex w-fit items-center rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/85">
+                        Zápas
+                      </span>
                     )}
                   </span>
                 </button>
