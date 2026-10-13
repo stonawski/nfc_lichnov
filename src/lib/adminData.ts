@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Gallery, GalleryImage, NewsArticle, Player, Staff, Team } from './types'
+import type { Gallery, GalleryImage, NewsArticle, NewsMedia, NewsMatchOption, Player, Staff, Team } from './types'
 import { preferDorostOverMen } from './playerIdentity'
 
 export type CreateGalleryInput = {
@@ -180,7 +180,7 @@ export async function deleteGalleryRecords(id: string): Promise<void> {
 
 
 const newsSelect =
-  'id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
+  'id,team_id,match_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
 
 export type CreateNewsInput = {
   title: string
@@ -196,6 +196,7 @@ export type UpdateNewsInput = {
   category: string | null
   team_id: string | null
   featured: boolean
+  match_id: string | null
 }
 
 export async function fetchAdminNews(): Promise<NewsArticle[]> {
@@ -258,6 +259,7 @@ export async function updateNewsArticle(
       category: input.category?.trim() || null,
       team_id: input.team_id || null,
       featured: input.featured,
+      match_id: input.match_id || null,
     })
     .eq('id', id)
     .select(newsSelect)
@@ -305,6 +307,65 @@ export async function deleteNewsArticle(id: string): Promise<void> {
   if (error) throw error
 }
 
+
+const newsMediaSelect = 'id,news_id,media_type,media_url,sort_order,created_at'
+
+export async function fetchAdminNewsMedia(newsId: string): Promise<NewsMedia[]> {
+  const { data, error } = await supabase
+    .from('news_media')
+    .select(newsMediaSelect)
+    .eq('news_id', newsId)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as NewsMedia[]
+}
+
+export async function addNewsMedia(
+  newsId: string,
+  mediaType: NewsMedia['media_type'],
+  mediaUrl: string,
+): Promise<NewsMedia> {
+  const { data: lastMedia, error: orderError } = await supabase
+    .from('news_media')
+    .select('sort_order')
+    .eq('news_id', newsId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+  if (orderError) throw orderError
+  const nextOrder = (lastMedia?.[0]?.sort_order ?? -1) + 1
+  const { data, error } = await supabase
+    .from('news_media')
+    .insert({ news_id: newsId, media_type: mediaType, media_url: mediaUrl, sort_order: nextOrder })
+    .select(newsMediaSelect)
+    .single()
+  if (error) throw error
+  return data as NewsMedia
+}
+
+export async function deleteNewsMedia(id: string): Promise<void> {
+  const { error } = await supabase.from('news_media').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function fetchNewsMatchOptions(teamId?: string): Promise<NewsMatchOption[]> {
+  const fields = 'id,team_id,home_team_name,away_team_name,playing_at,score_home,score_away,final_score'
+  const now = new Date().toISOString()
+  let played = supabase.from('matches').select(fields)
+    .lte('playing_at', now).order('playing_at', { ascending: false }).limit(60)
+  let upcoming = supabase.from('matches').select(fields)
+    .gt('playing_at', now).order('playing_at', { ascending: true }).limit(60)
+
+  if (teamId) {
+    played = played.eq('team_id', teamId)
+    upcoming = upcoming.eq('team_id', teamId)
+  }
+
+  const [past, future] = await Promise.all([played, upcoming])
+  if (past.error) throw past.error
+  if (future.error) throw future.error
+  return [...(future.data ?? []), ...(past.data ?? [])] as NewsMatchOption[]
+}
 
 const playerSelect =
   'id,team_id,facr_player_id,first_name,last_name,birth_date,number,position,photo_url,facr_photo_url,bio,matches_count,goals_count,yellow_cards,red_cards,active,sort_order'
