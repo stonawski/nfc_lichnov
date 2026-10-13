@@ -330,6 +330,7 @@ export async function fetchAdminNewsMedia(newsId: string): Promise<NewsMedia[]> 
     .eq('news_id', newsId)
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true })
+  if (error && ['42P01', 'PGRST205'].includes(error.code ?? '')) return []
   if (error) throw error
   return (data ?? []) as NewsMedia[]
 }
