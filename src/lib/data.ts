@@ -321,6 +321,8 @@ export async function fetchPublishedNewsMedia(newsId: string): Promise<NewsMedia
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true })
 
+  // Keep existing articles readable before news_media migration is deployed.
+  if (error && ['42P01', 'PGRST205'].includes(error.code ?? '')) return []
   if (error) throw error
   return (data ?? []) as NewsMedia[]
 }
