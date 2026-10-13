@@ -10,7 +10,7 @@ export function NewsMatchCard({
   variant = 'detail',
 }: {
   matchId: string
-  variant?: 'detail' | 'corner' | 'thumbnail'
+  variant?: 'detail' | 'corner' | 'thumbnail' | 'hero'
 }) {
   const matchQuery = useQuery({
     queryKey: ['match', matchId],
@@ -40,22 +40,23 @@ export function NewsMatchCard({
     match.playing_at,
   ) ?? (upcoming ? null : match.final_score)
   const score = upcoming ? 'VS' : result || '–'
-  if (variant === 'thumbnail') {
+  if (variant === 'thumbnail' || variant === 'hero') {
+    const isHero = variant === 'hero'
     return (
       <div
-        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[linear-gradient(180deg,rgba(5,24,14,.10),rgba(5,24,14,.28)_48%,rgba(5,24,14,.50))] px-5 text-white"
+        className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white ${isHero ? 'px-2 sm:px-6' : 'bg-[linear-gradient(180deg,rgba(5,24,14,.10),rgba(5,24,14,.28)_48%,rgba(5,24,14,.50))] px-5'}`}
         role="img"
         aria-label={`${match.home_team_name} ${score} ${match.away_team_name}`}
       >
-        <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-5">
+        <div className={`grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center ${isHero ? 'gap-1 sm:gap-4' : 'gap-3 sm:gap-5'}`}>
           <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">
-            <ClubLogo src={homeLogo} name={match.home_team_name} size="lg" />
+            <ClubLogo src={homeLogo} name={match.home_team_name} size={isHero ? 'hero' : 'lg'} />
           </div>
-          <span className="min-w-[70px] text-center text-4xl font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.85)] sm:text-5xl">
+          <span className={`text-center font-black tracking-[-0.055em] drop-shadow-[0_4px_16px_rgba(0,0,0,.85)] ${isHero ? 'min-w-[55px] text-4xl sm:text-5xl lg:text-6xl' : 'min-w-[70px] text-4xl sm:text-5xl'}`}>
             {score}
           </span>
           <div className="flex justify-center drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]">
-            <ClubLogo src={awayLogo} name={match.away_team_name} size="lg" />
+            <ClubLogo src={awayLogo} name={match.away_team_name} size={isHero ? 'hero' : 'lg'} />
           </div>
         </div>
       </div>

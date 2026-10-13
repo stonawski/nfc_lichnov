@@ -87,7 +87,7 @@ export function NewsSpotlight({
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
               <div className="absolute inset-x-0 top-[17%] h-[68%] opacity-[0.38] sm:opacity-[0.48] lg:opacity-[0.57]">
                 <div className="relative h-full w-full scale-[1.1] sm:scale-[1.22] lg:scale-[1.32]">
-                  <NewsMatchCard matchId={active.match_id} variant="thumbnail" />
+                  <NewsMatchCard matchId={active.match_id} variant="hero" />
                 </div>
               </div>
               <div
