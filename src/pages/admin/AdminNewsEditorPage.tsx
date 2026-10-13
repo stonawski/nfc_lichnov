@@ -2,6 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft,
   Check,
+  ChevronDown,
+  CalendarDays,
+  Search,
   ExternalLink,
   Eye,
   EyeOff,
@@ -13,7 +16,7 @@ import {
   Star,
   Trash2,
 } from 'lucide-react'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MediaUploader } from '../../admin/MediaUploader'
 import {
@@ -31,6 +34,7 @@ import {
 import { fetchTeams } from '../../lib/data'
 import { formatDate, formatMatchDate } from '../../lib/format'
 import { deleteMediaObjects, mediaObjectKeyFromUrl } from '../../lib/media'
+import type { NewsMatchOption } from '../../lib/types'
 
 function slugify(value: string) {
   return value
@@ -501,40 +505,13 @@ export function AdminNewsEditorPage() {
                 </select>
               </Field>
 
-              <Field label="Přiřadit k zápasu (nepovinné)">
-                <select
-                  value={matchId}
-                  onChange={(event) => setMatchId(event.target.value)}
-                  className="admin-input"
-                  disabled={matchOptionsQuery.isLoading}
-                >
-                  <option value="">Bez přiřazeného zápasu</option>
-                  {matchId && !(matchOptionsQuery.data ?? []).some((match) => match.id === matchId) && (
-                    <option value={matchId}>Dříve přiřazený zápas</option>
-                  )}
-                  <optgroup label="Nadcházející zápasy">
-                    {(matchOptionsQuery.data ?? []).filter((match) => new Date(match.playing_at).getTime() > Date.now()).map((match) => (
-                      <option key={match.id} value={match.id}>
-                        {formatMatchDate(match.playing_at)} · {match.home_team_name} – {match.away_team_name}
-                      </option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Odehrané zápasy">
-                    {(matchOptionsQuery.data ?? []).filter((match) => new Date(match.playing_at).getTime() <= Date.now()).map((match) => (
-                      <option key={match.id} value={match.id}>
-                        {formatMatchDate(match.playing_at)} · {match.home_team_name} – {match.away_team_name}
-                        {match.final_score ? ` (${match.final_score})` : ''}
-                      </option>
-                    ))}
-                  </optgroup>
-                </select>
-                <p className="mt-2 text-xs leading-5 text-ink-500">
-                  V aktualitě se objeví názvy a loga obou týmů, termín a případně výsledek.
-                </p>
-                {matchOptionsQuery.isError && (
-                  <p className="mt-2 text-xs text-red-600">Zápasy se nepodařilo načíst.</p>
-                )}
-              </Field>
+              <MatchPicker
+                value={matchId}
+                onChange={setMatchId}
+                matches={matchOptionsQuery.data ?? []}
+                loading={matchOptionsQuery.isLoading}
+                error={matchOptionsQuery.isError}
+              />
 
               <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-sand-200 bg-white p-4">
                 <input
@@ -701,6 +678,162 @@ export function AdminNewsEditorPage() {
           </section>
         </aside>
       </div>
+    </div>
+  )
+}
+
+
+function MatchPicker({
+  value,
+  onChange,
+  matches,
+  loading,
+  error,
+}: {
+  value: string
+  onChange: (id: string) => void
+  matches: NewsMatchOption[]
+  loading: boolean
+  error: boolean
+}) {
+  const detailsRef = useRef<HTMLDetailsElement>(null)
+  const [search, setSearch] = useState('')
+  const selected = matches.find((match) => match.id === value)
+  const normalized = search.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const filtered = matches.filter((match) =>
+    [match.home_team_name, match.away_team_name, formatMatchDate(match.playing_at)]
+      .join(' ')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .includes(normalized),
+  )
+  const now = Date.now()
+  const upcoming = filtered.filter((match) => new Date(match.playing_at).getTime() > now)
+  const played = filtered.filter((match) => new Date(match.playing_at).getTime() <= now)
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!detailsRef.current?.contains(event.target as Node)) {
+        detailsRef.current?.removeAttribute('open')
+      }
+    }
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') detailsRef.current?.removeAttribute('open')
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
+
+  const choose = (id: string) => {
+    onChange(id)
+    setSearch('')
+    detailsRef.current?.removeAttribute('open')
+  }
+
+  const buttonRows = (rows: NewsMatchOption[]) => rows.map((match) => {
+    const active = match.id === value
+    return (
+      <button
+        key={match.id}
+        type="button"
+        onClick={() => choose(match.id)}
+        className={`flex w-full items-center justify-between gap-3 rounded-[13px] px-3 py-3 text-left transition-colors ${active
+          ? 'bg-brand-900 text-white'
+          : 'text-brand-900 hover:bg-brand-50'}`}
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-bold leading-5">
+            {match.home_team_name} – {match.away_team_name}
+          </span>
+          <span className={`mt-0.5 block text-[10px] ${active ? 'text-white/70' : 'text-ink-500'}`}>
+            {formatMatchDate(match.playing_at)}
+            {match.final_score ? ` · ${match.final_score}` : ''}
+          </span>
+        </span>
+        {active && <Check size={16} className="shrink-0 text-[#80dba1]" />}
+      </button>
+    )
+  })
+
+  return (
+    <div className="relative">
+      <div className="mb-2 text-xs font-bold uppercase tracking-[0.13em] text-ink-500">
+        Přiřadit k zápasu (nepovinné)
+      </div>
+      <details ref={detailsRef} className="group relative">
+        <summary
+          className="flex min-h-[48px] w-full cursor-pointer list-none items-center justify-between gap-3 rounded-[16px] border border-brand-900/10 bg-white px-4 py-3 text-left text-sm font-bold text-brand-900 shadow-[0_6px_24px_rgba(24,53,42,.04)] outline-none transition hover:border-brand-500/30 focus-visible:ring-2 focus-visible:ring-brand-500/30 [&::-webkit-details-marker]:hidden"
+        >
+          <span className="flex min-w-0 items-center gap-2.5">
+            <CalendarDays size={17} className="shrink-0 text-brand-500" />
+            <span className="min-w-0 truncate">
+              {loading ? 'Načítám zápasy…' : selected
+                ? `${selected.home_team_name} – ${selected.away_team_name}`
+                : value ? 'Dříve přiřazený zápas' : 'Bez přiřazeného zápasu'}
+            </span>
+          </span>
+          <ChevronDown size={17} className="shrink-0 text-brand-500 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-[20px] border border-brand-900/10 bg-[#fbfaf6] p-2 shadow-[0_18px_45px_rgba(24,53,42,.16)]">
+          <label className="flex h-10 items-center gap-2 rounded-[12px] border border-brand-900/10 bg-white px-3">
+            <Search size={15} className="shrink-0 text-ink-500" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') event.preventDefault()
+              }}
+              placeholder="Najít soupeře nebo datum…"
+              aria-label="Hledat zápas"
+              className="min-w-0 flex-1 bg-transparent text-xs text-brand-900 outline-none"
+            />
+          </label>
+          <div className="mt-2 max-h-[300px] overflow-y-auto overscroll-contain">
+            <button
+              type="button"
+              onClick={() => choose('')}
+              className={`flex w-full items-center justify-between rounded-[13px] px-3 py-2.5 text-left text-xs font-bold ${!value
+                ? 'bg-brand-900 text-white'
+                : 'text-ink-500 hover:bg-brand-50 hover:text-brand-900'}`}
+            >
+              Bez přiřazeného zápasu {!value && <Check size={15} className="text-[#80dba1]" />}
+            </button>
+            {value && !selected && (
+              <button type="button" onClick={() => choose(value)} className="w-full rounded-[13px] px-3 py-2.5 text-left text-xs font-bold text-brand-900 hover:bg-brand-50">
+                Dříve přiřazený zápas
+              </button>
+            )}
+            {upcoming.length > 0 && (
+              <>
+                <div className="px-3 pb-1 pt-3 text-[10px] font-black uppercase tracking-[0.14em] text-brand-500">
+                  Nadcházející zápasy
+                </div>
+                {buttonRows(upcoming)}
+              </>
+            )}
+            {played.length > 0 && (
+              <>
+                <div className="px-3 pb-1 pt-3 text-[10px] font-black uppercase tracking-[0.14em] text-brand-500">
+                  Odehrané zápasy
+                </div>
+                {buttonRows(played)}
+              </>
+            )}
+            {!loading && upcoming.length === 0 && played.length === 0 && (
+              <p className="px-3 py-4 text-xs text-ink-500">Žádný zápas neodpovídá hledání.</p>
+            )}
+          </div>
+        </div>
+      </details>
+      <p className="mt-2 text-xs leading-5 text-ink-500">
+        V aktualitě se zobrazí oba týmy, loga, termín a případně výsledek.
+      </p>
+      {error && <p className="mt-2 text-xs text-red-600">Zápasy se nepodařilo načíst.</p>}
     </div>
   )
 }
