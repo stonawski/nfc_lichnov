@@ -5,7 +5,9 @@ import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { Seo } from '../components/Seo'
-import { fetchNewsBySlug, fetchPublishedNews } from '../lib/data'
+import { NewsMatchCard } from '../components/NewsMatchCard'
+import { NewsArticleMedia } from '../components/NewsArticleMedia'
+import { fetchNewsBySlug, fetchPublishedNews, fetchPublishedNewsMedia } from '../lib/data'
 import { formatDate } from '../lib/format'
 import type { NewsArticle } from '../lib/types'
 
@@ -20,6 +22,13 @@ export function NewsDetailPage() {
     enabled: Boolean(slug),
     retry: false,
   })
+  const mediaQuery = useQuery({
+    queryKey: ['news-media', query.data?.id],
+    queryFn: () => fetchPublishedNewsMedia(query.data!.id),
+    enabled: Boolean(query.data?.id),
+    retry: false,
+  })
+
   const relatedQuery = useQuery({
     queryKey: ['news', 'related'],
     queryFn: () => fetchPublishedNews(16),
@@ -105,9 +114,17 @@ export function NewsDetailPage() {
             </div>
           </div>
 
+          {article.match_id && <NewsMatchCard matchId={article.match_id} />}
+
           <div className="prose-club whitespace-pre-wrap break-words text-base leading-8 text-ink-900 sm:text-[17px] sm:leading-9">
             {article.content || 'Obsah článku zatím není doplněn.'}
           </div>
+
+          {mediaQuery.data && <NewsArticleMedia items={mediaQuery.data} />}
+
+          {mediaQuery.isError && (
+            <p className="mt-6 text-sm text-ink-500">Další fotografie a videa se nepodařilo načíst.</p>
+          )}
 
           <div className="mt-14 border-t border-sand-200 pt-8">
             <Link
