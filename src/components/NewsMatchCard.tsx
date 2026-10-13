@@ -40,13 +40,6 @@ export function NewsMatchCard({
     match.playing_at,
   ) ?? (upcoming ? null : match.final_score)
   const score = upcoming ? 'VS' : result || '–'
-  // The watermark belongs to the opponent, never our own club.
-  const opponentLogo = /lichnov/i.test(match.home_team_name)
-    ? awayLogo
-    : /lichnov/i.test(match.away_team_name)
-      ? homeLogo
-      : null
-
   if (variant === 'thumbnail') {
     return (
       <div
@@ -72,15 +65,6 @@ export function NewsMatchCard({
   if (variant === 'corner') {
     return (
       <>
-        {opponentLogo && (
-          <img
-            src={opponentLogo}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-[10%] -right-[13%] z-0 aspect-square w-[min(68vw,650px)] select-none object-contain opacity-[0.12] grayscale brightness-150"
-            loading="lazy"
-          />
-        )}
         <div
           className="relative z-10 mt-8 flex w-fit shrink-0 self-end items-center gap-4 text-white xl:absolute xl:bottom-16 xl:right-12 xl:mt-0"
           aria-label={`${match.home_team_name} ${score} ${match.away_team_name}`}
