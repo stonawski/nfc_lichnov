@@ -150,6 +150,9 @@ export function NewsSpotlight({
                     <span className="mt-1.5 block text-[10px] text-white/50">
                       {formatDate(article.published_at)}
                     </span>
+                    {article.match_id && (
+                      <NewsMatchCard matchId={article.match_id} variant="compact" tone="dark" />
+                    )}
                   </span>
                 </button>
               )
