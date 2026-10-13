@@ -81,6 +81,21 @@ export function NewsSpotlight({
 
       <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
         <div className="relative flex min-h-[430px] min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
+          {/* Use the same logo–score–logo composition as the archive thumbnail,
+              enlarged and faded behind the editorial copy rather than tucked in a corner. */}
+          {active.match_id && (
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+              <div className="absolute inset-x-0 top-[17%] h-[68%] opacity-[0.38] sm:opacity-[0.48] lg:opacity-[0.57]">
+                <div className="relative h-full w-full scale-[1.1] sm:scale-[1.22] lg:scale-[1.32]">
+                  <NewsMatchCard matchId={active.match_id} variant="thumbnail" />
+                </div>
+              </div>
+              <div
+                className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,32,22,.62)_0%,rgba(8,32,22,.23)_35%,transparent_75%)]"
+                aria-hidden="true"
+              />
+            </div>
+          )}
           <div className="relative z-10 max-w-[720px]">
             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.14em] sm:text-xs">
               <span aria-hidden="true" className="h-[2px] w-9 rounded-full bg-[#6ad094]" />
@@ -109,7 +124,6 @@ export function NewsSpotlight({
               Přečíst <ArrowRight size={16} />
             </Link>
           </div>
-          {active.match_id && <NewsMatchCard matchId={active.match_id} variant="corner" />}
         </div>
 
         <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[800px] lg:border-l lg:border-white/[0.12]">
