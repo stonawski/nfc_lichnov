@@ -6,6 +6,7 @@ import type {
   MatchParticipant,
   MatchTimelineEvent,
   NewsArticle,
+  NewsMedia,
   Player,
   Staff,
   Standing,
@@ -266,7 +267,7 @@ export async function fetchPublishedNews(limit?: number): Promise<NewsArticle[]>
   ensureConfigured()
   let query = supabase
     .from('news')
-    .select('id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
+    .select('id,team_id,match_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
     .eq('published', true)
     .order('published_at', { ascending: false })
 
@@ -280,7 +281,7 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null>
   ensureConfigured()
   const { data, error } = await supabase
     .from('news')
-    .select('id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
+    .select('id,team_id,match_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
     .eq('slug', slug)
     .eq('published', true)
     .maybeSingle()
@@ -289,6 +290,19 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null>
   return data as NewsArticle | null
 }
 
+
+export async function fetchPublishedNewsMedia(newsId: string): Promise<NewsMedia[]> {
+  ensureConfigured()
+  const { data, error } = await supabase
+    .from('news_media')
+    .select('id,news_id,media_type,media_url,sort_order,created_at')
+    .eq('news_id', newsId)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as NewsMedia[]
+}
 
 export async function fetchGalleries(): Promise<Gallery[]> {
   ensureConfigured()
