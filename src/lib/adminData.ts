@@ -181,6 +181,8 @@ export async function deleteGalleryRecords(id: string): Promise<void> {
 
 const newsSelect =
   'id,team_id,match_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
+const legacyNewsSelect =
+  'id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
 
 export type CreateNewsInput = {
   title: string
@@ -200,26 +202,37 @@ export type UpdateNewsInput = {
 }
 
 export async function fetchAdminNews(): Promise<NewsArticle[]> {
-  const { data, error } = await supabase
-    .from('news')
-    .select(newsSelect)
+  const query = () => supabase.from('news')
+  const result = await query().select(newsSelect)
     .order('published', { ascending: false })
     .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
 
-  if (error) throw error
-  return (data ?? []) as NewsArticle[]
+  if (!result.error) return (result.data ?? []) as NewsArticle[]
+  if (!/match_id/.test(result.error.message)) throw result.error
+
+  const legacy = await query().select(legacyNewsSelect)
+    .order('published', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+  if (legacy.error) throw legacy.error
+  return (legacy.data ?? []).map((row) => ({ ...row, match_id: null })) as NewsArticle[]
 }
 
 export async function fetchAdminNewsById(id: string): Promise<NewsArticle | null> {
-  const { data, error } = await supabase
-    .from('news')
+  const result = await supabase.from('news')
     .select(newsSelect)
     .eq('id', id)
     .maybeSingle()
+  if (!result.error) return result.data as NewsArticle | null
+  if (!/match_id/.test(result.error.message)) throw result.error
 
-  if (error) throw error
-  return data as NewsArticle | null
+  const legacy = await supabase.from('news')
+    .select(legacyNewsSelect)
+    .eq('id', id)
+    .maybeSingle()
+  if (legacy.error) throw legacy.error
+  return legacy.data ? { ...legacy.data, match_id: null } as NewsArticle : null
 }
 
 export async function createNewsDraft(input: CreateNewsInput): Promise<NewsArticle> {
