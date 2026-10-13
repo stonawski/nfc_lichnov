@@ -8,9 +8,11 @@ import { formatMatchDate, isUpcomingMatch, matchScore } from '../lib/format'
 export function NewsMatchCard({
   matchId,
   variant = 'detail',
+  tone = 'light',
 }: {
   matchId: string
-  variant?: 'detail' | 'spotlight'
+  variant?: 'detail' | 'spotlight' | 'compact'
+  tone?: 'light' | 'dark'
 }) {
   const query = useQuery({
     queryKey: ['match', matchId],
@@ -38,9 +40,29 @@ export function NewsMatchCard({
     match.manual_score_home,
     match.manual_score_away,
     match.playing_at,
-  ) ?? match.final_score
+  ) ?? (upcoming ? null : match.final_score)
 
   const dark = variant === 'spotlight'
+
+  if (variant === 'compact') {
+    return (
+      <div
+        className={`mt-2 min-w-0 rounded-[11px] border px-2.5 py-2 text-left ${tone === 'dark'
+          ? 'border-[#c1e7c8]/25 bg-[#102f22]/65 text-white'
+          : 'border-brand-900/10 bg-brand-50/75 text-brand-900'}`}
+        aria-label={`Aktualita k zápasu: ${match.home_team_name} – ${match.away_team_name}`}
+      >
+        <div className={`mb-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.1em] ${tone === 'dark' ? 'text-[#b7e8c4]' : 'text-brand-700'}`}>
+          <CalendarDays size={11} />
+          {upcoming ? 'Před zápasem' : 'K zápasu'}
+          {!upcoming && score && <span className="ml-auto font-black">{score}</span>}
+        </div>
+        <div className="line-clamp-1 text-[11px] font-semibold leading-4">
+          {match.home_team_name} – {match.away_team_name}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={dark
