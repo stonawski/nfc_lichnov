@@ -2,6 +2,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDate } from '../lib/format'
+import { NewsMatchCard } from './NewsMatchCard'
 import type { NewsArticle } from '../lib/types'
 
 const FALLBACK_IMAGE = '/hero-lichnov-field.webp'
@@ -96,6 +97,7 @@ export function NewsSpotlight({
                 {active.excerpt}
               </p>
             )}
+            {active.match_id && <NewsMatchCard matchId={active.match_id} variant="spotlight" />}
             <Link
               to={`/aktuality/${active.slug}`}
               className="mt-7 inline-flex items-center gap-3 rounded-[16px] border border-white/20 bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.09em] text-brand-900 shadow-[0_10px_28px_rgba(4,30,17,.2)] transition-colors hover:bg-[#def2e3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
