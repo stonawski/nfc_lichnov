@@ -1,5 +1,7 @@
 import { ArrowUpRight, Images, Play } from 'lucide-react'
-import type { NewsMedia } from '../lib/types'
+import { useState } from 'react'
+import { Lightbox } from './GalleryLightbox'
+import type { GalleryImage, NewsMedia } from '../lib/types'
 
 function videoPresentation(url: string): { kind: 'embed' | 'file' | 'link'; src: string } {
   try {
@@ -35,6 +37,18 @@ function videoPresentation(url: string): { kind: 'embed' | 'file' | 'link'; src:
 }
 
 export function NewsArticleMedia({ items }: { items: NewsMedia[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const images: GalleryImage[] = items
+    .filter((item) => item.media_type === 'image')
+    .map((item) => ({
+      id: item.id,
+      gallery_id: item.news_id,
+      image_url: item.media_url,
+      caption: null,
+      sort_order: item.sort_order,
+      created_at: item.created_at,
+      updated_at: item.created_at,
+    }))
   if (!items.length) return null
 
   return (
@@ -50,13 +64,12 @@ export function NewsArticleMedia({ items }: { items: NewsMedia[] }) {
         {items.map((item) => {
           if (item.media_type === 'image') {
             return (
-              <a
+              <button
                 key={item.id}
-                href={item.media_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block overflow-hidden rounded-[20px] bg-sand-100 ring-1 ring-sand-200"
-                aria-label="Otevřít fotografii v plné velikosti"
+                type="button"
+                onClick={() => setOpenIndex(images.findIndex((image) => image.id === item.id))}
+                className="group block w-full overflow-hidden rounded-[20px] bg-sand-100 ring-1 ring-sand-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500"
+                aria-label="Otevřít fotografii v galerii"
               >
                 <img
                   src={item.media_url}
@@ -64,7 +77,7 @@ export function NewsArticleMedia({ items }: { items: NewsMedia[] }) {
                   loading="lazy"
                   className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                 />
-              </a>
+              </button>
             )
           }
 
@@ -97,6 +110,18 @@ export function NewsArticleMedia({ items }: { items: NewsMedia[] }) {
           )
         })}
       </div>
+
+      {openIndex !== null && images[openIndex] && (
+        <Lightbox
+          key={images[openIndex].id}
+          image={images[openIndex]}
+          index={openIndex}
+          count={images.length}
+          onClose={() => setOpenIndex(null)}
+          onPrevious={() => setOpenIndex((openIndex - 1 + images.length) % images.length)}
+          onNext={() => setOpenIndex((openIndex + 1) % images.length)}
+        />
+      )}
     </section>
   )
 }
