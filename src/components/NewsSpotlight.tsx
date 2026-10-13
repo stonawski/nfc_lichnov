@@ -64,8 +64,8 @@ export function NewsSpotlight({
         }}
       />
 
-      <div className="relative z-10 grid min-w-0 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
-        <div className="flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[650px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
+      <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
+        <div className="flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
           <div className="max-w-[720px]">
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#91d3a6] sm:text-xs">
               <span>{active.category || 'Aktualita'}</span>
@@ -89,7 +89,7 @@ export function NewsSpotlight({
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[650px] lg:border-l lg:border-white/10">
+        <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[800px] lg:border-l lg:border-white/10">
           <div className="flex items-center justify-between gap-4 border-y border-white/10 px-5 py-4 lg:border-t-0 lg:px-6 lg:py-6">
             <span className="text-[10px] font-bold uppercase tracking-[0.17em] text-white/55">
               Vyber aktualitu
@@ -111,7 +111,7 @@ export function NewsSpotlight({
                   onClick={() => setSelectedId(article.id)}
                   aria-pressed={selected}
                   aria-label={`Zobrazit aktualitu: ${article.title}`}
-                  className={`group relative flex w-[235px] shrink-0 items-center gap-3 border-r border-white/10 px-4 py-4 text-left transition-colors focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white sm:w-[295px] lg:min-h-[96px] lg:w-full lg:flex-1 lg:basis-0 lg:border-b lg:border-r-0 lg:px-5 ${selected ? 'bg-white/[0.09]' : 'hover:bg-white/[0.05]'}`}
+                  className={`group relative flex w-[235px] shrink-0 items-center gap-3 border-r border-white/10 px-4 py-4 text-left transition-colors focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white sm:w-[295px] lg:min-h-[96px] lg:w-full lg:border-b lg:border-r-0 lg:px-5 ${selected ? 'bg-white/[0.09]' : 'hover:bg-white/[0.05]'}`}
                 >
                   {selected && (
                     <span aria-hidden="true" className="absolute bottom-0 left-0 h-[3px] w-full bg-[#67bd84] lg:bottom-auto lg:h-full lg:w-[3px]" />
