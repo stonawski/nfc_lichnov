@@ -62,6 +62,17 @@ export function AdminNewsEditorPage() {
 
   const article = articleQuery.data
 
+  const [title, setTitle] = useState('')
+  const [slug, setSlug] = useState('')
+  const [excerpt, setExcerpt] = useState('')
+  const [content, setContent] = useState('')
+  const [category, setCategory] = useState('')
+  const [teamId, setTeamId] = useState('')
+  const [matchId, setMatchId] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
+  const [featured, setFeatured] = useState(false)
+  const [slugEdited, setSlugEdited] = useState(false)
+
   const matchOptionsQuery = useQuery({
     queryKey: ['admin-news-match-options', teamId],
     queryFn: () => fetchNewsMatchOptions(teamId || undefined),
@@ -76,16 +87,6 @@ export function AdminNewsEditorPage() {
   })
   const media = mediaQuery.data ?? []
 
-  const [title, setTitle] = useState('')
-  const [slug, setSlug] = useState('')
-  const [excerpt, setExcerpt] = useState('')
-  const [content, setContent] = useState('')
-  const [category, setCategory] = useState('')
-  const [teamId, setTeamId] = useState('')
-  const [matchId, setMatchId] = useState('')
-  const [videoUrl, setVideoUrl] = useState('')
-  const [featured, setFeatured] = useState(false)
-  const [slugEdited, setSlugEdited] = useState(false)
 
   useEffect(() => {
     if (!article) return
