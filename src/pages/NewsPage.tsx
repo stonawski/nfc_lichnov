@@ -9,7 +9,6 @@ import {
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
-import { NewsMatchCard } from '../components/NewsMatchCard'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchPublishedNews, fetchTeams } from '../lib/data'
@@ -354,8 +353,13 @@ function PinnedNewsCard({ article }: { article: NewsArticle | null }) {
         </div>
 
         <div className="max-w-2xl">
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/50">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/70">
             <span>{article.category || 'Aktualita'}</span>
+            {article.match_id && (
+              <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-black text-white/90">
+                K zápasu
+              </span>
+            )}
             <span>·</span>
             <span>{formatDate(article.published_at)}</span>
           </div>
@@ -366,11 +370,6 @@ function PinnedNewsCard({ article }: { article: NewsArticle | null }) {
             <p className="mt-4 line-clamp-2 max-w-xl text-sm leading-6 text-white/65">
               {article.excerpt}
             </p>
-          )}
-          {article.match_id && (
-            <div className="max-w-[410px]">
-              <NewsMatchCard matchId={article.match_id} variant="compact" tone="dark" />
-            </div>
           )}
         </div>
       </div>
@@ -404,9 +403,16 @@ function NewsCard({ article }: { article: NewsArticle }) {
 
       <div className="p-6">
         <div className="flex items-center justify-between gap-4">
-          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-            {article.category || 'Aktualita'}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
+              {article.category || 'Aktualita'}
+            </span>
+            {article.match_id && (
+              <span className="rounded-full border border-brand-900/10 bg-brand-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-brand-700">
+                Zápas
+              </span>
+            )}
+          </div>
           <ArrowUpRight
             size={17}
             className="text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"
@@ -420,7 +426,6 @@ function NewsCard({ article }: { article: NewsArticle }) {
             {article.excerpt}
           </p>
         )}
-        {article.match_id && <NewsMatchCard matchId={article.match_id} variant="compact" />}
         <div className="mt-5 border-t border-sand-200 pt-4 text-xs text-ink-500">
           {formatDate(article.published_at)}
         </div>
