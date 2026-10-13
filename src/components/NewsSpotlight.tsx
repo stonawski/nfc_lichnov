@@ -31,7 +31,7 @@ export function NewsSpotlight({
   const active = items.find((article) => article.id === selectedId) ?? featured
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#102b22] text-white" aria-label="Aktuálně z Lichnova">
+    <section className="relative isolate overflow-hidden bg-[#102b22] pb-7 text-white" aria-label="Aktuálně z Lichnova">
       <div
         className="pointer-events-none absolute inset-0 z-0"
         aria-hidden="true"
@@ -57,40 +57,56 @@ export function NewsSpotlight({
         aria-hidden="true"
         style={{
           background: [
-            'radial-gradient(ellipse 76% 110% at -12% 44%, rgba(17,137,75,.60) 0%, rgba(25,121,75,.43) 34%, rgba(21,91,60,.17) 70%, transparent 100%)',
-            'linear-gradient(90deg, rgba(7,35,23,.50) 0%, rgba(9,37,25,.24) 42%, transparent 66%, #102b22 100%)',
-            'linear-gradient(0deg, rgba(9,35,24,.32), transparent 32%)',
+            'radial-gradient(ellipse 85% 115% at -15% 54%, rgba(39,138,89,.48) 0%, rgba(25,109,73,.30) 38%, rgba(18,74,50,.12) 74%, transparent 100%)',
+            'radial-gradient(ellipse 76% 78% at 24% 105%, rgba(7,43,28,.44) 0%, transparent 75%)',
+            'linear-gradient(90deg, rgba(7,35,23,.52) 0%, rgba(9,37,25,.22) 43%, transparent 67%, #102b22 100%)',
+            'linear-gradient(0deg, rgba(9,35,24,.26), transparent 38%)',
           ].join(', '),
+        }}
+      />
+
+      {/* Almost imperceptible fabric-like grain connects this editorial stage
+          with the softer, layered design of the rest of the homepage. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.11]"
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(128deg,rgba(232,255,234,.14) 0px,rgba(232,255,234,.14) .6px,transparent .6px,transparent 8px)',
+          maskImage: 'linear-gradient(90deg,#000 0%,rgba(0,0,0,.35) 57%,transparent 83%)',
+          WebkitMaskImage: 'linear-gradient(90deg,#000 0%,rgba(0,0,0,.35) 57%,transparent 83%)',
         }}
       />
 
       <div className="relative z-10 grid min-w-0 lg:min-h-[800px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_390px]">
         <div className="flex min-h-[430px] min-w-0 flex-col justify-end px-5 pb-12 pt-14 sm:min-h-[530px] sm:px-9 sm:pb-16 lg:min-h-[800px] lg:px-[max(2.5rem,calc((100vw_-_1240px)/2))] lg:pb-20 lg:pr-10">
           <div className="max-w-[720px]">
-            <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#91d3a6] sm:text-xs">
-              <span>{active.category || 'Aktualita'}</span>
-              <span className="text-white/45">·</span>
-              <span className="text-white/70">{formatDate(active.published_at)}</span>
+            <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.14em] sm:text-xs">
+              <span aria-hidden="true" className="h-[2px] w-9 rounded-full bg-[#6ad094]" />
+              <span className="rounded-full border border-[#a3e9b8]/25 bg-[#174d35]/55 px-3 py-1.5 text-[#baf0c7] backdrop-blur-sm">
+                {active.category || 'Aktualita'}
+              </span>
+              <span className="text-white/75">{formatDate(active.published_at)}</span>
             </div>
-            <h3 className="mt-4 max-w-[700px] text-[clamp(2.35rem,4.6vw,4.7rem)] font-black leading-[.93] tracking-[-0.055em]">
+            <h3 className="mt-5 max-w-[760px] text-[clamp(2.6rem,5vw,5.1rem)] font-black leading-[.94] tracking-[-0.058em] [text-shadow:0_3px_20px_rgba(0,0,0,.22)]">
               {active.title}
             </h3>
             {active.excerpt && (
-              <p className="mt-4 line-clamp-2 max-w-[580px] text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
+              <p className="mt-5 line-clamp-2 max-w-[590px] text-sm leading-7 text-white/85 sm:text-[17px]">
                 {active.excerpt}
               </p>
             )}
             <Link
               to={`/aktuality/${active.slug}`}
-              className="mt-7 inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-xs font-black uppercase tracking-[0.1em] text-brand-900 transition-colors hover:bg-[#cbead2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="mt-7 inline-flex items-center gap-3 rounded-[16px] border border-white/20 bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.09em] text-brand-900 shadow-[0_10px_28px_rgba(4,30,17,.2)] transition-colors hover:bg-[#def2e3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
               Přečíst <ArrowRight size={16} />
             </Link>
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[800px] lg:border-l lg:border-white/10">
-          <div className="flex items-center justify-between gap-4 border-y border-white/10 px-5 py-4 lg:border-t-0 lg:px-6 lg:py-6">
+        <div className="flex min-w-0 flex-col bg-[#102b22]/95 lg:h-full lg:min-h-[800px] lg:border-l lg:border-white/[0.12]">
+          <div className="flex items-center justify-between gap-4 border-y border-white/10 bg-white/[0.025] px-5 py-4 lg:border-t-0 lg:px-6 lg:py-6">
             <span className="text-[10px] font-bold uppercase tracking-[0.17em] text-white/55">
               Vyber aktualitu
             </span>
@@ -111,22 +127,25 @@ export function NewsSpotlight({
                   onClick={() => setSelectedId(article.id)}
                   aria-pressed={selected}
                   aria-label={`Zobrazit aktualitu: ${article.title}`}
-                  className={`group relative flex w-[235px] shrink-0 items-center gap-3 border-r border-white/10 px-4 py-4 text-left transition-colors focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white sm:w-[295px] lg:min-h-[96px] lg:w-full lg:border-b lg:border-r-0 lg:px-5 ${selected ? 'bg-white/[0.09]' : 'hover:bg-white/[0.05]'}`}
+                  className={`group relative flex w-[245px] shrink-0 items-center gap-3 border-r border-white/[0.08] px-4 py-4 text-left transition-colors focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white sm:w-[295px] lg:min-h-[112px] lg:w-full lg:border-b lg:border-r-0 lg:px-5 ${selected ? 'bg-[linear-gradient(90deg,rgba(41,108,74,.62),rgba(255,255,255,.045))]' : 'hover:bg-white/[0.055]'}`}
                 >
                   {selected && (
-                    <span aria-hidden="true" className="absolute bottom-0 left-0 h-[3px] w-full bg-[#67bd84] lg:bottom-auto lg:h-full lg:w-[3px]" />
+                    <span aria-hidden="true" className="absolute bottom-0 left-0 h-[3px] w-full bg-[#7bd19a] shadow-[0_0_18px_rgba(95,219,138,.4)] lg:bottom-auto lg:h-full lg:w-[3px]" />
                   )}
                   <img
                     src={article.cover_image || FALLBACK_IMAGE}
                     alt=""
                     loading="lazy"
-                    className="h-[58px] w-[78px] shrink-0 object-cover sm:h-[64px] sm:w-[92px]"
+                    className={`h-[64px] w-[90px] shrink-0 rounded-[10px] object-cover ring-1 ring-white/[0.16] transition-transform duration-300 group-hover:scale-[1.02] sm:h-[74px] sm:w-[108px] ${selected ? 'ring-[#a5e2b6]/50' : ''}`}
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="line-clamp-2 text-xs font-bold leading-5 text-white/90 sm:text-[13px]">
+                    <span className="mb-1 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#9bd9ad]">
+                      {article.category || 'Aktualita'}
+                    </span>
+                    <span className={`line-clamp-2 text-xs font-extrabold leading-[1.35] sm:text-[13px] ${selected ? 'text-white' : 'text-white/85'}`}>
                       {article.title}
                     </span>
-                    <span className="mt-1 block text-[10px] text-white/45">
+                    <span className="mt-1.5 block text-[10px] text-white/50">
                       {formatDate(article.published_at)}
                     </span>
                   </span>
