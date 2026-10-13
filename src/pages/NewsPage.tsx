@@ -9,6 +9,7 @@ import {
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
+import { NewsMatchCard } from '../components/NewsMatchCard'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchPublishedNews, fetchTeams } from '../lib/data'
@@ -366,6 +367,11 @@ function PinnedNewsCard({ article }: { article: NewsArticle | null }) {
               {article.excerpt}
             </p>
           )}
+          {article.match_id && (
+            <div className="max-w-[410px]">
+              <NewsMatchCard matchId={article.match_id} variant="compact" tone="dark" />
+            </div>
+          )}
         </div>
       </div>
     </Link>
@@ -414,6 +420,7 @@ function NewsCard({ article }: { article: NewsArticle }) {
             {article.excerpt}
           </p>
         )}
+        {article.match_id && <NewsMatchCard matchId={article.match_id} variant="compact" />}
         <div className="mt-5 border-t border-sand-200 pt-4 text-xs text-ink-500">
           {formatDate(article.published_at)}
         </div>
