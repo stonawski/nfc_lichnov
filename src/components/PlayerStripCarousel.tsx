@@ -172,8 +172,10 @@ export function PlayerStripCarousel({
       </div>
 
       <div
-        className={`relative z-30 h-[17px] ${
-          flush ? 'bg-sand-100' : 'bg-sand-50'
+        className={`relative z-30 ${
+          // Reserve enough space for the 68px crest: otherwise the next
+          // section paints over the part hanging below this narrow band.
+          flush ? 'h-[52px] bg-sand-100' : 'h-[17px] bg-sand-50'
         }`}
       >
         <div
