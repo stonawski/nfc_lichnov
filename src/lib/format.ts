@@ -53,13 +53,23 @@ export function formatMatchTime(value: string | null | undefined) {
   }).format(new Date(value))
 }
 
+const NFC_LICHNOV_GROUND_ADDRESS = 'Lichnov 286, 742 75 Lichnov, Česko'
+
 export function matchVenueMapUrl(
   match: Pick<Match, 'pitch_name' | 'home_team_name'>,
 ) {
   const pitch = match.pitch_name?.trim()
-  const query = pitch
-    ? `${pitch}, ${match.home_team_name}`
-    : `${match.home_team_name} fotbalové hřiště`
+  // Google Maps can confuse our Lichnov (742 75) with Lichnov u Bruntálu.
+  // Route all references to NFC Lichnov's home ground to its exact address;
+  // keep existing venue lookup for other clubs' pitches.
+  const lichnovHome =
+    /\bNFC\s+Lichnov\b/i.test(match.home_team_name) ||
+    (Boolean(pitch) && /\bLichnov\b/i.test(pitch!) && !/\bBrunt[aá]l/i.test(pitch!))
+  const query = lichnovHome
+    ? NFC_LICHNOV_GROUND_ADDRESS
+    : pitch
+      ? `${pitch}, ${match.home_team_name}`
+      : `${match.home_team_name} fotbalové hřiště`
 
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 }
