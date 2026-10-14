@@ -15,7 +15,7 @@ import { EmptyState, LoadingState } from "../components/LoadingState";
 import { HomeMatchBoard } from "../components/HomeMatchBoard";
 import { NewsSpotlight } from "../components/NewsSpotlight";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
-import { SectionHeading } from "../components/SectionHeading";
+import { SocialShowcase } from "../components/SocialShowcase";
 import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
@@ -190,6 +190,28 @@ export function HomePage() {
         )
       : standings.slice(0, 5);
 
+  // Some imported standings rows lack a crest. Reuse genuine FAČR match logos
+  // already available on the homepage, never an unrelated generic club logo.
+  const matchLogos = new Map<number, string>();
+  for (const summary of matchesQuery.data ?? []) {
+    const match = summary.match;
+    if (!match) continue;
+    if (match.home_team_facr_id != null && match.home_team_logo) {
+      matchLogos.set(match.home_team_facr_id, match.home_team_logo);
+    }
+    if (match.away_team_facr_id != null && match.away_team_logo) {
+      matchLogos.set(match.away_team_facr_id, match.away_team_logo);
+    }
+  }
+  const standingsWithLogos = standingsPreview.map((row) => ({
+    ...row,
+    club_logo:
+      row.club_logo ||
+      (/lichnov/i.test(row.team_name || row.club_name || "") ? men?.logo_url : null) ||
+      matchLogos.get(row.facr_team_id) ||
+      null,
+  }));
+
   return (
     <main>
       <section className="home-homepage-hero site-hero-frame relative -mt-[84px] overflow-hidden px-4 pb-12 pt-[116px] sm:-mt-[88px] sm:px-5 sm:pb-16 sm:pt-[132px] md:px-8 md:pt-[140px] lg:pb-20">
@@ -328,7 +350,7 @@ export function HomePage() {
                 <LoadingState rows={5} />
               ) : standingsPreview.length ? (
                 <DataFade>
-                  <StandingsTable rows={standingsPreview} compact />
+                  <StandingsTable rows={standingsWithLogos} compact />
                 </DataFade>
               ) : (
                 <EmptyState
@@ -479,36 +501,7 @@ export function HomePage() {
         </DataFade>
       ) : null}
 
-      <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
-        <div className="mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="NFC Lichnov"
-            title="Klub je víc než sestava."
-          />
-
-          <div className="grid overflow-hidden rounded-[28px] border border-sand-200 bg-[#fbfaf6] sm:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-sand-200">
-            {[
-              ["O klubu", "/klub"],
-              ["Historie", "/klub/historie"],
-              ["Statistiky", "/klub/statistiky"],
-              ["Sportovní areál", "/klub/areal"],
-              ["Kontakt", "/kontakt"],
-            ].map(([label, to]) => (
-              <Link
-                key={label}
-                to={to}
-                className="group flex items-center justify-between border-b border-sand-200 px-5 py-6 text-2xl font-extrabold tracking-[-0.04em] text-brand-900 transition hover:bg-white last:border-b-0 md:px-6 md:py-9 lg:border-b-0"
-              >
-                {label}
-                <ArrowUpRight
-                  size={20}
-                  className="text-ink-500 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-brand-500"
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SocialShowcase />
     </main>
   );
 }

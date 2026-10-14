@@ -130,7 +130,7 @@ function AdminLoading() {
 
 function RouteLoading() {
   return (
-    <main aria-busy="true" aria-label="Načítání stránky">
+    <main aria-busy="true" aria-label="Načítání stránky" className="route-loading-enter">
       <section className="site-hero-frame relative -mt-[84px] flex flex-col overflow-hidden px-5 pb-14 pt-[124px] sm:-mt-[88px] sm:pt-[136px] md:px-8 md:pb-20 md:pt-[144px]">
         <div className="relative mx-auto flex w-full max-w-[1240px] flex-1 items-center py-8 md:py-12">
           <div className="w-full max-w-[760px]">
