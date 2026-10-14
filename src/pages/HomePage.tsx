@@ -492,7 +492,7 @@ export function HomePage() {
           </div>
         </section>
       ) : men && menPlayersQuery.data?.length ? (
-        <DataFade>
+        <DataFade className="relative z-30">
           <PlayerStripCarousel
             team={men}
             players={menPlayersQuery.data}
