@@ -9,6 +9,7 @@ import {
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
+import { NewsMatchCard } from '../components/NewsMatchCard'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
 import { EmptyState, LoadingState } from '../components/LoadingState'
 import { fetchPublishedNews, fetchTeams } from '../lib/data'
@@ -353,8 +354,13 @@ function PinnedNewsCard({ article }: { article: NewsArticle | null }) {
         </div>
 
         <div className="max-w-2xl">
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/50">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/70">
             <span>{article.category || 'Aktualita'}</span>
+            {article.match_id && (
+              <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-black text-white/90">
+                K zápasu
+              </span>
+            )}
             <span>·</span>
             <span>{formatDate(article.published_at)}</span>
           </div>
@@ -378,7 +384,7 @@ function NewsCard({ article }: { article: NewsArticle }) {
       to={`/aktuality/${article.slug}`}
       className="group overflow-hidden rounded-[30px] border border-sand-200 bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-soft"
     >
-      <div className="aspect-[16/10] overflow-hidden bg-sand-100">
+      <div className="relative aspect-[16/10] overflow-hidden bg-sand-100">
         {article.cover_image ? (
           <img
             src={article.cover_image}
@@ -394,13 +400,23 @@ function NewsCard({ article }: { article: NewsArticle }) {
             className="h-full w-full object-cover opacity-70"
           />
         )}
+        {article.match_id && (
+          <NewsMatchCard matchId={article.match_id} variant="thumbnail" />
+        )}
       </div>
 
       <div className="p-6">
         <div className="flex items-center justify-between gap-4">
-          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-            {article.category || 'Aktualita'}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
+              {article.category || 'Aktualita'}
+            </span>
+            {article.match_id && (
+              <span className="rounded-full border border-brand-900/10 bg-brand-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-brand-700">
+                Zápas
+              </span>
+            )}
+          </div>
           <ArrowUpRight
             size={17}
             className="text-ink-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-500"

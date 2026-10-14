@@ -23,7 +23,9 @@ const scopeFolders = {
   club: 'club',
 } as const
 
-const maxFileSize = 12 * 1024 * 1024
+const maxImageSize = 12 * 1024 * 1024
+const maxNewsVideoSize = 100 * 1024 * 1024
+const allowedNewsVideoTypes = new Set(['video/mp4', 'video/webm'])
 
 type MediaScope = keyof typeof scopeFolders
 
@@ -174,12 +176,14 @@ Deno.serve(async (request) => {
     return json({ error: 'fileName is required.' }, 400)
   }
 
-  if (!contentType || !allowedContentTypes.has(contentType)) {
-    return json({ error: 'Unsupported image type.' }, 400)
+  const isNewsVideo = scope === 'news' && !!contentType && allowedNewsVideoTypes.has(contentType)
+  if (!contentType || (!allowedContentTypes.has(contentType) && !isNewsVideo)) {
+    return json({ error: 'Unsupported media type.' }, 400)
   }
 
-  if (typeof fileSize === 'number' && (fileSize <= 0 || fileSize > maxFileSize)) {
-    return json({ error: 'Image is too large. Maximum size is 12 MB.' }, 400)
+  const maximumSize = isNewsVideo ? maxNewsVideoSize : maxImageSize
+  if (typeof fileSize !== 'number' || !Number.isFinite(fileSize) || fileSize <= 0 || fileSize > maximumSize) {
+    return json({ error: 'Media exceeds the permitted upload size.' }, 400)
   }
 
   const safeName = sanitizeFileName(fileName)

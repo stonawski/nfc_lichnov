@@ -126,6 +126,7 @@ export type Staff = {
 export type NewsArticle = {
   id: string
   team_id: string | null
+  match_id: string | null
   title: string
   slug: string
   excerpt: string | null
@@ -137,6 +138,21 @@ export type NewsArticle = {
   published_at: string | null
   created_at: string
 }
+
+export type NewsMedia = {
+  id: string
+  news_id: string
+  media_type: 'image' | 'video'
+  media_url: string
+  sort_order: number
+  created_at: string
+}
+
+export type NewsMatchOption = Pick<
+  Match,
+  'id' | 'team_id' | 'home_team_name' | 'away_team_name' |
+  'playing_at' | 'score_home' | 'score_away' | 'final_score'
+>
 
 export type Gallery = {
   id: string

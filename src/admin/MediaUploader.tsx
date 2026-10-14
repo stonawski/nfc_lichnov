@@ -22,11 +22,13 @@ export function MediaUploader({
   scope,
   resourceId,
   multiple = true,
+  allowVideo = false,
   onUploaded,
 }: {
   scope: MediaScope
   resourceId: string
   multiple?: boolean
+  allowVideo?: boolean
   onUploaded?: (media: UploadedMedia) => Promise<void> | void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -35,7 +37,10 @@ export function MediaUploader({
   const [busy, setBusy] = useState(false)
 
   async function handleFiles(fileList: FileList | File[]) {
-    const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'))
+    const files = Array.from(fileList).filter(
+      (file) => file.type.startsWith('image/') ||
+        (allowVideo && ['video/mp4', 'video/webm'].includes(file.type)),
+    )
     if (!files.length || busy) return
 
     const selected = multiple ? files : files.slice(0, 1)
@@ -54,7 +59,12 @@ export function MediaUploader({
 
       try {
         updateItem(itemId, { state: 'compressing' })
-        const uploadFile = await compressForWeb(originalFile)
+        if (originalFile.type.startsWith('video/') && originalFile.size > 100 * 1024 * 1024) {
+          throw new Error('Video může mít nejvýše 100 MB.')
+        }
+        const uploadFile = originalFile.type.startsWith('video/')
+          ? originalFile
+          : await compressForWeb(originalFile)
 
         updateItem(itemId, { state: 'uploading', name: uploadFile.name })
 
@@ -145,7 +155,7 @@ export function MediaUploader({
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
+          accept={allowVideo ? 'image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm' : 'image/jpeg,image/png,image/webp,image/avif'}
           multiple={multiple}
           className="sr-only"
           onChange={(event) => {
@@ -158,11 +168,13 @@ export function MediaUploader({
         </div>
 
         <h3 className="mt-5 text-xl font-extrabold tracking-[-0.035em] text-brand-900">
-          Přetáhni sem fotografie
+          {allowVideo ? 'Přetáhni sem fotografie nebo video' : 'Přetáhni sem fotografie'}
         </h3>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink-500">
-          Obrázky před uploadem automaticky zmenšíme a převedeme do WebP.
-          Originály se do R2 neposílají.
+          Obrázky automaticky optimalizujeme do WebP.
+          {allowVideo
+            ? ' Video MP4 nebo WebM nahrajeme přímo (max. 100 MB).'
+            : ' Originály se do R2 neposílají.'}
         </p>
 
         <button
@@ -171,7 +183,7 @@ export function MediaUploader({
           onClick={() => inputRef.current?.click()}
           className="mt-5 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-wait disabled:opacity-50"
         >
-          {busy ? 'Nahrávám…' : multiple ? 'Vybrat fotografie' : 'Vybrat fotografii'}
+          {busy ? 'Nahrávám…' : allowVideo ? 'Vybrat fotky nebo video' : multiple ? 'Vybrat fotografie' : 'Vybrat fotografii'}
         </button>
       </div>
 
@@ -230,7 +242,7 @@ function UploadStateIcon({ state }: { state: UploadItem['state'] }) {
 }
 
 function stateLabel(state: UploadItem['state']) {
-  if (state === 'compressing') return 'Optimalizuji pro web…'
+  if (state === 'compressing') return 'Připravuji soubor…'
   if (state === 'uploading') return 'Nahrávám do Cloudflare R2…'
   if (state === 'saving') return 'Ukládám do databáze…'
   if (state === 'done') return 'Hotovo'

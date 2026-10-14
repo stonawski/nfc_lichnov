@@ -18,7 +18,8 @@ import {
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
-import { AlbumOverlay, Lightbox } from './GalleryPage'
+import { AlbumOverlay } from './GalleryPage'
+import { Lightbox } from '../components/GalleryLightbox'
 import { fetchGalleries, fetchGalleryImages } from '../lib/data'
 
 const CLUB_ADDRESS = 'Lichnov 286, 742 75 Lichnov'

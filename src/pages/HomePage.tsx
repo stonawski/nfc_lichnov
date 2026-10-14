@@ -13,6 +13,7 @@ import { DataFade } from "../components/DataFade";
 import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
 import { EmptyState, LoadingState } from "../components/LoadingState";
 import { HomeMatchBoard } from "../components/HomeMatchBoard";
+import { NewsSpotlight } from "../components/NewsSpotlight";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
 import { SectionHeading } from "../components/SectionHeading";
 import { StandingsTable } from "../components/StandingsTable";
@@ -26,7 +27,6 @@ import {
   fetchTeams,
   fetchUpcomingMatches,
 } from "../lib/data";
-import { formatDate } from "../lib/format";
 import type { TeamMatchSummary } from "../lib/types";
 
 export function HomePage() {
@@ -42,7 +42,7 @@ export function HomePage() {
   });
   const newsQuery = useQuery({
     queryKey: ["news", "home"],
-    queryFn: () => fetchPublishedNews(4),
+    queryFn: () => fetchPublishedNews(5),
     retry: false,
   });
   const upcomingQuery = useQuery({
@@ -274,115 +274,34 @@ export function HomePage() {
 
       
 
-      <section className="relative overflow-hidden bg-sand-100 px-5 py-20 md:px-8 md:py-28">
-        <div className="relative mx-auto max-w-[1240px]">
-          <SectionHeading
-            eyebrow="Klubový deník"
-            title="Aktuálně z Lichnova"
-            text="Novinky z hřiště, kabiny i života klubu."
-          />
-
-          {newsQuery.isLoading ? (
-            <LoadingState rows={3} />
-          ) : news.length ? (
-            <DataFade className="stagger-children grid gap-7 lg:grid-cols-[1.45fr_.75fr]">
-              <Link
-                to={`/aktuality/${news[0].slug}`}
-                className="group relative min-h-[470px] overflow-hidden rounded-[38px] bg-brand-900 p-7 text-white shadow-soft sm:p-9"
-              >
-                {news[0].cover_image ? (
-                  <img
-                    src={news[0].cover_image}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-48 transition duration-700 group-hover:scale-[1.025]"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(0,146,63,.42),transparent_32%)]" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-900 via-brand-900/45 to-brand-900/5" />
-
-                <div className="relative flex h-full min-h-[405px] flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/70 backdrop-blur">
-                      {news[0].category || "Aktualita"}
-                    </span>
-                    <ArrowUpRight
-                      size={20}
-                      className="text-white/55 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-semibold text-white/55">
-                      {formatDate(news[0].published_at)}
-                    </div>
-                    <h3 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.02] tracking-[-0.045em] sm:text-5xl">
-                      {news[0].title}
-                    </h3>
-                    {news[0].excerpt && (
-                      <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
-                        {news[0].excerpt}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Link>
-
-              <div>
-                {news.slice(1, 4).map((article) => (
-                  <Link
-                    key={article.id}
-                    to={`/aktuality/${article.slug}`}
-                    className="group grid grid-cols-[1fr_auto] gap-5 border-b border-brand-900/10 py-6 first:pt-5"
-                  >
-                    <div>
-                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-500">
-                        {article.category || "Aktualita"}
-                      </div>
-                      <h3 className="mt-2 text-xl font-extrabold leading-tight tracking-[-0.035em] text-brand-900 transition group-hover:text-brand-700">
-                        {article.title}
-                      </h3>
-                      <p className="mt-3 text-xs text-ink-500">
-                        {formatDate(article.published_at)}
-                      </p>
-                    </div>
-
-                    <div className="grid h-10 w-10 place-items-center self-center rounded-2xl bg-white/70 text-brand-900 ring-1 ring-white transition group-hover:bg-brand-500 group-hover:text-white">
-                      <ArrowUpRight size={17} />
-                    </div>
-                  </Link>
-                ))}
-
-              </div>
-            </DataFade>
-          ) : (
-            <DataFade>
-              <EmptyState
-              title="Aktuality zatím nejsou publikované"
-              text="Jakmile v administraci zveřejníš první článek, objeví se automaticky tady."
-              />
-            </DataFade>
-          )}
-        </div>
-      </section>
-
-      {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
-        <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
+      {newsQuery.isLoading ? (
+        <section className="bg-[#102b22] px-5 py-20 md:px-8">
           <div className="mx-auto max-w-[1240px]">
             <LoadingState rows={3} />
           </div>
         </section>
-      ) : men && menPlayersQuery.data?.length ? (
+      ) : news.length ? (
         <DataFade>
-          <PlayerStripCarousel
-            team={men}
-            players={menPlayersQuery.data}
-            flush
-          />
+          <NewsSpotlight articles={news} />
         </DataFade>
-      ) : null}
+      ) : (
+        <section className="bg-[#102b22] px-5 py-20 text-white md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#91d3a6]">
+              Klubový deník
+            </div>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.055em]">
+              Aktuálně z Lichnova
+            </h2>
+            <p className="mt-5 text-sm text-white/70">
+              Aktuality zatím nejsou publikované. Jakmile zveřejníme první článek,
+              objeví se automaticky tady.
+            </p>
+          </div>
+        </section>
+      )}
 
-      <section className="bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
+      <section className="relative z-20 -mt-7 bg-sand-100 px-5 pb-16 pt-14 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[42px] bg-brand-900 px-6 py-9 text-white sm:px-8 md:px-10 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
@@ -544,8 +463,21 @@ export function HomePage() {
         </div>
       </section>
 
-      
-
+      {teamsQuery.isLoading || (men && menPlayersQuery.isLoading) ? (
+        <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <LoadingState rows={3} />
+          </div>
+        </section>
+      ) : men && menPlayersQuery.data?.length ? (
+        <DataFade>
+          <PlayerStripCarousel
+            team={men}
+            players={menPlayersQuery.data}
+            flush
+          />
+        </DataFade>
+      ) : null}
 
       <section className="bg-white px-5 pb-14 pt-20 md:px-8 md:pb-16 md:pt-24">
         <div className="mx-auto max-w-[1240px]">

@@ -6,6 +6,7 @@ import type {
   MatchParticipant,
   MatchTimelineEvent,
   NewsArticle,
+  NewsMedia,
   Player,
   Staff,
   Standing,
@@ -262,33 +263,69 @@ export async function fetchStaffByTeam(teamId: string): Promise<Staff[]> {
   return (data ?? []) as Staff[]
 }
 
+const NEWS_FIELDS = 'id,team_id,match_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
+const LEGACY_NEWS_FIELDS = 'id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at'
+
+function isMissingNewsMatchColumn(error: { message: string } | null) {
+  return Boolean(error && /match_id/.test(error.message))
+}
+
 export async function fetchPublishedNews(limit?: number): Promise<NewsArticle[]> {
   ensureConfigured()
-  let query = supabase
-    .from('news')
-    .select('id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
+  let query = supabase.from('news')
+    .select(NEWS_FIELDS)
     .eq('published', true)
     .order('published_at', { ascending: false })
 
   if (limit) query = query.limit(limit)
   const { data, error } = await query
-  if (error) throw error
-  return (data ?? []) as NewsArticle[]
+  if (!error) return (data ?? []) as NewsArticle[]
+  if (!isMissingNewsMatchColumn(error)) throw error
+
+  // A newly deployed frontend remains readable until the migration is applied.
+  let legacyQuery = supabase.from('news')
+    .select(LEGACY_NEWS_FIELDS)
+    .eq('published', true)
+    .order('published_at', { ascending: false })
+  if (limit) legacyQuery = legacyQuery.limit(limit)
+  const legacy = await legacyQuery
+  if (legacy.error) throw legacy.error
+  return (legacy.data ?? []).map((row) => ({ ...row, match_id: null })) as NewsArticle[]
 }
 
 export async function fetchNewsBySlug(slug: string): Promise<NewsArticle | null> {
   ensureConfigured()
-  const { data, error } = await supabase
-    .from('news')
-    .select('id,team_id,title,slug,excerpt,content,cover_image,category,featured,published,published_at,created_at')
+  const { data, error } = await supabase.from('news')
+    .select(NEWS_FIELDS)
     .eq('slug', slug)
     .eq('published', true)
     .maybeSingle()
+  if (!error) return data as NewsArticle | null
+  if (!isMissingNewsMatchColumn(error)) throw error
 
-  if (error) throw error
-  return data as NewsArticle | null
+  const legacy = await supabase.from('news')
+    .select(LEGACY_NEWS_FIELDS)
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle()
+  if (legacy.error) throw legacy.error
+  return legacy.data ? { ...legacy.data, match_id: null } as NewsArticle : null
 }
 
+export async function fetchPublishedNewsMedia(newsId: string): Promise<NewsMedia[]> {
+  ensureConfigured()
+  const { data, error } = await supabase
+    .from('news_media')
+    .select('id,news_id,media_type,media_url,sort_order,created_at')
+    .eq('news_id', newsId)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  // Keep existing articles readable before news_media migration is deployed.
+  if (error && ['42P01', 'PGRST205'].includes(error.code ?? '')) return []
+  if (error) throw error
+  return (data ?? []) as NewsMedia[]
+}
 
 export async function fetchGalleries(): Promise<Gallery[]> {
   ensureConfigured()
