@@ -41,11 +41,9 @@ export function StandingsTable({
           >
             <div role="cell" className={`font-extrabold ${lichnov ? 'text-brand-500' : 'text-ink-500'}`}>{row.rank ?? '—'}</div>
             <div role="cell" className="flex min-w-0 items-center gap-2.5">
-              {!compact && (
-                <div className={dense ? '-my-0.5 scale-[0.88]' : ''}>
-                  <ClubLogo src={row.club_logo} name={row.team_name} size="sm" />
-                </div>
-              )}
+              <div className={`shrink-0 ${compact ? '-my-1 scale-[0.86]' : dense ? '-my-0.5 scale-[0.88]' : ''}`}>
+                <ClubLogo src={row.club_logo} name={row.team_name || row.club_name || 'Klub'} size="sm" />
+              </div>
               <span className={`truncate font-semibold ${lichnov ? 'text-brand-900' : 'text-ink-900'}`}>{row.team_name || row.club_name}</span>
             </div>
             <div role="cell" className="text-center text-ink-500">{row.matches_count ?? '—'}</div>

@@ -360,17 +360,22 @@ img {
 
 
 .route-content-enter {
-  animation: route-content-enter 480ms var(--motion-ease) both;
-  will-change: opacity;
+  animation: route-content-enter 340ms var(--motion-ease-soft) both;
+}
+
+.route-loading-enter {
+  /* Fast, prewarmed navigation won't flash a skeleton. On slower routes the
+     placeholder gradually appears instead of popping in mid-transition. */
+  animation: route-loading-reveal 320ms var(--motion-ease-soft) 140ms both;
+  min-height: min(850px, 100svh);
 }
 
 .content-enter {
-  animation: content-fade-enter 720ms var(--motion-ease) both;
+  animation: content-fade-enter 540ms var(--motion-ease-soft) both;
 }
 
 .data-fade-in {
-  animation: data-fade-in 640ms var(--motion-ease-soft) both;
-  will-change: opacity;
+  animation: data-fade-in 600ms var(--motion-ease-soft) both;
 }
 
 .component-swap-enter {
@@ -451,13 +456,13 @@ img {
 }
 
 @keyframes route-content-enter {
-  from {
-    opacity: 0.68;
-  }
+  from { opacity: 0.84; }
+  to { opacity: 1; }
+}
 
-  to {
-    opacity: 1;
-  }
+@keyframes route-loading-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes component-swap-enter {

@@ -89,7 +89,7 @@ export function PlayerStripCarousel({
 
   return (
     <section
-      className={`content-enter player-strip relative z-20 w-full bg-brand-900 text-white ${
+      className={`content-enter player-strip relative z-20 w-full overflow-visible bg-brand-900 text-white ${
         flush ? 'mb-0 mt-0' : 'mb-14 mt-3'
       }`}
     >
@@ -172,17 +172,18 @@ export function PlayerStripCarousel({
       </div>
 
       <div
-        className={`relative z-30 h-[17px] ${
-          flush ? 'bg-sand-100' : 'bg-sand-50'
+        className={`relative z-30 ${
+          // Keep the separator narrow and let the crest visibly overlap
+          // the next section, instead of trapping it inside a wide strip.
+          flush ? 'h-[17px] bg-sand-100' : 'h-[17px] bg-sand-50'
         }`}
       >
         <div
           className="pointer-events-none absolute inset-x-0 top-[13px] z-50 flex -translate-y-1/2 items-center"
-          style={{ filter: 'drop-shadow(0 12px 12px rgba(24, 53, 42, 0.3))' }}
         >
           <div className="h-[7px] flex-1 bg-[#18352a]" />
           <div
-            className={`grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full ring-4 ring-brand-900 ${
+            className={`grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full ring-4 ring-brand-900 shadow-[0_14px_22px_rgba(24,53,42,.36)] ${
               flush ? 'bg-sand-100' : 'bg-sand-50'
             }`}
           >

@@ -53,14 +53,32 @@ export function PublicRouteWarmup() {
     document.addEventListener('focusin', warmFromIntent)
     document.addEventListener('touchstart', warmFromIntent, { passive: true })
 
+    // Avoid parsing several route chunks at once while the homepage is busy.
+    // Hover/focus/touch intent preloading above still takes priority.
+    let cancelled = false
     const warmCommonRoutes = () => {
-      void Promise.allSettled([
-        import('../pages/TeamsPage'),
-        import('../pages/MatchesPage'),
-        import('../pages/NewsPage'),
-        import('../pages/GalleryPage'),
-        import('../pages/StaticPages'),
-      ])
+      const routes: Array<() => Promise<unknown>> = [
+        () => import('../pages/TeamsPage'),
+        () => import('../pages/MatchesPage'),
+        () => import('../pages/NewsPage'),
+        () => import('../pages/GalleryPage'),
+        () => import('../pages/StaticPages'),
+      ]
+
+      void (async () => {
+        for (const loadRoute of routes) {
+          if (cancelled) break
+          try {
+            await loadRoute()
+          } catch {
+            // A transient failure during speculative preloading must not
+            // break navigation; React.lazy can retry during actual navigation.
+          }
+          if (!cancelled) {
+            await new Promise<void>((resolve) => window.setTimeout(resolve, 180))
+          }
+        }
+      })()
     }
 
     const idleWindow = window as IdleWindow
@@ -74,6 +92,7 @@ export function PublicRouteWarmup() {
     }
 
     return () => {
+      cancelled = true
       document.removeEventListener('pointerover', warmFromIntent)
       document.removeEventListener('focusin', warmFromIntent)
       document.removeEventListener('touchstart', warmFromIntent)

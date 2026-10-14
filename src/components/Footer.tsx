@@ -1,24 +1,7 @@
-import { ArrowUpRight, Facebook, Instagram } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { SOCIAL_CHANNELS, SocialIcon } from "./SocialLinks";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-
-const SOCIAL_LINKS = [
-  {
-    label: "Facebook",
-    href: "https://cs-cz.facebook.com/NFCLichnov/",
-    icon: <Facebook size={19} strokeWidth={1.9} />,
-  },
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/nfc_lichnov_z.s?igsh=YXBjOGkyazJjencx",
-    icon: <Instagram size={19} strokeWidth={1.9} />,
-  },
-  {
-    label: "TikTok",
-    href: "https://www.tiktok.com/@nfc.lichnov?_r=1&_t=ZN-96ej7l3cT9K",
-    icon: <TikTokIcon />,
-  },
-];
 
 export function Footer() {
   return (
@@ -71,7 +54,7 @@ export function Footer() {
                 Sleduj nás
               </div>
               <div className="mt-3 flex items-center gap-2.5">
-                {SOCIAL_LINKS.map((social) => (
+                {SOCIAL_CHANNELS.map((social) => (
                   <a
                     key={social.label}
                     href={social.href}
@@ -81,7 +64,7 @@ export function Footer() {
                     title={social.label}
                     className="grid h-10 w-10 place-items-center rounded-full border border-white/[0.16] bg-white/[0.055] text-white/80 transition duration-200 hover:-translate-y-0.5 hover:border-white/[0.3] hover:bg-white/[0.12] hover:text-white"
                   >
-                    {social.icon}
+                    <SocialIcon platform={social.platform} size={19} />
                   </a>
                 ))}
               </div>
@@ -131,22 +114,5 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
     >
       {children}
     </Link>
-  );
-}
-
-function TikTokIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M14.2 4.2c.66 1.76 1.88 2.82 3.8 3.16v3.1a8.1 8.1 0 0 1-3.78-1.06v5.64a5.24 5.24 0 1 1-4.52-5.19v3.15a2.14 2.14 0 1 0 1.38 2V4.2h3.12Z"
-        fill="currentColor"
-      />
-    </svg>
   );
 }
