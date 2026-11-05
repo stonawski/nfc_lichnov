@@ -43,10 +43,16 @@ export function PublicRouteWarmup() {
       return url.origin === window.location.origin ? url.pathname : null
     }
 
+    const attemptedPaths = new Set<string>()
     const warmFromIntent = (event: Event) => {
       const pathname = resolveInternalPath(event.target)
-      if (!pathname || pathname === window.location.pathname) return
-      void warmPath(pathname)
+      if (!pathname || pathname === window.location.pathname || attemptedPaths.has(pathname)) return
+
+      attemptedPaths.add(pathname)
+      void warmPath(pathname).catch(() => {
+        // Let a future hover/touch retry a failed speculative chunk.
+        attemptedPaths.delete(pathname)
+      })
     }
 
     document.addEventListener('pointerover', warmFromIntent, { passive: true })

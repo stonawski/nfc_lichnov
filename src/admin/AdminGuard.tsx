@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { withDeadline } from '../lib/withDeadline'
 
 type AccessState = 'checking' | 'allowed' | 'signed-out' | 'forbidden' | 'error'
 
 export function AdminGuard() {
   const [state, setState] = useState<AccessState>('checking')
+  const [verificationAttempt, setVerificationAttempt] = useState(0)
   const location = useLocation()
 
   useEffect(() => {
@@ -13,43 +15,47 @@ export function AdminGuard() {
 
     async function verifyAccess() {
       setState('checking')
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await withDeadline(supabase.auth.getSession(), 20_000)
 
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
+        if (cancelled) return
+        if (sessionError) {
+          setState('error')
+          return
+        }
+        if (!session) {
+          setState('signed-out')
+          return
+        }
 
-      if (cancelled) return
+        const { data: canEdit, error: permissionError } = await withDeadline(
+          supabase.rpc('can_edit_content'),
+          20_000,
+        )
+        if (cancelled) return
 
-      if (sessionError) {
-        setState('error')
-        return
+        if (permissionError) {
+          console.error('Unable to verify admin permissions', permissionError)
+          setState('error')
+          return
+        }
+        setState(canEdit === true ? 'allowed' : 'forbidden')
+      } catch (error) {
+        // A rejected auth/transport promise must never leave the admin on a
+        // permanent loading spinner. Treat it as failed verification.
+        if (!cancelled) {
+          console.error('Admin permission verification failed', error)
+          setState('error')
+        }
       }
-
-      if (!session) {
-        setState('signed-out')
-        return
-      }
-
-      const { data: canEdit, error: permissionError } = await supabase.rpc('can_edit_content')
-
-      if (cancelled) return
-
-      if (permissionError) {
-        console.error('Unable to verify admin permissions', permissionError)
-        setState('error')
-        return
-      }
-
-      setState(canEdit === true ? 'allowed' : 'forbidden')
     }
 
     void verifyAccess()
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    return () => { cancelled = true }
+  }, [verificationAttempt])
 
   if (state === 'checking') {
     return (
@@ -100,6 +106,13 @@ export function AdminGuard() {
           <p className="mt-4 text-sm leading-6 text-ink-500">
             Zkontroluj připojení k Supabase a nastavení funkce <code>can_edit_content()</code>.
           </p>
+          <button
+            type="button"
+            onClick={() => setVerificationAttempt((attempt) => attempt + 1)}
+            className="mt-7 rounded-2xl bg-brand-900 px-5 py-3 text-sm font-bold text-white hover:bg-brand-700"
+          >
+            Zkusit ověření znovu
+          </button>
         </div>
       </div>
     )
