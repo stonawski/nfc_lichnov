@@ -20,10 +20,12 @@ import {
   fetchGalleries,
   fetchGalleryBySlug,
   fetchGalleryImages,
+  fetchPublicGallerySummaries,
   fetchTeams,
   galleryImageUrl,
 } from '../lib/data'
 import { formatDate } from '../lib/format'
+import type { PublicGallerySummary } from '../lib/data'
 import type { Gallery, GalleryImage } from '../lib/types'
 
 export function GalleryPage() {
@@ -39,9 +41,10 @@ export function GalleryPage() {
     queryFn: fetchGalleries,
     retry: false,
   })
-  const imagesQuery = useQuery({
-    queryKey: ['gallery-images'],
-    queryFn: () => fetchGalleryImages(),
+  const summariesQuery = useQuery({
+    queryKey: ['gallery-images', 'summaries'],
+    queryFn: () => fetchPublicGallerySummaries(galleriesQuery.data ?? []),
+    enabled: galleriesQuery.isSuccess && Boolean(galleriesQuery.data?.length),
     retry: false,
   })
   const teamsQuery = useQuery({
@@ -50,17 +53,10 @@ export function GalleryPage() {
     retry: false,
   })
 
-  const imagesByGallery = useMemo(() => {
-    const map = new Map<string, GalleryImage[]>()
-
-    for (const image of imagesQuery.data ?? []) {
-      const current = map.get(image.gallery_id) ?? []
-      current.push(image)
-      map.set(image.gallery_id, current)
-    }
-
-    return map
-  }, [imagesQuery.data])
+  const summaryByGallery = useMemo(
+    () => new Map((summariesQuery.data ?? []).map((summary) => [summary.galleryId, summary])),
+    [summariesQuery.data],
+  )
 
   const galleries = galleriesQuery.data ?? []
   const teams = teamsQuery.data ?? []
@@ -72,7 +68,7 @@ export function GalleryPage() {
     [galleries],
   )
   // Team labels are optional filters, not a reason to block every album.
-  const loading = galleriesQuery.isLoading || imagesQuery.isLoading
+  const loading = galleriesQuery.isLoading || summariesQuery.isLoading
 
   const years = useMemo(
     () =>
@@ -104,14 +100,18 @@ export function GalleryPage() {
     })
   }, [galleries, sort, teamId, year])
 
-  const totalPhotos = imagesQuery.data?.length ?? 0
+  const totalPhotos = (summariesQuery.data ?? []).reduce((sum, item) => sum + item.photoCount, 0)
   const latestYear = years[0] ?? null
   const hasFilters = teamId !== 'all' || year !== 'all'
   const openGallery =
     galleries.find((gallery) => gallery.id === openGalleryId) ?? null
-  const openGalleryImages = (
-    openGallery ? imagesByGallery.get(openGallery.id) ?? [] : []
-  ).filter((image) => Boolean(galleryImageUrl(image)))
+  const openImagesQuery = useQuery({
+    queryKey: ['gallery-images', openGalleryId],
+    queryFn: () => fetchGalleryImages(openGalleryId!),
+    enabled: Boolean(openGalleryId),
+    retry: false,
+  })
+  const openGalleryImages = (openImagesQuery.data ?? []).filter((image) => Boolean(galleryImageUrl(image)))
   const openImage =
     openImageIndex == null ? null : openGalleryImages[openImageIndex] ?? null
 
@@ -220,7 +220,7 @@ export function GalleryPage() {
 
             <GalleryHeroVisual
               gallery={featured}
-              images={featured ? imagesByGallery.get(featured.id) ?? [] : []}
+              summary={featured ? summaryByGallery.get(featured.id) : undefined}
               onOpen={() => featured && setOpenGalleryId(featured.id)}
             />
           </div>
@@ -287,12 +287,12 @@ export function GalleryPage() {
           <div className="mt-8">
             {loading ? (
               <LoadingState rows={5} />
-            ) : galleriesQuery.isError || imagesQuery.isError ? (
+            ) : galleriesQuery.isError || summariesQuery.isError ? (
               <ErrorState
                 title="Galerii se nepodařilo načíst"
                 onRetry={() => {
                   void galleriesQuery.refetch()
-                  void imagesQuery.refetch()
+                  void summariesQuery.refetch()
                 }}
               />
             ) : galleries.length ? (
@@ -302,7 +302,7 @@ export function GalleryPage() {
                   className="stagger-children grid gap-5 md:grid-cols-2 lg:grid-cols-12"
                 >
                   {visibleGalleries.map((gallery, index) => {
-                    const images = imagesByGallery.get(gallery.id) ?? []
+                    const summary = summaryByGallery.get(gallery.id)
                     const featuredAlbum = index === 0 && !hasFilters
                     const span = featuredAlbum
                       ? 'lg:col-span-7 lg:row-span-2'
@@ -316,7 +316,7 @@ export function GalleryPage() {
                       <GalleryCard
                         key={gallery.id}
                         gallery={gallery}
-                        images={images}
+                        summary={summary}
                         featured={featuredAlbum}
                         className={span}
                         onOpen={() => setOpenGalleryId(gallery.id)}
@@ -370,7 +370,7 @@ export function GalleryPage() {
                     (gallery) => galleryYear(gallery) === item,
                   )
                   const photoCount = yearGalleries.reduce(
-                    (sum, gallery) => sum + (imagesByGallery.get(gallery.id)?.length ?? 0),
+                    (sum, gallery) => sum + (summaryByGallery.get(gallery.id)?.photoCount ?? 0),
                     0,
                   )
 
@@ -412,6 +412,9 @@ export function GalleryPage() {
         <AlbumOverlay
           gallery={openGallery}
           images={openGalleryImages}
+          loading={openImagesQuery.isLoading}
+          error={openImagesQuery.isError}
+          onRetry={() => void openImagesQuery.refetch()}
           onClose={closeAlbum}
           onOpenImage={setOpenImageIndex}
           lightboxOpen={openImageIndex != null}
@@ -442,17 +445,14 @@ export function GalleryPage() {
 
 function GalleryHeroVisual({
   gallery,
-  images,
+  summary,
   onOpen,
 }: {
   gallery: Gallery | null
-  images: GalleryImage[]
+  summary?: PublicGallerySummary
   onOpen: () => void
 }) {
-  const urls = images
-    .map((image) => galleryImageUrl(image))
-    .filter((value): value is string => Boolean(value))
-    .slice(0, 3)
+  const urls = summary?.previewUrls.slice(0, 3) ?? []
   const fallback = gallery?.cover_image || urls[0] || '/hero-lichnov-field.webp'
 
   if (!gallery) {
@@ -488,7 +488,7 @@ function GalleryHeroVisual({
     )
   }
 
-  const previewUrls = albumPreviewUrls(gallery, images)
+  const previewUrls = albumPreviewUrls(gallery, summary?.previewUrls ?? [])
 
   return (
     <button
@@ -514,7 +514,7 @@ function GalleryHeroVisual({
               <span>{formatDate(gallery.event_date || gallery.created_at)}</span>
               <span>·</span>
               <span>
-                {images.length} {photoCountLabel(images.length)}
+                {summary?.photoCount ?? 0} {photoCountLabel(summary?.photoCount ?? 0)}
               </span>
             </div>
           </div>
@@ -855,18 +855,18 @@ export function GalleryDetailPage() {
 
 function GalleryCard({
   gallery,
-  images,
+  summary,
   featured,
   className,
   onOpen,
 }: {
   gallery: Gallery
-  images: GalleryImage[]
+  summary?: PublicGallerySummary
   featured: boolean
   className: string
   onOpen: () => void
 }) {
-  const previewUrls = albumPreviewUrls(gallery, images)
+  const previewUrls = albumPreviewUrls(gallery, summary?.previewUrls ?? [])
 
   return (
     <button
@@ -890,7 +890,7 @@ function GalleryCard({
               )}
               <span className="text-brand-500">·</span>
               <span>
-                {images.length} {photoCountLabel(images.length)}
+                {summary?.photoCount ?? 0} {photoCountLabel(summary?.photoCount ?? 0)}
               </span>
             </div>
 
@@ -950,7 +950,7 @@ function AlbumAccordionPreview({
   )
 }
 
-function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
+function albumPreviewUrls(gallery: Gallery, previewUrls: string[]) {
   const urls: string[] = []
   const seen = new Set<string>()
 
@@ -961,7 +961,7 @@ function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
   }
 
   add(gallery.cover_image)
-  images.forEach((image) => add(galleryImageUrl(image)))
+  previewUrls.forEach(add)
 
   if (!urls.length) add('/hero-lichnov-field.webp')
   return urls.slice(0, 4)
@@ -970,12 +970,18 @@ function albumPreviewUrls(gallery: Gallery, images: GalleryImage[]) {
 export function AlbumOverlay({
   gallery,
   images,
+  loading = false,
+  error = false,
+  onRetry,
   onClose,
   onOpenImage,
   lightboxOpen,
 }: {
   gallery: Gallery
   images: GalleryImage[]
+  loading?: boolean
+  error?: boolean
+  onRetry?: () => void
   onClose: () => void
   onOpenImage: (index: number) => void
   lightboxOpen: boolean
@@ -1064,13 +1070,15 @@ export function AlbumOverlay({
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5 lg:p-6">
-          {!contentReady ? (
+          {!contentReady || loading ? (
             <div className="grid min-h-[360px] place-items-center">
               <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.14em] text-ink-500/60">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
                 Načítám album
               </div>
             </div>
+          ) : error ? (
+            <ErrorState title="Fotografie alba se nepodařilo načíst" onRetry={onRetry} />
           ) : images.length ? (
             <div className="album-grid-enter columns-1 gap-3 sm:columns-2 lg:columns-3">
               {images.map((image, index) => {

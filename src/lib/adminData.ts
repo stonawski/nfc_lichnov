@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { collectAllPages } from './collectPages'
 import type { Gallery, GalleryImage, NewsArticle, NewsMedia, NewsMatchOption, Player, Staff, Team } from './types'
 import { preferDorostOverMen } from './playerIdentity'
 
@@ -74,16 +75,23 @@ export async function setGalleryPublished(id: string, published: boolean): Promi
 }
 
 export async function fetchAdminGalleryImageCounts(): Promise<Record<string, number>> {
-  const { data, error } = await supabase.from('gallery_images').select('gallery_id')
-  if (error) throw error
+  const ids = await collectAllPages(async (start, end) => {
+    const { data, error } = await supabase
+      .from('gallery_images')
+      .select('gallery_id')
+      .order('gallery_id', { ascending: true })
+      .order('id', { ascending: true })
+      .range(start, end)
+    if (error) throw error
+    return data ?? []
+  })
 
-  return (data ?? []).reduce<Record<string, number>>((counts, row) => {
+  return ids.reduce<Record<string, number>>((counts, row) => {
     const galleryId = row.gallery_id as string
     counts[galleryId] = (counts[galleryId] ?? 0) + 1
     return counts
   }, {})
 }
-
 
 export async function fetchAdminGalleryById(id: string): Promise<Gallery | null> {
   const { data, error } = await supabase
@@ -97,15 +105,19 @@ export async function fetchAdminGalleryById(id: string): Promise<Gallery | null>
 }
 
 export async function fetchAdminGalleryImages(galleryId: string): Promise<GalleryImage[]> {
-  const { data, error } = await supabase
-    .from('gallery_images')
-    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
-    .eq('gallery_id', galleryId)
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: true })
+  return collectAllPages(async (start, end) => {
+    const { data, error } = await supabase
+      .from('gallery_images')
+      .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+      .eq('gallery_id', galleryId)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
+      .range(start, end)
 
-  if (error) throw error
-  return (data ?? []) as GalleryImage[]
+    if (error) throw error
+    return (data ?? []) as GalleryImage[]
+  })
 }
 
 export async function addGalleryImage(

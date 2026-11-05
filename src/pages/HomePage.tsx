@@ -57,7 +57,7 @@ export function HomePage() {
   });
   const galleryImagesQuery = useQuery({
     queryKey: ["gallery-images", "home-random"],
-    queryFn: () => fetchHomepageGalleryImages(),
+    queryFn: () => fetchHomepageGalleryImages((galleriesQuery.data ?? []).map((gallery) => gallery.id)),
     enabled: galleriesQuery.isSuccess && Boolean(galleriesQuery.data?.length),
     retry: false,
   });
