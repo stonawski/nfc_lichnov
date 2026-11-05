@@ -764,6 +764,15 @@ export function TeamPage() {
               <LoadingState rows={4} />
             </div>
           </div>
+        ) : playersQuery.isError ? (
+          <div className="px-5 md:px-8">
+            <div className="mx-auto max-w-[1240px]">
+              <ErrorState
+                title="Soupisku se nepodařilo načíst"
+                onRetry={() => void playersQuery.refetch()}
+              />
+            </div>
+          </div>
         ) : playersQuery.data?.length ? (
           <DataFade>
             <PlayerStripCarousel team={team} players={playersQuery.data} />
@@ -797,6 +806,11 @@ export function TeamPage() {
 
           {staffQuery.isLoading ? (
             <LoadingState rows={3} />
+          ) : staffQuery.isError ? (
+            <ErrorState
+              title="Realizační tým se nepodařilo načíst"
+              onRetry={() => void staffQuery.refetch()}
+            />
           ) : staffQuery.data?.length ? (
             <DataFade className="stagger-children flex flex-wrap justify-center gap-4">
               {staffQuery.data.map((person) => (

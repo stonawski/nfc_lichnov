@@ -17,6 +17,7 @@ import type {
 import { TEAM_ORDER } from './format'
 import { isPlayerOwnedByDorost } from './playerIdentity'
 import { normalizeTacticalPosition } from './playerPosition'
+import { createConcurrentReadDeduper } from './shareConcurrentRead'
 
 function ensureConfigured() {
   if (!isSupabaseConfigured) {
@@ -26,18 +27,7 @@ function ensureConfigured() {
 
 // Share only simultaneous identical reads. Results are never cached here:
 // React Query still controls freshness and CMS invalidations.
-const pendingPublicReads = new Map<string, Promise<unknown>>()
-
-function shareConcurrentRead<T>(key: string, load: () => Promise<T>): Promise<T> {
-  const existing = pendingPublicReads.get(key) as Promise<T> | undefined
-  if (existing) return existing
-
-  const pending = Promise.resolve().then(load).finally(() => {
-    if (pendingPublicReads.get(key) === pending) pendingPublicReads.delete(key)
-  })
-  pendingPublicReads.set(key, pending)
-  return pending
-}
+const shareConcurrentRead = createConcurrentReadDeduper()
 
 export function fetchTeams(): Promise<Team[]> {
   return shareConcurrentRead('active-teams', loadActiveTeams)
@@ -396,17 +386,27 @@ export async function fetchHomepageGalleryImages(limit = 72): Promise<GalleryIma
 export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
   ensureConfigured()
 
-  let query = supabase
-    .from('gallery_images')
-    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: true })
+  // PostgREST caps rows per response (commonly at 1000). Without pagination,
+  // large albums silently lose their remaining images, counts and lightbox items.
+  const pageSize = 500
+  const images: GalleryImage[] = []
+  for (let offset = 0; ; offset += pageSize) {
+    let query = supabase
+      .from('gallery_images')
+      .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
 
-  if (galleryId) query = query.eq('gallery_id', galleryId)
+    if (galleryId) query = query.eq('gallery_id', galleryId)
 
-  const { data, error } = await query
-  if (error) throw error
-  return (data ?? []) as GalleryImage[]
+    const { data, error } = await query.range(offset, offset + pageSize - 1)
+    if (error) throw error
+
+    const page = (data ?? []) as GalleryImage[]
+    images.push(...page)
+    if (page.length < pageSize) return images
+  }
 }
 
 export function galleryImageUrl(image: GalleryImage): string {

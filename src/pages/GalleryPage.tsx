@@ -718,6 +718,19 @@ export function GalleryDetailPage() {
     )
   }
 
+  if (galleryQuery.isError) {
+    return (
+      <main className="px-5 py-20 md:px-8">
+        <div className="mx-auto max-w-[1100px]">
+          <ErrorState
+            title="Album se nepodařilo načíst"
+            onRetry={() => void galleryQuery.refetch()}
+          />
+        </div>
+      </main>
+    )
+  }
+
   if (!gallery) {
     return (
       <main className="px-5 py-20 md:px-8">
@@ -780,9 +793,9 @@ export function GalleryDetailPage() {
           {imagesQuery.isLoading ? (
             <LoadingState rows={6} />
           ) : imagesQuery.isError ? (
-            <EmptyState
+            <ErrorState
               title="Fotografie se nepodařilo načíst"
-              text="Zkontroluj veřejná oprávnění tabulky gallery_images."
+              onRetry={() => void imagesQuery.refetch()}
             />
           ) : images.length ? (
             <DataFade className="stagger-children columns-1 gap-4 sm:columns-2 lg:columns-3">
