@@ -1,8 +1,8 @@
 -- Lightweight, RLS-aware album previews for the public gallery index.
 -- Read-only; no production rows are modified and existing RLS stays in force.
 -- Deploy through Supabase SQL Editor before enabling the fast summary path.
-create index if not exists gallery_images_album_preview_idx
-  on public.gallery_images (gallery_id, sort_order, created_at, id);
+-- No index DDL is included here: inspect row counts and EXPLAIN in staging
+-- before adding an index on an actively written production table.
 
 create or replace function public.public_gallery_summaries()
 returns table (

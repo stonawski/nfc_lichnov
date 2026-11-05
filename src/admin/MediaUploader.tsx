@@ -1,6 +1,7 @@
 import { Check, CloudUpload, Image as ImageIcon, Loader2, X } from 'lucide-react'
 import { useRef, useState, type DragEvent } from 'react'
 import { supabase } from '../lib/supabase'
+import { withDeadline } from '../lib/withDeadline'
 
 export type MediaScope = 'gallery' | 'player' | 'news' | 'staff' | 'club'
 
@@ -72,15 +73,18 @@ export function MediaUploader({
 
         updateItem(itemId, { state: 'uploading', name: uploadFile.name })
 
-        const { data, error } = await supabase.functions.invoke('media-upload-url', {
-          body: {
-            scope,
-            resourceId,
-            fileName: uploadFile.name,
-            contentType: uploadFile.type,
-            fileSize: uploadFile.size,
-          },
-        })
+        const { data, error } = await withDeadline(
+          supabase.functions.invoke('media-upload-url', {
+            body: {
+              scope,
+              resourceId,
+              fileName: uploadFile.name,
+              contentType: uploadFile.type,
+              fileSize: uploadFile.size,
+            },
+          }),
+          25_000,
+        )
 
         if (error) throw error
         if (!data?.uploadUrl || !data?.publicUrl || !data?.objectKey) {

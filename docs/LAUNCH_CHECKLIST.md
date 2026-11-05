@@ -21,6 +21,7 @@ This checklist is the final gate before the new public website replaces the lega
 
 ## Supabase
 
+- [ ] Deploy `supabase/migrations/20261105130000_public_gallery_summaries.sql` via SQL Editor on staging first, then production after backup; confirm counts and previews.
 - [ ] Apply all migrations, including `20260922083000_club_stats.sql`.
 - [ ] Verify public read RLS for published public content.
 - [ ] Verify editor write RLS through `can_edit_content()`.

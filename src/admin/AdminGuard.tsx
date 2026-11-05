@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { withDeadline } from '../lib/withDeadline'
 
 type AccessState = 'checking' | 'allowed' | 'signed-out' | 'forbidden' | 'error'
 
@@ -18,7 +19,7 @@ export function AdminGuard() {
         const {
           data: { session },
           error: sessionError,
-        } = await supabase.auth.getSession()
+        } = await withDeadline(supabase.auth.getSession(), 20_000)
 
         if (cancelled) return
         if (sessionError) {
@@ -30,7 +31,10 @@ export function AdminGuard() {
           return
         }
 
-        const { data: canEdit, error: permissionError } = await supabase.rpc('can_edit_content')
+        const { data: canEdit, error: permissionError } = await withDeadline(
+          supabase.rpc('can_edit_content'),
+          20_000,
+        )
         if (cancelled) return
 
         if (permissionError) {

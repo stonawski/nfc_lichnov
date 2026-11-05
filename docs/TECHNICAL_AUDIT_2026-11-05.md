@@ -47,7 +47,7 @@ Zdroj: GitHub Actions, baseline `main` run [#38621732785](https://github.com/sto
 ## 4. Bezpečnost — zjištění a zbývající ověření
 
 - **Statická kontrola:** CMS používá `AdminGuard` s Auth session + `can_edit_content()`; media Edge Functions před presign/delete provádějí `getUser()` a stejný permission check; `news_media` migrace má RLS. Nejde o důkaz správného *nasazení* těchto pravidel do živého Supabase.
-- **Npm audit produkčních závislostí:** GitHub CI hlásí **2 moderate** v React Routeru (GHSA-wrjc-x8rr-h8h6 a GHSA-337j-9hxr-rhxg). Doporučený `npm audit fix --force` mění React Router na v7 a je breaking; bezpečnostní upgrade vyžaduje izolované kompatibilitní testy rout a navigace. **V tomto PR neproveden.** Současné `safeReturnPath` již kontroluje protokolové/origin backslash pokusy, ale nemusí pokrýt všechny renderované interní odkazy.
+- **Npm audit produkčních závislostí:** ve druhé fázi PR byl React Router upgradován na `react-router-dom@7.18.5` včetně lockfile. Ověřovací CI #246 prošlo TypeScriptem, sestavením a `npm audit --omit=dev` s **0 nálezy**. Přesto nebyla v živém prohlížeči potvrzena funkčnost všech navigačních scénářů; tuto kontrolu zachovej před nasazením. `safeReturnPath` nadále odmítá nebezpečné `from` adresy.
 - **R2:** povolené typy médií a deklarovaná maximální velikost jsou kontrolované při vystavování presigned URL. **Bez skutečného testu R2 nemáme potvrzené omezení velikosti nahraného těla PUT**; presigned PutObject sám o sobě nemusí serverově vynucovat předem deklarovaný `fileSize`.
 - **Neověřeno:** živá RLS pravidla nad všemi původními tabulkami, role neautorizovaného uživatele, konfigurace CORS, logy Edge Functions, skutečné ukládání a mazání obsahu, session refresh a odhlášení na reálném účtu.
 - V rámci auditu nejsou přidávána DB oprávnění, nové SQL migrace, service-role klíče ani přímé změny veřejných dat.
@@ -74,3 +74,20 @@ Zdroj: GitHub Actions, baseline `main` run [#38621732785](https://github.com/sto
 ## 7. Závěr
 
 PR opravuje konkrétní reprodukovatelné problémy v řídicích podmínkách loading/error, objemu stahovaných metadat homepage, stránkování dat, řízení timeoutů a zpracování chyb CMS, bez přepisování designu a architektury. CI prokazuje sestavitelnost a 12 testů, **nikoli garantovanou bezchybnost všech produkčních scénářů**. Merge až po review a kontrolní fázi v prostředí s reálnými daty.
+
+## 8. Doplnění druhé fáze auditu (5. 11. 2026)
+
+**Co se změnilo po první stabilizační fázi:**
+
+- **React Router:** deklarativní React Router DOM byl aktualizován na verzi **7.18.5** bez změny URL schématu. Ověřovací CI #246 úspěšně sestavilo React 18 / Vite aplikaci; produkční audit závislostí vrací **0 zranitelností**. Regresní testy na reálné prohlížení rout zůstávají povinným staging krokem.
+- **Veřejné galerie:** navržená databázová funkce `public.public_gallery_summaries()` vrací pouze přesné počty a nejvýše čtyři URL náhledů na publikované album. Celé metadata konkrétního alba se načtou až při jeho otevření. Vzhled multi-image karet, filtry, počet fotek, lightbox a album URL zůstávají zachované. Supabase RLS se nevypíná; funkce je `security invoker`.
+- **Kompatibilita migrace:** pokud Supabase funkce zatím neexistuje (PGRST202 / 42883), frontend použije původní plné načítání fotografií. Optimalizační přínos na produkci nastane až **po bezpečném nasazení** `supabase/migrations/20261105130000_public_gallery_summaries.sql` přes Supabase UI. Migration pouze vytváří čtecí SQL funkci a upravuje granty na tuto funkci; nemění obsah tabulek ani indexy.
+- **Admin galerie:** počty všech fotografií a zobrazení galerie se načítají po stránkách; výchozí PostgREST limit tak nemůže potichu uříznout přesahy nad 1000 záznamů.
+- **CMS:** Auth kontrola přístupu, přihlášení a získání podpisu pro upload nyní mají omezené čekání 20–25 sekund. Velký samotný R2 PUT upload **záměrně nemá tento krátký timeout**, aby nedocházelo k přerušování videí na pomalých sítích.
+- **Testy:** první sada 12 automatických testů zůstává zachovaná; přidaná druhá sada pokrývá generický časový limit pro CMS. Celkové počty a výsledky kontroluj z nejnovějšího CI běhu PR #32.
+
+**Syntetická srovnávací data:** výchozí `main` CI (říjen 2026) má součet všech JS chunků **269,44 kB gzip**. Kandidát s galeriemi a React Router v7 z běhu CI #246 měl **276,43 kB gzip**; rozdíl odráží zejména nové závislosti a runtime logiku, nikoli čas načítání na síti. Hlavní chunk v CI #246 činil **30,79 kB gzip**. Pro finální commit se mohou velikosti nepatrně lišit. Lighthouse/Core Web Vitals a reálné DB payloady pořád nebyly změřeny.
+
+**Bezpečnostní poznámky:** presigned R2 PUT ověřuje oprávnění před podpisem a deklarovanou velikost, ale velikost *skutečně odeslaného* těla bez serverového HEAD nebo podepsaného požadavku s garantovanou Content-Length dosud nebyla prokázána jako vynucená. Nenasazuj neotestované změny podpisů; ověř R2 podmínky na stagingu. Úspěšný build nenahrazuje živý login, RLS ani vizuální QA.
+
+**Povinná ruční kontrola před mergem:** přihlášení a odhlášení přes Supabase, galerie více než 1000 fotek, detail alba a lightbox, přímý refresh hluboké URL, další publikace v CMS, video upload a omezení nepovoleného uživatele. Žádná část tohoto ručního kroku zde není označována za provedenou.

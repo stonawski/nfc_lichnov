@@ -74,6 +74,8 @@ Přístup je chráněný Supabase Auth a serverovou kontrolou `can_edit_content(
 
 Repo obsahuje databázové migrace potřebné pro funkce, které vznikly spolu s frontendem. Před produkčním nasazením zkontroluj a aplikuj všechny migrace ve složce `supabase/migrations`.
 
+Přehled fotogalerií může používat novou čtecí funkci `public_gallery_summaries()`. Její migrace je v `supabase/migrations/20261105130000_public_gallery_summaries.sql`. Nejprve ji ověř na stagingu a poté aplikuj přes Supabase SQL Editor. Do té doby web bezpečně používá předchozí, datově náročnější načítání.
+
 Historické klubové statistiky používají migraci:
 
 ```text
