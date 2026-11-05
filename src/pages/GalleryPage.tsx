@@ -14,7 +14,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
 import { Lightbox } from '../components/GalleryLightbox'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { Seo } from '../components/Seo'
 import {
   fetchGalleries,
@@ -71,8 +71,8 @@ export function GalleryPage() {
       )[0] ?? null,
     [galleries],
   )
-  const loading =
-    galleriesQuery.isLoading || imagesQuery.isLoading || teamsQuery.isLoading
+  // Team labels are optional filters, not a reason to block every album.
+  const loading = galleriesQuery.isLoading || imagesQuery.isLoading
 
   const years = useMemo(
     () =>
@@ -287,10 +287,13 @@ export function GalleryPage() {
           <div className="mt-8">
             {loading ? (
               <LoadingState rows={5} />
-            ) : galleriesQuery.isError || imagesQuery.isError || teamsQuery.isError ? (
-              <EmptyState
+            ) : galleriesQuery.isError || imagesQuery.isError ? (
+              <ErrorState
                 title="Galerii se nepodařilo načíst"
-                text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení s obsahem klubu."
+                onRetry={() => {
+                  void galleriesQuery.refetch()
+                  void imagesQuery.refetch()
+                }}
               />
             ) : galleries.length ? (
               visibleGalleries.length ? (

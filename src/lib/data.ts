@@ -24,7 +24,26 @@ function ensureConfigured() {
   }
 }
 
-export async function fetchTeams(): Promise<Team[]> {
+// Share only simultaneous identical reads. Results are never cached here:
+// React Query still controls freshness and CMS invalidations.
+const pendingPublicReads = new Map<string, Promise<unknown>>()
+
+function shareConcurrentRead<T>(key: string, load: () => Promise<T>): Promise<T> {
+  const existing = pendingPublicReads.get(key) as Promise<T> | undefined
+  if (existing) return existing
+
+  const pending = Promise.resolve().then(load).finally(() => {
+    if (pendingPublicReads.get(key) === pending) pendingPublicReads.delete(key)
+  })
+  pendingPublicReads.set(key, pending)
+  return pending
+}
+
+export function fetchTeams(): Promise<Team[]> {
+  return shareConcurrentRead('active-teams', loadActiveTeams)
+}
+
+async function loadActiveTeams(): Promise<Team[]> {
   ensureConfigured()
 
   const baseSelect = 'id,name,short_name,slug,category,logo_url,active,sort_order,season'
@@ -72,7 +91,11 @@ export async function fetchTeamBySlug(slug: string): Promise<Team | null> {
   return teams.find((team) => team.slug === slug) ?? null
 }
 
-export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
+export function fetchActiveSeasons(): Promise<TeamSeason[]> {
+  return shareConcurrentRead('active-seasons', loadActiveSeasons)
+}
+
+async function loadActiveSeasons(): Promise<TeamSeason[]> {
   ensureConfigured()
   const { data, error } = await supabase
     .from('team_seasons')
@@ -354,6 +377,20 @@ export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> 
 
   if (error) throw error
   return data as Gallery | null
+}
+
+// The homepage slideshow only needs a small, recent sample. Avoid downloading
+// the complete album archive just to display one photograph at a time.
+export async function fetchHomepageGalleryImages(limit = 72): Promise<GalleryImage[]> {
+  ensureConfigured()
+  const { data, error } = await supabase
+    .from('gallery_images')
+    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return (data ?? []) as GalleryImage[]
 }
 
 export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
