@@ -82,6 +82,12 @@ supabase/migrations/20260922083000_club_stats.sql
 
 ## Dokumentace
 
+Aktuální technický audit a verifikované stabilizační opravy:
+
+```text
+docs/TECHNICAL_AUDIT_2026-11-05.md
+```
+
 Kompletní technický handover a finální popis architektury projektu:
 
 ```text
