@@ -35,38 +35,44 @@ export function AdminLoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submitting) return
     setSubmitting(true)
     setError(null)
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    })
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
 
-    if (signInError) {
-      setError('Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.')
+      if (signInError) {
+        setError('Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.')
+        return
+      }
+
+      const { data: canEdit, error: permissionError } = await supabase.rpc('can_edit_content')
+
+      if (permissionError || canEdit !== true) {
+        await supabase.auth.signOut()
+        setError('Tento účet nemá oprávnění spravovat obsah.')
+        return
+      }
+
+      const from =
+        typeof location.state === 'object' &&
+        location.state &&
+        'from' in location.state &&
+        typeof location.state.from === 'string'
+          ? location.state.from
+          : '/admin'
+
+      navigate(from, { replace: true })
+    } catch (error) {
+      console.error('Admin sign-in request failed', error)
+      setError('Přihlášení se nepodařilo dokončit. Zkontroluj připojení a zkus to znovu.')
+    } finally {
       setSubmitting(false)
-      return
     }
-
-    const { data: canEdit, error: permissionError } = await supabase.rpc('can_edit_content')
-
-    if (permissionError || canEdit !== true) {
-      await supabase.auth.signOut()
-      setError('Tento účet nemá oprávnění spravovat obsah.')
-      setSubmitting(false)
-      return
-    }
-
-    const from =
-      typeof location.state === 'object' &&
-      location.state &&
-      'from' in location.state &&
-      typeof location.state.from === 'string'
-        ? location.state.from
-        : '/admin'
-
-    navigate(from, { replace: true })
   }
 
   return (

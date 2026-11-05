@@ -35,13 +35,17 @@ export function MediaUploader({
   const [dragging, setDragging] = useState(false)
   const [items, setItems] = useState<UploadItem[]>([])
   const [busy, setBusy] = useState(false)
+  const busyRef = useRef(false)
 
   async function handleFiles(fileList: FileList | File[]) {
     const files = Array.from(fileList).filter(
       (file) => file.type.startsWith('image/') ||
         (allowVideo && ['video/mp4', 'video/webm'].includes(file.type)),
     )
-    if (!files.length || busy) return
+    if (!files.length || busyRef.current) return
+    // Guard synchronously: two upload events can fire before React commits
+    // the busy state and would otherwise duplicate the same files.
+    busyRef.current = true
 
     const selected = multiple ? files : files.slice(0, 1)
     const initialItems = selected.map((file) => ({
@@ -114,6 +118,7 @@ export function MediaUploader({
       }
     }
 
+    busyRef.current = false
     setBusy(false)
     if (inputRef.current) inputRef.current.value = ''
   }
