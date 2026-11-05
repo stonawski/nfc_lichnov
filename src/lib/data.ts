@@ -18,6 +18,7 @@ import { TEAM_ORDER } from './format'
 import { isPlayerOwnedByDorost } from './playerIdentity'
 import { normalizeTacticalPosition } from './playerPosition'
 import { createConcurrentReadDeduper } from './shareConcurrentRead'
+import { collectAllPages } from './collectPages'
 
 function ensureConfigured() {
   if (!isSupabaseConfigured) {
@@ -388,9 +389,7 @@ export async function fetchGalleryImages(galleryId?: string): Promise<GalleryIma
 
   // PostgREST caps rows per response (commonly at 1000). Without pagination,
   // large albums silently lose their remaining images, counts and lightbox items.
-  const pageSize = 500
-  const images: GalleryImage[] = []
-  for (let offset = 0; ; offset += pageSize) {
+  return collectAllPages<GalleryImage>(async (start, end) => {
     let query = supabase
       .from('gallery_images')
       .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
@@ -400,13 +399,10 @@ export async function fetchGalleryImages(galleryId?: string): Promise<GalleryIma
 
     if (galleryId) query = query.eq('gallery_id', galleryId)
 
-    const { data, error } = await query.range(offset, offset + pageSize - 1)
+    const { data, error } = await query.range(start, end)
     if (error) throw error
-
-    const page = (data ?? []) as GalleryImage[]
-    images.push(...page)
-    if (page.length < pageSize) return images
-  }
+    return (data ?? []) as GalleryImage[]
+  }, 500)
 }
 
 export function galleryImageUrl(image: GalleryImage): string {
