@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { DataFade } from '../components/DataFade'
 import { NewsMatchCard } from '../components/NewsMatchCard'
 import { HeroFieldBackdrop } from '../components/HeroFieldBackdrop'
-import { EmptyState, LoadingState } from '../components/LoadingState'
+import { EmptyState, ErrorState, LoadingState } from '../components/LoadingState'
 import { fetchPublishedNews, fetchTeams } from '../lib/data'
 import { formatDate } from '../lib/format'
 import type { NewsArticle } from '../lib/types'
@@ -215,12 +215,12 @@ export function NewsPage() {
 
       <section className="bg-sand-100 px-5 pb-14 pt-12 md:px-8 md:pb-20 md:pt-16">
         <div className="mx-auto max-w-[1240px]">
-          {query.isLoading || teamsQuery.isLoading ? (
+          {query.isLoading ? (
             <LoadingState rows={5} />
           ) : query.isError ? (
-            <EmptyState
+            <ErrorState
               title="Aktuality se nepodařilo načíst"
-              text="Zkus načtení zopakovat. Pokud problém přetrvá, může být dočasně nedostupné spojení s obsahem klubu."
+              onRetry={() => void query.refetch()}
             />
           ) : articles.length === 0 ? (
             <EmptyNewsState />

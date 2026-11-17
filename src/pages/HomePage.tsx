@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { ClubLogo } from "../components/ClubLogo";
 import { DataFade } from "../components/DataFade";
 import { HeroFieldBackdrop } from "../components/HeroFieldBackdrop";
-import { EmptyState, LoadingState } from "../components/LoadingState";
+import { EmptyState, ErrorState, LoadingState } from "../components/LoadingState";
 import { HomeMatchBoard } from "../components/HomeMatchBoard";
 import { NewsSpotlight } from "../components/NewsSpotlight";
 import { PlayerStripCarousel } from "../components/PlayerStripCarousel";
@@ -20,7 +20,7 @@ import { StandingsTable } from "../components/StandingsTable";
 import {
   fetchDisplayPlayersByTeam,
   fetchGalleries,
-  fetchGalleryImages,
+  fetchHomepageGalleryImages,
   fetchHomepageMatchSummaries,
   fetchPublishedNews,
   fetchStandingsByTeam,
@@ -57,8 +57,8 @@ export function HomePage() {
   });
   const galleryImagesQuery = useQuery({
     queryKey: ["gallery-images", "home-random"],
-    queryFn: () => fetchGalleryImages(),
-    enabled: galleriesQuery.isSuccess,
+    queryFn: () => fetchHomepageGalleryImages((galleriesQuery.data ?? []).map((gallery) => gallery.id)),
+    enabled: galleriesQuery.isSuccess && Boolean(galleriesQuery.data?.length),
     retry: false,
   });
 
@@ -233,9 +233,12 @@ export function HomePage() {
             {matchesQuery.isLoading || upcomingQuery.isLoading ? (
               <LoadingState rows={5} />
             ) : matchesQuery.isError || upcomingQuery.isError ? (
-              <EmptyState
-                title="Data se nepodařilo načíst"
-                text="Zkontroluj Supabase připojení a veřejná RLS oprávnění."
+              <ErrorState
+                title="Zápasy se nepodařilo načíst"
+                onRetry={() => {
+                  void matchesQuery.refetch()
+                  void upcomingQuery.refetch()
+                }}
               />
             ) : (
               <DataFade>
@@ -302,6 +305,15 @@ export function HomePage() {
             <LoadingState rows={3} />
           </div>
         </section>
+      ) : newsQuery.isError ? (
+        <section className="bg-[#102b22] px-5 py-16 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <ErrorState
+              title="Aktuality se nepodařilo načíst"
+              onRetry={() => void newsQuery.refetch()}
+            />
+          </div>
+        </section>
       ) : news.length ? (
         <DataFade>
           <NewsSpotlight articles={news} />
@@ -348,6 +360,11 @@ export function HomePage() {
             <div className="rounded-[30px] bg-[#fbfaf6] p-2 text-ink-900 sm:p-3">
               {standingsQuery.isLoading ? (
                 <LoadingState rows={5} />
+              ) : standingsQuery.isError ? (
+                <ErrorState
+                  title="Tabulku se nepodařilo načíst"
+                  onRetry={() => void standingsQuery.refetch()}
+                />
               ) : standingsPreview.length ? (
                 <DataFade>
                   <StandingsTable rows={standingsWithLogos} compact />
@@ -394,7 +411,17 @@ export function HomePage() {
 
           <div className="relative min-h-[620px] overflow-hidden rounded-[34px] lg:min-h-[650px] lg:overflow-visible lg:rounded-none">
             <div className="absolute inset-x-0 top-0 h-[390px] w-full overflow-hidden rounded-[34px] bg-brand-900 shadow-[0_24px_70px_rgba(24,53,42,.12)] sm:h-[430px] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-auto lg:w-[84%] lg:rounded-[42px]">
-              {galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
+              {galleriesQuery.isError || galleryImagesQuery.isError ? (
+                <div className="absolute inset-0 z-10 grid items-center bg-brand-900 p-5">
+                  <ErrorState
+                    title="Fotografie se nepodařilo načíst"
+                    onRetry={() => {
+                      void galleriesQuery.refetch()
+                      if (galleriesQuery.data?.length) void galleryImagesQuery.refetch()
+                    }}
+                  />
+                </div>
+              ) : galleriesQuery.isLoading || galleryImagesQuery.isLoading ? (
                 <div className="absolute inset-0 p-6">
                   <LoadingState rows={3} />
                 </div>
@@ -489,6 +516,18 @@ export function HomePage() {
         <section className="min-h-[360px] bg-white px-5 py-10 md:px-8">
           <div className="mx-auto max-w-[1240px]">
             <LoadingState rows={3} />
+          </div>
+        </section>
+      ) : teamsQuery.isError || menPlayersQuery.isError ? (
+        <section className="bg-white px-5 py-10 md:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <ErrorState
+              title="Hráče se nepodařilo načíst"
+              onRetry={() => {
+                void teamsQuery.refetch()
+                if (men) void menPlayersQuery.refetch()
+              }}
+            />
           </div>
         </section>
       ) : men && menPlayersQuery.data?.length ? (

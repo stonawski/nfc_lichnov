@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, LockKeyhole } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { withDeadline } from '../../lib/withDeadline'
 import { Seo } from '../../components/Seo'
 
 export function AdminLoginPage() {
@@ -18,15 +19,18 @@ export function AdminLoginPage() {
     async function redirectExistingEditor() {
       const {
         data: { session },
-      } = await supabase.auth.getSession()
+      } = await withDeadline(supabase.auth.getSession(), 20_000)
 
       if (!active || !session) return
 
-      const { data: canEdit } = await supabase.rpc('can_edit_content')
+      const { data: canEdit } = await withDeadline(supabase.rpc('can_edit_content'), 20_000)
       if (active && canEdit === true) navigate('/admin', { replace: true })
     }
 
-    void redirectExistingEditor()
+    void redirectExistingEditor().catch((reason) => {
+      // A failed speculative session lookup must not cause an unhandled error.
+      console.warn('Admin session check failed', reason)
+    })
 
     return () => {
       active = false
@@ -35,38 +39,47 @@ export function AdminLoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submitting) return
     setSubmitting(true)
     setError(null)
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    })
+    try {
+      const { error: signInError } = await withDeadline(supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      }), 20_000)
 
-    if (signInError) {
-      setError('Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.')
+      if (signInError) {
+        setError('Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.')
+        return
+      }
+
+      const { data: canEdit, error: permissionError } = await withDeadline(
+        supabase.rpc('can_edit_content'),
+        20_000,
+      )
+
+      if (permissionError || canEdit !== true) {
+        await supabase.auth.signOut()
+        setError('Tento účet nemá oprávnění spravovat obsah.')
+        return
+      }
+
+      const from =
+        typeof location.state === 'object' &&
+        location.state &&
+        'from' in location.state &&
+        typeof location.state.from === 'string'
+          ? location.state.from
+          : '/admin'
+
+      navigate(from, { replace: true })
+    } catch (error) {
+      console.error('Admin sign-in request failed', error)
+      setError('Přihlášení se nepodařilo dokončit. Zkontroluj připojení a zkus to znovu.')
+    } finally {
       setSubmitting(false)
-      return
     }
-
-    const { data: canEdit, error: permissionError } = await supabase.rpc('can_edit_content')
-
-    if (permissionError || canEdit !== true) {
-      await supabase.auth.signOut()
-      setError('Tento účet nemá oprávnění spravovat obsah.')
-      setSubmitting(false)
-      return
-    }
-
-    const from =
-      typeof location.state === 'object' &&
-      location.state &&
-      'from' in location.state &&
-      typeof location.state.from === 'string'
-        ? location.state.from
-        : '/admin'
-
-    navigate(from, { replace: true })
   }
 
   return (

@@ -17,6 +17,8 @@ import type {
 import { TEAM_ORDER } from './format'
 import { isPlayerOwnedByDorost } from './playerIdentity'
 import { normalizeTacticalPosition } from './playerPosition'
+import { createConcurrentReadDeduper } from './shareConcurrentRead'
+import { collectAllPages } from './collectPages'
 
 function ensureConfigured() {
   if (!isSupabaseConfigured) {
@@ -24,7 +26,15 @@ function ensureConfigured() {
   }
 }
 
-export async function fetchTeams(): Promise<Team[]> {
+// Share only simultaneous identical reads. Results are never cached here:
+// React Query still controls freshness and CMS invalidations.
+const shareConcurrentRead = createConcurrentReadDeduper()
+
+export function fetchTeams(): Promise<Team[]> {
+  return shareConcurrentRead('active-teams', loadActiveTeams)
+}
+
+async function loadActiveTeams(): Promise<Team[]> {
   ensureConfigured()
 
   const baseSelect = 'id,name,short_name,slug,category,logo_url,active,sort_order,season'
@@ -72,7 +82,11 @@ export async function fetchTeamBySlug(slug: string): Promise<Team | null> {
   return teams.find((team) => team.slug === slug) ?? null
 }
 
-export async function fetchActiveSeasons(): Promise<TeamSeason[]> {
+export function fetchActiveSeasons(): Promise<TeamSeason[]> {
+  return shareConcurrentRead('active-seasons', loadActiveSeasons)
+}
+
+async function loadActiveSeasons(): Promise<TeamSeason[]> {
   ensureConfigured()
   const { data, error } = await supabase
     .from('team_seasons')
@@ -356,20 +370,87 @@ export async function fetchGalleryBySlug(slug: string): Promise<Gallery | null> 
   return data as Gallery | null
 }
 
+// The homepage slideshow only needs a small, recent sample. Avoid downloading
+// the complete album archive just to display one photograph at a time.
+export async function fetchHomepageGalleryImages(galleryIds: string[], limit = 72): Promise<GalleryImage[]> {
+  ensureConfigured()
+  if (!galleryIds.length) return []
+  const { data, error } = await supabase
+    .from('gallery_images')
+    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+    .in('gallery_id', galleryIds)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return (data ?? []) as GalleryImage[]
+}
+
+export type PublicGallerySummary = {
+  galleryId: string
+  photoCount: number
+  previewUrls: string[]
+}
+
+/** One small RLS-aware response per album, rather than the full photo archive. */
+export async function fetchPublicGallerySummaries(galleries: Gallery[]): Promise<PublicGallerySummary[]> {
+  ensureConfigured()
+  if (!galleries.length) return []
+
+  const { data, error } = await supabase.rpc('public_gallery_summaries')
+  if (!error) {
+    return (data ?? []).map((row: {
+      gallery_id: string
+      photo_count: number | string
+      preview_urls: string[] | null
+    }) => ({
+      galleryId: row.gallery_id,
+      photoCount: Number(row.photo_count) || 0,
+      previewUrls: Array.isArray(row.preview_urls) ? row.preview_urls : [],
+    }))
+  }
+
+  if (error.code !== 'PGRST202' && error.code !== '42883') throw error
+
+  // The migration may not yet be deployed. Retain exact legacy display until
+  // the Supabase SQL migration has been installed manually.
+  const images = await fetchGalleryImages()
+  const counts = new Map<string, number>()
+  const previews = new Map<string, string[]>()
+  for (const image of images) {
+    counts.set(image.gallery_id, (counts.get(image.gallery_id) ?? 0) + 1)
+    const urls = previews.get(image.gallery_id) ?? []
+    if (urls.length < 4 && image.image_url && !urls.includes(image.image_url)) {
+      urls.push(image.image_url)
+      previews.set(image.gallery_id, urls)
+    }
+  }
+  return galleries.map((gallery) => ({
+    galleryId: gallery.id,
+    photoCount: counts.get(gallery.id) ?? 0,
+    previewUrls: previews.get(gallery.id) ?? [],
+  }))
+}
+
 export async function fetchGalleryImages(galleryId?: string): Promise<GalleryImage[]> {
   ensureConfigured()
 
-  let query = supabase
-    .from('gallery_images')
-    .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: true })
+  // PostgREST caps rows per response (commonly at 1000). Without pagination,
+  // large albums silently lose their remaining images, counts and lightbox items.
+  return collectAllPages<GalleryImage>(async (start, end) => {
+    let query = supabase
+      .from('gallery_images')
+      .select('id,gallery_id,image_url,caption,sort_order,created_at,updated_at')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
 
-  if (galleryId) query = query.eq('gallery_id', galleryId)
+    if (galleryId) query = query.eq('gallery_id', galleryId)
 
-  const { data, error } = await query
-  if (error) throw error
-  return (data ?? []) as GalleryImage[]
+    const { data, error } = await query.range(start, end)
+    if (error) throw error
+    return (data ?? []) as GalleryImage[]
+  }, 500)
 }
 
 export function galleryImageUrl(image: GalleryImage): string {

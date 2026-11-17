@@ -70,12 +70,9 @@ export function MatchDetailPage() {
     retry: false,
   })
 
-  const matchDataLoading =
-    matchQuery.isLoading ||
-    teamsQuery.isLoading ||
-    (Boolean(match) && (participantsQuery.isLoading || timelineQuery.isLoading))
-
-  if (matchDataLoading) {
+  // The hero only depends on the match itself. Lineup and timeline have
+  // their own loading placeholders, so a slow secondary API cannot stall the page.
+  if (matchQuery.isLoading) {
     return <PublicDataPageLoading sections={1} />
   }
 
@@ -161,6 +158,11 @@ export function MatchDetailPage() {
 
               {participantsQuery.isLoading ? (
                 <LoadingState rows={5} />
+              ) : participantsQuery.isError ? (
+                <ErrorState
+                  title="Sestavu se nepodařilo načíst"
+                  onRetry={() => void participantsQuery.refetch()}
+                />
               ) : clubParticipants.length ? (
                 <DataFade>
                   <FormationPitch
@@ -185,6 +187,13 @@ export function MatchDetailPage() {
               {timelineQuery.isLoading ? (
                 <div className="mt-4">
                   <LoadingState rows={5} />
+                </div>
+              ) : timelineQuery.isError ? (
+                <div className="mt-4">
+                  <ErrorState
+                    title="Průběh zápasu se nepodařilo načíst"
+                    onRetry={() => void timelineQuery.refetch()}
+                  />
                 </div>
               ) : timeline.length ? (
                 <DataFade>
